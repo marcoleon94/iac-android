@@ -12,11 +12,14 @@ public class MFormGenerator extends FormActivity {
 	public static final int OPTION_POPULATE = 1;
 	public static final int OPTION_CANCEL = 2;
 
+	public static final String FILE_FIELDS = "FormFields.json";
+	public static final String FILE_SCHEMA = "schemas.json";
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_mform_generator);
-		generateForm(FormActivity.parseFileToString(this, "schemas.json"));
+		generateForm(FormActivity.parseFileToString(this, FILE_FIELDS));
 		save();
 	}
 
