@@ -1,0 +1,77 @@
+{
+   "meta":{
+      "type":"meta",
+      "name":"Music Album"
+   },
+   "artist": {
+        "type": "string",
+        "id": "0",
+        "default": "",
+        "priority": "0"
+    },
+   "Datos Personales":{
+      "header":"Datos Personales",
+      "key":"barcodeReader",
+      "title":"Presiona aquí para leer el código de barras de la credencial",
+      "action":"openCamera:",
+	  "priority": "0" 
+   },
+   "Número de Empleado":{
+      "key":"employeeID",
+      "type":"unsigned",
+      "title":"Número de Empleado",
+      "placeholder":"123456789",
+      "validate":"yes",
+	  "priority": "2" 
+   },
+   "Edad":{
+      "key":"age",
+      "title":"Edad",
+      "type":"unsigned",
+      "placeholder":"Su edad",
+      "validate":"yes",
+	  "priority": "3" 
+   },
+   "Jefe Inmediato":{
+      "key":"bossName",
+      "title":"Jefe Inmediato",
+      "type":"text",
+      "placeholder":"Nombre (ej. Juan Perez)",
+	  "priority": "4" 
+   },
+   "Puesto":{
+      "key":"jobName",
+      "title":"Puesto",
+      "type":"text",
+      "placeholder":"Su Puesto",
+	  "priority": "5" 
+   },
+   "Departamento":{
+      "key":"department",
+      "title":"Departamento",
+      "type":"text",
+      "placeholder":"Su Departamento",
+	  "priority": "6" 
+   },
+   "Sindicalizado":{
+      "key":"union",
+      "title":"Sindicalizado",
+      "type":"boolean",
+	  "priority": "7" 
+	  "default": "0",
+   },
+   "Indirecto":{
+      "key":"indirect",
+      "title":"Indirecto",
+      "type":"boolean",
+	  "priority": "8" 
+	  "default": "0",
+   },
+   "Salary":{
+      "key":"salary",
+      "title":"Salary",
+      "type":"boolean",
+	  "priority": "9" 
+	  "default": "0",
+   }
+}
