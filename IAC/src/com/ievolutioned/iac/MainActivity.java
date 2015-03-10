@@ -12,12 +12,21 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
 		findViewById(R.id.button1).setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				startActivity(new Intent(getApplicationContext(), MFormGenerator.class));
+				startActivity(new Intent(getApplicationContext(),
+						MFormGenerator.class));
+			}
+		});
+		findViewById(R.id.button2).setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(getApplicationContext(),
+						JsonToView.class));
 			}
 		});
 	}
