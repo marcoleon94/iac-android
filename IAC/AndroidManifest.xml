@@ -26,6 +26,10 @@
             android:name=".MFormGenerator"
             android:label="@string/app_name" >
         </activity>
+        <meta-data
+            android:name="com.crashlytics.ApiKey"
+            android:value="aafc418d6588bb390cbabc7a049d9d424e1e6466" />
     </application>
 
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
