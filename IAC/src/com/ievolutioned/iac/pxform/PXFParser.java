@@ -3,26 +3,26 @@ package com.ievolutioned.iac.pxform;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class PXFParser {
 
 	private JsonElement jseObject;
-	private List<PXFormWidget> lWidgets = new ArrayList<PXFormWidget>();
+	private List<PXWidget> lWidgets = new ArrayList<PXWidget>();
 
 	private PXFParser(){ }
 
-	public List<PXFormWidget> getWidget(){
+	public List<PXWidget> getWidget(){
 		return lWidgets;
 	}
 	public JsonElement getJsonElement(){
@@ -37,7 +37,7 @@ public class PXFParser {
 	 */
 	public static PXFParser parseXForm(final Context context, final String json){
 		PXFParser p = new PXFParser();
-		final LayoutInflater inflayer = LayoutInflater.from(context);
+		//final LayoutInflater inflayer = LayoutInflater.from(context);
 		JsonElement el = new JsonParser().parse(json);
 		p.jseObject = el;
 
@@ -53,38 +53,12 @@ public class PXFParser {
 				if(!e.isJsonObject())
 					continue;
 
-				p.lWidgets.add(PXFormWidget.getWidgetFromType(context, inflayer, e.getAsJsonObject()));
+				p.lWidgets.add(getWidgetFromType(context, e.getAsJsonObject()));
 			}
 		}
 
 		return p;
 	}
-	/**
-	 * 
-	 * @param context
-	 * @param inflater
-	 * @param jsonOnj
-	 * @return
-	 */
-	/*
-	private static List<PXFormWidget> getWidget(final Context context, final LayoutInflater inflater, 
-			final JsonObject jsonOnj){
-		Set<Map.Entry<String,JsonElement>> entrySet = jsonOnj.entrySet();
-
-		List<PXFormWidget> list = new ArrayList<PXFormWidget>();
-
-		for(Map.Entry<String,JsonElement> e : entrySet){
-			PXFormWidget w = PXFormWidget.getWidgetFromType(context, inflater, jsonOnj, e);
-
-			if(w == null)
-				continue;
-
-			list.add(w);
-		}
-
-		return list;
-	}
-	 */
 
 	public static String parseFileToString(Context context, String filename )
 	{
@@ -103,5 +77,50 @@ public class PXFParser {
 			Log.i("MakeMachine", "IOException: " + e.getMessage() );
 		}
 		return null;
+	}
+
+	public static PXWidget getWidgetFromType(final Context context,
+			final JsonObject entry){
+
+		//View v = null;
+		Map<String, Map.Entry<String,JsonElement>> map = new HashMap<String, Map.Entry<String,JsonElement>>();
+		PXWidget widget = null;
+
+		//map all the fields by key
+		for(Map.Entry<String,JsonElement> e : entry.entrySet()){
+			map.put(e.getKey(), e);
+		}
+
+		//we got a well defined field
+		if(map.containsKey(PXWidget.FIELD_TYPE)){
+			if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
+					.equals(PXWidget.FIELD_TYPE_TEXT)){
+				widget = new PXFEdit(context, map);
+			} 
+			else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
+					.equals(PXWidget.FIELD_TYPE_BOOLEAN)){
+				widget = new PXFCheckBox(context, map);
+			} 
+			else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
+					.equals(PXWidget.FIELD_TYPE_DATE)){
+				//TODO date dialog picker
+			} 
+			else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
+					.equals(PXWidget.FIELD_TYPE_LONGTEXT)){
+				widget = new PXFEdit(context, map);
+			} 
+			else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
+					.equals(PXWidget.FIELD_TYPE_UNSIGNED)){
+				widget = new PXFEdit(context, map);				
+			}
+		} 
+		else if(map.containsKey(PXWidget.FIELD_OPTIONS)){
+			widget = new PXFSpinner(context, map);
+		} 
+		else if(map.containsKey(PXWidget.FIELD_ACTION)){
+			widget = new PXFButton(context, map);
+		}
+
+		return widget == null ? new PXFUnknownControlType(context, map) : widget;
 	}
 }

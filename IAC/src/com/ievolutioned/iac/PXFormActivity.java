@@ -1,7 +1,7 @@
 package com.ievolutioned.iac;
 
 import com.ievolutioned.iac.pxform.PXFParser;
-import com.ievolutioned.iac.pxform.PXFormWidget;
+import com.ievolutioned.iac.pxform.PXWidget;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -21,7 +21,7 @@ public class PXFormActivity extends Activity {
 				PXFParser.parseFileToString(PXFormActivity.this, "FormFields_Pablo.json"));
 		LinearLayout container = (LinearLayout)findViewById(R.id.PXForm_linearPanel);
 		
-		for(PXFormWidget w : p.getWidget()){
+		for(PXWidget w : p.getWidget()){
 			for(View v : w.getViewList()){
 				container.addView(v);
 			}
