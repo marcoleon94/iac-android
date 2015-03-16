@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.gson.JsonArray;
@@ -16,12 +17,22 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class PXFParser {
-
+	private boolean bhasErrors = false;
 	private JsonElement jseObject;
 	private List<PXWidget> lWidgets = new ArrayList<PXWidget>();
+	private PXFParserEventHandler eventHandler;
+	private Context cContext;
 
-	private PXFParser(){ }
-
+	public interface PXFParserEventHandler{
+		public abstract void finish(PXFParser parser, String json);
+		public abstract void error(Exception ex, String json);
+	}
+	
+	public PXFParser(Context c, PXFParserEventHandler callback){
+		cContext = c;
+		eventHandler = callback;
+	}
+	
 	public List<PXWidget> getWidget(){
 		return lWidgets;
 	}
@@ -29,20 +40,47 @@ public class PXFParser {
 		return jseObject;
 	}
 
+	public boolean hasErrors(){
+		return bhasErrors;
+	}
+	
 	/**
 	 * 
 	 * @param context
 	 * @param json
 	 * @return
 	 */
-	public static PXFParser parseXForm(final Context context, final String json){
-		PXFParser p = new PXFParser();
-		//final LayoutInflater inflayer = LayoutInflater.from(context);
-		JsonElement el = new JsonParser().parse(json);
-		p.jseObject = el;
+	public void parseJson(final String json){
+		bhasErrors = false;
+		JsonElement el;
 
-		if(el.isJsonNull())
-			return p;
+		//AsyncTask<Void, Void, Long> t1 = new AsyncTask<Void, Void, Long>(){
+		//	@Override
+		//	protected Long doInBackground(Void... params) {
+		//		// TODO Auto-generated method stub
+		//		return null;
+		//	}			
+		//}; 
+		
+		try{
+			el = new JsonParser().parse(json);
+		}catch(Exception ex){
+			ex.printStackTrace();
+			bhasErrors = true;
+
+			if(eventHandler != null){
+				eventHandler.error(ex, json);
+			}
+
+			return;
+		}
+		
+		jseObject = el;		
+
+		if(el.isJsonNull()){
+			bhasErrors = true;
+			return;
+		}
 
 		if(el.isJsonArray()){       
 			JsonArray array = el.getAsJsonArray();
@@ -53,11 +91,13 @@ public class PXFParser {
 				if(!e.isJsonObject())
 					continue;
 
-				p.lWidgets.add(getWidgetFromType(context, e.getAsJsonObject()));
+				lWidgets.add(getWidgetFromType(cContext, e.getAsJsonObject()));
 			}
 		}
 
-		return p;
+		if(eventHandler != null){
+			eventHandler.finish(PXFParser.this, json);
+		}
 	}
 
 	public static String parseFileToString(Context context, String filename )
@@ -79,7 +119,7 @@ public class PXFParser {
 		return null;
 	}
 
-	public static PXWidget getWidgetFromType(final Context context,
+	private static PXWidget getWidgetFromType(final Context context,
 			final JsonObject entry){
 
 		//View v = null;
