@@ -410,17 +410,17 @@ public class DynamicHelper {
                 }
                 break;
                 case BASE64: {
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
-                        view.setBackground(property.getValueBitmapDrawable());
-                    else
-                        view.setBackgroundDrawable(property.getValueBitmapDrawable());
+                    //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
+                    //    view.setBackground(property.getValueBitmapDrawable());
+                    //else
+                    //    view.setBackgroundDrawable(property.getValueBitmapDrawable());
                 }
                 break;
                 case DRAWABLE: {
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
-                        view.setBackground(property.getValueGradientDrawable());
-                    else
-                        view.setBackgroundDrawable(property.getValueGradientDrawable());
+                    //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
+                    //    view.setBackground(property.getValueGradientDrawable());
+                   // else
+                    //    view.setBackgroundDrawable(property.getValueGradientDrawable());
                 }
                 break;
             }
