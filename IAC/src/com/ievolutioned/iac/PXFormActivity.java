@@ -46,6 +46,6 @@ public class PXFormActivity extends Activity {
 			}
 		});
 		
-		p.parseJson(PXFParser.parseFileToString(getApplicationContext(), "FormFields_Pablo.json"));
+		p.parseJson(PXFParser.parseFileToString(getApplicationContext(), "FormFields_PabloUTF8.json"));
 	}
 }

@@ -153,7 +153,7 @@ public class PXFParser {
 			stream.read(bytes);
 			stream.close();
 
-			return new String( bytes );
+			return new String( bytes, "UTF-8" );
 
 		} catch ( IOException e ) {
 			Log.i("MakeMachine", "IOException: " + e.getMessage() );
