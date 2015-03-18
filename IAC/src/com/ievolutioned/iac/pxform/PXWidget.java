@@ -31,6 +31,7 @@ public abstract class PXWidget {
 	public static final String FIELD_TYPE_DATE     = "date"    ;
 	public static final String FIELD_TYPE_LONGTEXT = "longtext";
 	public static final String FIELD_TYPE_UNSIGNED = "unsigned";
+	public static final String FIELD_TYPE_CELL_BOOL= "FXFormOptionSegmentsCellCustom";
 
 	private Map<String, Map.Entry<String,JsonElement>> eEntry;
 	private List<View> lViews = new ArrayList<View>();
