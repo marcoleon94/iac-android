@@ -1,4 +1,4 @@
-package com.ievolutioned.iac.pxform;
+package com.ievolutioned.pxform;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -6,15 +6,17 @@ import java.util.Map.Entry;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
-public class PXFCheckBox extends PXWidget {
+public class PXFSpinner extends PXWidget {
 
-	public PXFCheckBox(Context context,
+	public PXFSpinner(Context context,
 			Map<String, Entry<String, JsonElement>> entry) {
 		super(context, entry);
 	}
@@ -33,16 +35,32 @@ public class PXFCheckBox extends PXWidget {
 				ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
 		text.setLayoutParams(params);
 
-		//check box control
-		CheckBox box = new CheckBox(context);
+		//initial spinner configuration
+		Spinner spinner = new Spinner(context);
 		params = new LinearLayout.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
-		box.setLayoutParams(params);
+		spinner.setLayoutParams(params);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, 
+				android.R.layout.simple_spinner_item );
+
+		//add fields to the adapter
+		if(map.get(FIELD_OPTIONS).getValue().isJsonArray()){
+			JsonArray array = map.get(FIELD_OPTIONS).getValue().getAsJsonArray();
+
+			for(int x = 0; x < array.size(); ++x){
+				final String s = array.get(x).getAsString();
+				adapter.add(s);
+			}
+		}
+
+		spinner.setAdapter(adapter);
+		spinner.setSelection(0);
 
 		//add views to the container
 		linear.addView(text);
-		linear.addView(box);
+		linear.addView(spinner);
 
 		return linear;
 	}
+
 }
