@@ -5,13 +5,9 @@ import com.ievolutioned.iac.R;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TextView;
-import android.widget.ToggleButton;
 
 public class CustomSwitch extends LinearLayout implements
 		android.widget.RadioGroup.OnCheckedChangeListener {

@@ -25,7 +25,7 @@ public class PXFParser {
 	private PXFParserEventHandler eventHandler;
 	//private Context cContext;
 	private final Handler handler;
-	Activity aActivity;
+	private Activity aActivity;
 
 	public interface PXFParserEventHandler{
 		public abstract void finish(PXFParser parser, String json);
@@ -185,21 +185,26 @@ public class PXFParser {
 			} 
 			else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
 					.equals(PXWidget.FIELD_TYPE_UNSIGNED)){
-				widget = new PXFEdit(context, map);				
+				widget = new PXFEdit(context, map);
 			}
 		} 
 		else if(map.containsKey(PXWidget.FIELD_OPTIONS)){
-			if (map.containsKey(PXWidget.FIELD_CELL)
-					&& map.get(PXWidget.FIELD_CELL).getValue().getAsString()
-							.equalsIgnoreCase(PXWidget.FIELD_TYPE_CELL_BOOL)) {
+			if (map.containsKey(PXWidget.FIELD_CELL) && 
+					isCELL_OPTION_SEGMENT(map.get(PXWidget.FIELD_CELL).getValue())) {
 				widget = new PXFToggleBoolean(context, map);
-			} else
+			} else {
 				widget = new PXFSpinner(context, map);
+			}
 		} 
 		else if(map.containsKey(PXWidget.FIELD_ACTION)){
 			widget = new PXFButton(context, map);
 		}
 
 		return widget == null ? new PXFUnknownControlType(context, map) : widget;
+	}
+	
+	private static boolean isCELL_OPTION_SEGMENT(JsonElement cell){
+		return PXWidget.FIELD_CELL_OPTION_SEGMENT.equalsIgnoreCase(cell.getAsString()) || 
+				PXWidget.FIELD_CELL_OPTION_SEGMENT_CUSTOM.equalsIgnoreCase(cell.getAsString());
 	}
 }

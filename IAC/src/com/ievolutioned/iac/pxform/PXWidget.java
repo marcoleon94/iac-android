@@ -31,13 +31,18 @@ public abstract class PXWidget {
 	public static final String FIELD_TYPE_DATE     = "date"    ;
 	public static final String FIELD_TYPE_LONGTEXT = "longtext";
 	public static final String FIELD_TYPE_UNSIGNED = "unsigned";
-	public static final String FIELD_TYPE_CELL_BOOL= "FXFormOptionSegmentsCellCustom";
+	
+	public static final String FIELD_CELL_OPTION_SEGMENT = "FXFormOptionSegmentsCell";
+	public static final String FIELD_CELL_OPTION_SEGMENT_CUSTOM = "FXFormOptionSegmentsCellCustom";
 
 	private Map<String, Map.Entry<String,JsonElement>> eEntry;
 	private List<View> lViews = new ArrayList<View>();
 	
 	protected abstract View addControls(final Context context, 
 			final Map<String, Map.Entry<String,JsonElement>> entry);
+	
+	//public abstract String getJsonResult();
+	
 	/**
 	 * 
 	 * @param context
