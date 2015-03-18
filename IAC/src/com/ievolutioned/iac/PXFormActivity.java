@@ -1,8 +1,8 @@
 package com.ievolutioned.iac;
 
-import com.ievolutioned.iac.pxform.PXFParser;
-import com.ievolutioned.iac.pxform.PXFParser.PXFParserEventHandler;
-import com.ievolutioned.iac.pxform.PXWidget;
+import com.ievolutioned.pxform.PXFParser;
+import com.ievolutioned.pxform.PXFParser.PXFParserEventHandler;
+import com.ievolutioned.pxform.PXWidget;
 import com.ievolutioned.iac.view.ViewUtility;
 
 import android.app.Activity;
