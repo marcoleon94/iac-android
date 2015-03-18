@@ -189,7 +189,12 @@ public class PXFParser {
 			}
 		} 
 		else if(map.containsKey(PXWidget.FIELD_OPTIONS)){
-			widget = new PXFSpinner(context, map);
+			if (map.containsKey(PXWidget.FIELD_CELL)
+					&& map.get(PXWidget.FIELD_CELL).getValue().getAsString()
+							.equalsIgnoreCase(PXWidget.FIELD_TYPE_CELL_BOOL)) {
+				widget = new PXFToggleBoolean(context, map);
+			} else
+				widget = new PXFSpinner(context, map);
 		} 
 		else if(map.containsKey(PXWidget.FIELD_ACTION)){
 			widget = new PXFButton(context, map);
