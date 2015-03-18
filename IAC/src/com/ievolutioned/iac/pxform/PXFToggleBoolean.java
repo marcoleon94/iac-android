@@ -1,22 +1,13 @@
 package com.ievolutioned.iac.pxform;
 
 import java.util.Map;
-import java.util.TooManyListenersException;
 import java.util.Map.Entry;
 
-import android.R;
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.google.gson.JsonArray;
