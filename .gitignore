@@ -20,3 +20,5 @@ project.properties
 .settings/
 crashlytics.properties
 *.png~
+IAC/build/
+PXForm/build/
