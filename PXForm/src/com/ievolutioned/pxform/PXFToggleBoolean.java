@@ -53,7 +53,7 @@ public class PXFToggleBoolean extends PXWidget {
 
 	public class CustomSwitch extends LinearLayout {
 		private static final String DEFAULT_TEXT_OFF = "No";
-		private static final String DEFAULT_TEXT_ON = "Sí";
+		private static final String DEFAULT_TEXT_ON = "Si";
 
 		private String textOff = DEFAULT_TEXT_OFF;
 		private String textOn = DEFAULT_TEXT_ON;
