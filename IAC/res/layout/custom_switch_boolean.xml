@@ -8,7 +8,7 @@
 
     <RadioButton
         android:id="@+id/custom_switch_boolean_off"
-        style="@style/CustomSwitch"
+
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -16,7 +16,7 @@
 
     <RadioButton
         android:id="@+id/custom_switch_boolean_on"
-        style="@style/CustomSwitch"
+
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1" />

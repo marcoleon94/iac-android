@@ -1,0 +1,110 @@
+{
+   "meta":{
+      "type":"meta",
+      "name":"The meta"
+   },
+   "Datos Personales":{
+      "id":1,
+      "type":"string",
+      "default":"",
+      "key":"barcodeReader",
+      "hint":"Presiona aquí para leer el código de barras de la credencial",
+      "action":"openCamera:",
+      "priority":"0"
+   },
+   "Número de Empleado":{
+      "type":"integer",
+      "id":"2",
+      "hint":"Número de Empleado",
+      "placeholder":"123456789",
+      "validate":"yes",
+      "priority":"2"
+   },
+   "Edad":{
+      "type":"integer",
+      "id":"3",
+      "hint":"Edad",
+      "placeholder":"Su edad",
+      "validate":"yes",
+      "priority":"3"
+   },
+   "Jefe Inmediato":{
+      "id":4,
+      "key":"bossName",
+      "hint":"Jefe Inmediato",
+      "type":"string",
+      "priority":"4"
+   },
+   "Puesto":{
+      "id":5,
+      "key":"jobName",
+      "hint":"Puesto",
+      "type":"string",
+      "placeholder":"Su Puesto",
+      "priority":"5"
+   },
+   "Departamento":{
+      "id":6,
+      "key":"department",
+      "hint":"Departamento",
+      "type":"string",
+      "placeholder":"Su Departamento",
+      "priority":"6"
+   },
+   "Sindicalizado":{
+      "id":7,
+      "key":"union",
+      "hint":"Sindicalizado",
+      "type":"boolean",
+      "default":"0",
+      "toggles":{
+         "1":[
+            "imported_from"
+         ]
+      },
+      "priority":"7"
+   },
+   "Indirecto":{
+      "id":8,
+      "key":"indirect",
+      "hint":"Indirecto",
+      "type":"boolean",
+      "priority":"8",
+      "default":"0",
+      "toggles":{
+         "1":[
+            "imported_from"
+         ]
+      }
+   },
+   "Salary":{
+      "id":9,
+      "key":"salary",
+      "hint":"Salary",
+      "type":"boolean",
+      "priority":"9",
+      "default":"0",
+      "toggles":{
+         "1":[
+            "imported_from"
+         ]
+      }
+   },
+   "imported_from":{
+      "type":"integer",
+      "id":"7",
+      "default":"0",
+      "priority":"8",
+      "options":{
+         "0":"N/A",
+         "1":"Spain",
+         "2":"Italy",
+         "3":"Germany",
+         "4":"France",
+         "5":"Japan",
+         "6":"Australia",
+         "7":"China",
+         "8":"United States"
+      }
+   }
+}
