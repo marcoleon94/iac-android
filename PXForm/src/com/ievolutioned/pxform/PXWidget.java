@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.google.gson.JsonElement;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.Gravity;
@@ -36,18 +37,38 @@ public abstract class PXWidget {
 	public static final String FIELD_CELL_OPTION_SEGMENT_CUSTOM = "FXFormOptionSegmentsCellCustom";
 
 	private Map<String, Map.Entry<String,JsonElement>> eEntry;
-	private List<View> lViews = new ArrayList<View>();
-	
-	protected abstract View addControls(final Context context, 
-			final Map<String, Map.Entry<String,JsonElement>> entry);
-	
+
+    private TextView tvHead;
+
+    /**
+     * Get a LinearLayout view container, if the map contains a PXWidget.FIELD_HEADER
+     *
+     * @param context
+     * @return
+     */
+	protected View createControl(final Activity context){
+        LinearLayout linear = getGenericLinearLayout(context);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        linear.setLayoutParams(params);
+        linear.setOrientation(LinearLayout.VERTICAL);
+        TextView v = null;
+
+        if(eEntry.containsKey(PXWidget.FIELD_HEADER)){
+        	v = getTextViewHead(context, eEntry);
+        	tvHead = v;
+        }
+
+        if(v != null){
+            linear.addView(v);
+        }
+
+        return linear;
+    }
+
 	//public abstract String getJsonResult();
 	
 	/**
-	 * 
-	 * @param context
-	 * @param text
-	 * @return
 	 */
 	private TextView getTextViewHead(Context context, 
 			Map<String, Map.Entry<String,JsonElement>> map){
@@ -80,28 +101,17 @@ public abstract class PXWidget {
 		return l;
 	}
 	
-	public PXWidget(final Context context, 
-			final Map<String, Map.Entry<String,JsonElement>> entry){
-		View v = null;
+	public PXWidget(Map<String, Map.Entry<String,JsonElement>> entry){
 		eEntry = entry;
-		
-		if(entry.containsKey(PXWidget.FIELD_HEADER)){
-			v = getTextViewHead(context, entry);
-			lViews.add(v);
-			v = null;
-		}
-		
-		v = addControls(context, eEntry);
-		
-		if(v != null)
-			lViews.add(v);
-	}
-
-	public List<View> getViewList(){
-		return lViews;
 	}
 	
 	public Map<String, Map.Entry<String,JsonElement>> getJsonEntries(){
 		return eEntry;
 	}
+
+    protected TextView getTextViewHead(){
+        return tvHead;
+    }
+
+    public abstract void setWidgetData(PXWidget widget);
 }
