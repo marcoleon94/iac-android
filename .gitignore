@@ -20,8 +20,7 @@ project.properties
 .settings/
 crashlytics.properties
 *.png~
-IAC/build/
-PXForm/build/
 build/*
 IAC/build/*
 PXForm/build/*
+.gradle/*
