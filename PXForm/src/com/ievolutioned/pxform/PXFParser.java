@@ -50,17 +50,12 @@ public class PXFParser {
 		return bhasErrors;
 	}
 
-	/**
-	 * @param context
-	 * @param json
-	 * @return
-	 */
 	public void parseJson(final String json){
 		bhasErrors = false;
 		AsyncTask<Void, Void, Void> t1 = new AsyncTask<Void, Void, Void>(){
 			@Override
 			protected Void doInBackground(Void... params1234) {
-				JsonElement json_tmp = null;
+				JsonElement json_tmp;
 				final List<PXWidget> w = new ArrayList<PXWidget>();
 
 				try{
@@ -114,7 +109,13 @@ public class PXFParser {
 						}catch(Exception ex){
 							ex.printStackTrace();
 						}
-					}
+                        try {
+                            //let the thread rest
+                            Thread.sleep(1);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
 
 					final JsonElement json_tmp_copy = json_tmp;
 					handler.post(new Runnable() { @Override public void run() {
@@ -150,13 +151,13 @@ public class PXFParser {
 			int size = stream.available();
 
 			byte[] bytes = new byte[size];
-			stream.read(bytes);
-			stream.close();
+            stream.read(bytes);
+            stream.close();
 
 			return new String( bytes, "UTF-8" );
 
 		} catch ( IOException e ) {
-			Log.i("MakeMachine", "IOException: " + e.getMessage() );
+			Log.i("PXForm", "IOException: " + e.getMessage() );
 		}
 		return null;
 	}
