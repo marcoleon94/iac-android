@@ -24,3 +24,4 @@ build/*
 IAC/build/*
 PXForm/build/*
 .gradle/*
+.idea/workspace.xml
