@@ -6,4 +6,4 @@
     <item android:drawable="@drawable/customswitch_switch_thumb_pressed_holo_light" android:state_checked="true"/>
     <item android:drawable="@drawable/customswitch_switch_bg_disabled_holo_light"/>
 
-</selector><!-- From: file:/C:/Users/Daniel/Documents/iEvolutioned/workspace/iac-android/IAC/res/drawable/selector_custom_switch.xml -->
+</selector><!-- From: file:/C:/Users/Pablo/AndroidStudioProjects/iac-android/IAC/res/drawable/selector_custom_switch.xml -->
