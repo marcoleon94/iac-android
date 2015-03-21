@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.ievolutioned.iac.model.LoginService;
 
 public class LoginActivity extends Activity {
 
@@ -52,7 +53,7 @@ public class LoginActivity extends Activity {
         EditText[] forms = {mEmail, mPassword};
         for (EditText f : forms) {
             if (TextUtils.isEmpty(f.getText())) {
-                showToast();
+                showToast("*Required field");
                 f.requestFocus();
                 return false;
             }
@@ -61,11 +62,29 @@ public class LoginActivity extends Activity {
         return true;
     }
 
-    private void showToast() {
-        Toast.makeText(this, "*Campo requerido", Toast.LENGTH_SHORT).show();
+    private void showToast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     private void logIn() {
-
+        LoginService loginService = new LoginService();
+        loginService.logIn(mEmail.getText().toString().trim(),mPassword.getText().toString().trim(), login_handler);
     }
+
+    private LoginService.LoginHandler login_handler = new LoginService.LoginHandler() {
+        @Override
+        public void onSuccess(LoginService.LoginResponse response) {
+            showToast("Logged in");
+        }
+
+        @Override
+        public void onError(LoginService.LoginResponse response) {
+            showToast("Logged in");
+        }
+
+        @Override
+        public void onCancel() {
+            showToast("Canceled!");
+        }
+    };
 }

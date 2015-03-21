@@ -31,6 +31,11 @@ public class LoginService {
             }
 
             @Override
+            protected void onPostExecute(LoginResponse response) {
+                hanldeResult(callback,response);
+            }
+
+            @Override
             protected void onCancelled() {
                 super.onCancelled();
                 callback.onCancel();
