@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -18,6 +19,7 @@ public class LoginActivity extends Activity {
     private EditText mEmail;
     private EditText mPassword;
     private Button mButtonSingIn;
+    private ProgressBar mSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,9 +33,11 @@ public class LoginActivity extends Activity {
         mEmail = (EditText) findViewById(R.id.activity_login_editEmail);
         mPassword = (EditText) findViewById(R.id.activity_login_editPassword);
         mButtonSingIn = (Button) findViewById(R.id.activity_login_btnLogIn);
+        mSpinner = (ProgressBar) findViewById(R.id.activity_login_progressBar);
+
+        mSpinner.setVisibility(View.GONE);
 
         //On click listeners
-
         mButtonSingIn.setOnClickListener(button_click);
     }
 
@@ -66,25 +70,36 @@ public class LoginActivity extends Activity {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
+    private void loading(boolean l) {
+        if (l)
+            mSpinner.setVisibility(View.VISIBLE);
+        else
+            mSpinner.setVisibility(View.GONE);
+    }
+
     private void logIn() {
+        loading(true);
         LoginService loginService = new LoginService();
-        loginService.logIn(mEmail.getText().toString().trim(),mPassword.getText().toString().trim(), login_handler);
+        loginService.logIn(mEmail.getText().toString().trim(), mPassword.getText().toString().trim(), login_handler);
     }
 
     private LoginService.LoginHandler login_handler = new LoginService.LoginHandler() {
         @Override
         public void onSuccess(LoginService.LoginResponse response) {
             showToast("Logged in");
+            loading(false);
         }
 
         @Override
         public void onError(LoginService.LoginResponse response) {
             showToast("Logged in");
+            loading(false);
         }
 
         @Override
         public void onCancel() {
             showToast("Canceled!");
+            loading(false);
         }
     };
 }
