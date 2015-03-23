@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/IAC/IAC.iml" filepath="$PROJECT_DIR$/IAC/IAC.iml" />
       <module fileurl="file://$PROJECT_DIR$/IAC/IAC.iml" filepath="$PROJECT_DIR$/IAC/IAC.iml" />
+      <module fileurl="file://$PROJECT_DIR$/IAC/IAC.iml" filepath="$PROJECT_DIR$/IAC/IAC.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PXForm/PXForm.iml" filepath="$PROJECT_DIR$/PXForm/PXForm.iml" />
       <module fileurl="file://$PROJECT_DIR$/PXForm/PXForm.iml" filepath="$PROJECT_DIR$/PXForm/PXForm.iml" />
       <module fileurl="file://$PROJECT_DIR$/PXForm/PXForm.iml" filepath="$PROJECT_DIR$/PXForm/PXForm.iml" />
       <module fileurl="file://$PROJECT_DIR$/iac-android.iml" filepath="$PROJECT_DIR$/iac-android.iml" />

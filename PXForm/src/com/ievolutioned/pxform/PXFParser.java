@@ -25,7 +25,7 @@ public class PXFParser {
         public abstract void error(Exception ex, String json);
     }
 
-    public PXFParser(Activity activity, PXFParserEventHandler callback){
+    public PXFParser(PXFParserEventHandler callback){
         eventHandler = callback;
     }
 
@@ -35,7 +35,6 @@ public class PXFParser {
             protected Void doInBackground(Void... params1234) {
                 JsonElement json_tmp;
                 final List<PXWidget> w = new ArrayList<PXWidget>();
-                final List<Integer> itemtype = new ArrayList<Integer>();
 
                 try{
                     json_tmp = new JsonParser().parse(json);
@@ -77,7 +76,7 @@ public class PXFParser {
                             map.put(mej.getKey(), mej);
                         }
 
-                        PXWidget px = getWidgetFromType(map, itemtype);
+                        PXWidget px = getWidgetFromType(map);
                         w.add(px);
 
                         try {
@@ -96,7 +95,7 @@ public class PXFParser {
                     return null;
                 }
 
-                final JsonElement json_tmp_copy = json_tmp;
+                //final JsonElement json_tmp_copy = json_tmp;
                 activity.runOnUiThread(new Runnable() { @Override public void run() {
                     if(eventHandler != null){
                         PXFAdapter adapter = new PXFAdapter(activity, w);
@@ -129,8 +128,7 @@ public class PXFParser {
         return null;
     }
 
-    private static PXWidget getWidgetFromType(final Map<String, Map.Entry<String,JsonElement>> map,
-                                              final List<Integer> itemtype){
+    private static PXWidget getWidgetFromType(final Map<String, Map.Entry<String,JsonElement>> map){
         PXWidget widget = null;
 
         //we got a well defined field
@@ -138,68 +136,37 @@ public class PXFParser {
             if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
                     .equals(PXWidget.FIELD_TYPE_TEXT)){
                 widget = new PXFEdit(map);
-                if(!itemtype.contains(PXWidget.ADAPTER_ITEM_TYPE_EDIT)){
-                    itemtype.add(PXWidget.ADAPTER_ITEM_TYPE_EDIT);
-                }
             }
             else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
                     .equals(PXWidget.FIELD_TYPE_BOOLEAN)){
                 widget = new PXFCheckBox(map);
-                if(!itemtype.contains(PXWidget.ADAPTER_ITEM_TYPE_CHECKBOX)){
-                    itemtype.add(PXWidget.ADAPTER_ITEM_TYPE_CHECKBOX);
-                }
             }
             else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
                     .equals(PXWidget.FIELD_TYPE_DATE)){
                 widget = new PXFDatePicker(map);
-                if(!itemtype.contains(PXWidget.ADAPTER_ITEM_TYPE_DATEPICKER)){
-                    itemtype.add(PXWidget.ADAPTER_ITEM_TYPE_DATEPICKER);
-                }
             }
             else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
                     .equals(PXWidget.FIELD_TYPE_LONGTEXT)){
                 widget = new PXFEdit(map);
-                if(!itemtype.contains(PXWidget.ADAPTER_ITEM_TYPE_EDIT)){
-                    itemtype.add(PXWidget.ADAPTER_ITEM_TYPE_EDIT);
-                }
             }
             else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
                     .equals(PXWidget.FIELD_TYPE_UNSIGNED)){
                 widget = new PXFEdit(map);
-                if(!itemtype.contains(PXWidget.ADAPTER_ITEM_TYPE_EDIT)){
-                    itemtype.add(PXWidget.ADAPTER_ITEM_TYPE_EDIT);
-                }
             }
         }
         else if(map.containsKey(PXWidget.FIELD_OPTIONS)){
             if (map.containsKey(PXWidget.FIELD_CELL) &&
                     isCELL_OPTION_SEGMENT(map.get(PXWidget.FIELD_CELL).getValue())) {
                 widget = new PXFToggleBoolean(map);
-                if(!itemtype.contains(PXWidget.ADAPTER_ITEM_TYPE_TOGGLEBOOLEAN)){
-                    itemtype.add(PXWidget.ADAPTER_ITEM_TYPE_TOGGLEBOOLEAN);
-                }
             } else {
                 widget = new PXFSpinner(map);
-                if(!itemtype.contains(PXWidget.ADAPTER_ITEM_TYPE_SPINNER)){
-                    itemtype.add(PXWidget.ADAPTER_ITEM_TYPE_SPINNER);
-                }
             }
         }
         else if(map.containsKey(PXWidget.FIELD_ACTION)){
             widget = new PXFButton(map);
-            if(!itemtype.contains(PXWidget.ADAPTER_ITEM_TYPE_BUTTON)){
-                itemtype.add(PXWidget.ADAPTER_ITEM_TYPE_BUTTON);
-            }
         }
 
-        if(widget == null){
-            widget = new PXFUnknownControlType(map);
-            if(!itemtype.contains(PXWidget.ADAPTER_ITEM_TYPE_UNKNOWN)){
-                itemtype.add(PXWidget.ADAPTER_ITEM_TYPE_UNKNOWN);
-            }
-        }
-
-        return widget;
+        return widget == null ? new PXFUnknownControlType(map) : widget;
     }
 
     private static boolean isCELL_OPTION_SEGMENT(JsonElement cell){

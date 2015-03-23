@@ -50,9 +50,10 @@ public class PXFButton extends PXWidget {
         button.setLayoutParams(par);
         button.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
                 getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
-        v.addView(button);
-
         helper.button = button;
+
+        //add controls to main container
+        v.addView(button);
 
         return v;
     }
