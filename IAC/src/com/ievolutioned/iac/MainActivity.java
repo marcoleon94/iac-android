@@ -43,16 +43,17 @@ public class MainActivity extends Activity {
     private void bindUI() {
         // find view
         mDrawerLayout = (DrawerLayout) findViewById(R.id.activity_main_drawer);
-        mDrawerListForm = (ListView) findViewById(R.id.activity_main_menu_forms);
+        //mDrawerListForm = (ListView) findViewById(R.id.activity_main_menu_forms);
 
         // menu items
 
-        menuFormTitles = getResources().getStringArray(R.array.nav_drawer_form_items);
-        menuSitesTitles = getResources().getStringArray(R.array.nav_drawer_form_items);
+        //menuFormTitles = getResources().getStringArray(R.array.nav_drawer_form_items);
+        //menuSitesTitles = getResources().getStringArray(R.array.nav_drawer_form_items);
 
-        drawerFormItems = new ArrayList<MenuDrawerItem>();
-        drawerSitesItems = new ArrayList<MenuDrawerItem>();
+        //drawerFormItems = new ArrayList<MenuDrawerItem>();
+        //drawerSitesItems = new ArrayList<MenuDrawerItem>();
 
+        /*
         for (int i = 0; i < menuFormTitles.length; i++) {
             drawerFormItems.add(new MenuDrawerItem(menuFormTitles[i]));
         }
@@ -61,6 +62,7 @@ public class MainActivity extends Activity {
         mDrawerListForm.setAdapter(adapter_forms);
 
         mDrawerListForm.setOnItemClickListener(drawer_click_form);
+        */
 
         setDrawer();
 
