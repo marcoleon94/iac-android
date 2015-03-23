@@ -14,11 +14,26 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.ievolutioned.iac.model.LoginService;
 
+/**
+ * Log in activity class. Manages the log in actions
+ */
 public class LoginActivity extends Activity {
 
+    /**
+     * EditText email control
+     */
     private EditText mEmail;
+    /**
+     * EditText password control
+     */
     private EditText mPassword;
+    /**
+     * Button for sing in action
+     */
     private Button mButtonSingIn;
+    /**
+     * ProgressBar spinner control
+     */
     private ProgressBar mSpinner;
 
     @Override
@@ -29,7 +44,11 @@ public class LoginActivity extends Activity {
         bindUI();
     }
 
+    /**
+     * Binds the user interface to control
+     */
     private void bindUI() {
+        // find controls
         mEmail = (EditText) findViewById(R.id.activity_login_editEmail);
         mPassword = (EditText) findViewById(R.id.activity_login_editPassword);
         mButtonSingIn = (Button) findViewById(R.id.activity_login_btnLogIn);
@@ -41,6 +60,9 @@ public class LoginActivity extends Activity {
         mButtonSingIn.setOnClickListener(button_click);
     }
 
+    /**
+     * Controls the button click
+     */
     private OnClickListener button_click = new OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -53,6 +75,11 @@ public class LoginActivity extends Activity {
         }
     };
 
+    /**
+     * Validates the sing in form
+     *
+     * @return true if it is valid, false otherwise
+     */
     private boolean validateForm() {
         EditText[] forms = {mEmail, mPassword};
         for (EditText f : forms) {
@@ -66,10 +93,20 @@ public class LoginActivity extends Activity {
         return true;
     }
 
+    /**
+     * Shows a message toast
+     *
+     * @param msg
+     */
     private void showToast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Shows the loading view
+     *
+     * @param l
+     */
     private void loading(boolean l) {
         if (l)
             mSpinner.setVisibility(View.VISIBLE);
@@ -77,12 +114,18 @@ public class LoginActivity extends Activity {
             mSpinner.setVisibility(View.GONE);
     }
 
+    /**
+     * Logs the user in the system
+     */
     private void logIn() {
         loading(true);
         LoginService loginService = new LoginService();
         loginService.logIn(mEmail.getText().toString().trim(), mPassword.getText().toString().trim(), login_handler);
     }
 
+    /**
+     * Log in call back handler
+     */
     private LoginService.LoginHandler login_handler = new LoginService.LoginHandler() {
         @Override
         public void onSuccess(LoginService.LoginResponse response) {
