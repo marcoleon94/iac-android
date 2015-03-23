@@ -10,6 +10,23 @@ import com.google.gson.JsonElement;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+
+for git:
+
+remove crashlytics files from repo, but don't
+remove "crashlytics.properties" in root:
+
+ git rm -r --cached directory/filename
+
+
+force git update local repo.
+all not commited changes will be lost
+
+ git fetch --all
+ git reset --hard origin/master
+
+*/
 /**
  */
 public class PXFAdapter extends BaseAdapter {

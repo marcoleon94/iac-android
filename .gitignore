@@ -26,3 +26,6 @@ PXForm/build/*
 .gradle/*
 .idea/workspace.xml
 *.iml
+.idea/dictionaries/*
+.idea/modules.xml
+.idea/misc.xml
