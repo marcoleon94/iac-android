@@ -25,22 +25,22 @@ public class PXFAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return 0;
+        return lWidgets.size();
     }
 
     @Override
     public int getItemViewType(int position) {
-        return super.getItemViewType(position);
+        return lWidgets.get(position).getAdapterItemType();
     }
 
     @Override
     public int getViewTypeCount() {
-        return super.getViewTypeCount();
+        return PXWidget.getAdapterItemTypeCount();
     }
 
     @Override
-    public Object getItem(int i) {
-        return null;
+    public PXWidget getItem(int position) {
+        return lWidgets.get(position);
     }
 
     @Override
@@ -49,11 +49,17 @@ public class PXFAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        return null;
+    public View getView(int pos, View view, ViewGroup viewGroup) {
+        final PXWidget w = getItem(pos);
+
+        if(view == null){
+            view = w.createControl(aActivity);
+        }
+
+        w.setWidgetData(view);
+
+        return view;
     }
-
-
 
     private View getWidgetFromType(PXWidget widget){
         return widget.createControl(aActivity);
