@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.ievolutioned.iac.model.LoginService;
+import com.ievolutioned.iac.util.AppConfig;
 
 /**
  * Log in activity class. Manages the log in actions
@@ -68,6 +69,10 @@ public class LoginActivity extends Activity {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.activity_login_btnLogIn:
+                    if(AppConfig.DEBUG) {
+                        logIn();
+                        break;
+                    }
                     if (validateForm())
                         logIn();
                     break;
@@ -131,6 +136,7 @@ public class LoginActivity extends Activity {
         public void onSuccess(LoginService.LoginResponse response) {
             showToast("Logged in");
             loading(false);
+            startActivity(new Intent(getBaseContext(), MainActivity.class));
         }
 
         @Override

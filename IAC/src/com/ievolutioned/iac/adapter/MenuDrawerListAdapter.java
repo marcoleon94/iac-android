@@ -66,7 +66,8 @@ public class MenuDrawerListAdapter extends BaseAdapter {
         ImageView imgIcon = (ImageView) convertView.findViewById(R.id.drawer_list_item_icon);
         TextView txtTitle = (TextView) convertView.findViewById(R.id.drawer_list_item_title);
 
-        imgIcon.setImageResource(items.get(position).getIcon());
+        if (items.get(position).getIcon() != MenuDrawerItem.ICON_DEFAULT)
+            imgIcon.setImageResource(items.get(position).getIcon());
         txtTitle.setText(items.get(position).getTitle());
 
         return convertView;

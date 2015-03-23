@@ -6,6 +6,8 @@ package com.ievolutioned.iac.view;
  */
 public class MenuDrawerItem {
 
+    public static final int ICON_DEFAULT = -1;
+
     private int icon;
     private String title;
 
@@ -23,6 +25,15 @@ public class MenuDrawerItem {
     public MenuDrawerItem(int icon, String title) {
         this.setTitle(title);
         this.setIcon(icon);
+    }
+
+    /**
+     * Instantiates a menu drawer item with and title
+     * @param title
+     */
+    public MenuDrawerItem(String title) {
+        this.setTitle(title);
+        this.setIcon(ICON_DEFAULT);
     }
 
     public int getIcon() {
