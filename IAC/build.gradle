@@ -21,10 +21,12 @@ dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
     compile project(':PXForm')
     compile 'com.crashlytics.android:crashlytics:1.+'
+    compile 'com.android.support:appcompat-v7:22.0.0'
+    compile 'com.android.support:support-v4:20.0.0'
 }
 
 android {
-    compileSdkVersion 16
+    compileSdkVersion 21
     buildToolsVersion "20.0.0"
 
     sourceSets {
