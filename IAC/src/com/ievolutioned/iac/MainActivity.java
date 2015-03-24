@@ -1,6 +1,7 @@
 package com.ievolutioned.iac;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -67,6 +68,10 @@ public class MainActivity extends Activity {
 
     }
 
+    public void selectItem(String item) {
+
+    }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -94,4 +99,6 @@ public class MainActivity extends Activity {
     public void setTitle(CharSequence title) {
         super.setTitle(title);
     }
+
+
 }

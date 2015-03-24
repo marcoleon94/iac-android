@@ -2,12 +2,14 @@ package com.ievolutioned.iac.fragment;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.adapter.MenuDrawerListAdapter;
 import com.ievolutioned.iac.view.MenuDrawerItem;
@@ -33,7 +35,7 @@ public class MenuFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_menu,container);
+        View root = inflater.inflate(R.layout.fragment_menu, container);
         bindUI(root);
         return root;
     }
@@ -64,13 +66,20 @@ public class MenuFragment extends Fragment {
         mDrawerSiteForm.setAdapter(adapter_sites);
 
         mDrawerListForm.setOnItemClickListener(drawer_click_form);
+        mDrawerSiteForm.setOnItemClickListener(drawer_click_form);
 
     }
 
     AdapterView.OnItemClickListener drawer_click_form = new AdapterView.OnItemClickListener() {
         @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+            selectItem(adapterView.getId() == R.id.fragment_menu_form_list ?
+                    menuFormTitles[position] : menuSitesTitles[position]);
         }
     };
+
+    protected void selectItem(String item) {
+        Log.d(MenuFragment.class.getName(), "Selected: " + item);
+        ((MainActivity)getActivity()).selectItem(item);
+    }
 }
