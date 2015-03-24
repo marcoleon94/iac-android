@@ -44,16 +44,14 @@ public abstract class PXWidget {
 
     private Map<String, Map.Entry<String,JsonElement>> eEntry;
 
-    private TextView tvHead;
-
     public static abstract class HelperWidget{
         protected LinearLayout container;
         protected TextView headTextView;
     }
 
     protected abstract HelperWidget generateHelperClass();
-
     public abstract int getAdapterItemType();
+    //public abstract String getJsonResult();
 
     public static int getAdapterItemTypeCount(){
         final Integer[] ids = new Integer[]{
@@ -76,15 +74,21 @@ public abstract class PXWidget {
     protected View createControl(final Activity context){
         HelperWidget helper = generateHelperClass();
         LinearLayout linear = getGenericLinearLayout(context);
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        android.widget.AbsListView.LayoutParams params =
+                new android.widget.AbsListView.LayoutParams(
+                        android.widget.AbsListView.LayoutParams.MATCH_PARENT,
+                        android.widget.AbsListView.LayoutParams.WRAP_CONTENT);
+
+        //ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+        //        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
         linear.setLayoutParams(params);
         linear.setOrientation(LinearLayout.VERTICAL);
         TextView v = null;
 
         if(eEntry.containsKey(PXWidget.FIELD_HEADER)){
             v = getTextViewHead(context, eEntry);
-            tvHead = v;
         }
 
         if(v != null){
@@ -93,11 +97,10 @@ public abstract class PXWidget {
 
         helper.container = linear;
         helper.headTextView = v;
+        linear.setTag(helper);
 
         return linear;
     }
-
-    //public abstract String getJsonResult();
 
     /**
      */
@@ -140,14 +143,10 @@ public abstract class PXWidget {
         return eEntry;
     }
 
-    protected TextView getTextViewHead(){
-        return tvHead;
-    }
-
     public void setWidgetData(View view){
         HelperWidget helper = (HelperWidget) view.getTag();
 
-        if(eEntry.containsKey(PXWidget.FIELD_HEADER)){
+        if(helper.headTextView != null && eEntry.containsKey(PXWidget.FIELD_HEADER)){
             helper.headTextView.setText(eEntry.get(FIELD_HEADER).getValue().getAsString());
         }
     }

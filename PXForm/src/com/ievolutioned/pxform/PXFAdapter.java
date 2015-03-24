@@ -65,7 +65,7 @@ public class PXFAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int pos, View view, ViewGroup viewGroup) {
+    public View getView(int pos, View view, ViewGroup group) {
         final PXWidget w = getItem(pos);
 
         if(view == null){

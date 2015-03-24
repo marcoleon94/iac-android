@@ -44,6 +44,8 @@ public class PXFEdit extends PXWidget{
         helper.title.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
                 getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
 
+        editConfigureTypeOfInput(helper.inputEdit, getJsonEntries());
+
         //TODO: read json to know what the state of the EditText is
         //helper.inputEdit.setText( );
     }
@@ -75,12 +77,7 @@ public class PXFEdit extends PXWidget{
         params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
         edit.setLayoutParams(params);
-        edit.setLines(1);
         editConfigureTypeOfInput(edit, getJsonEntries());
-        //edit.setMaxLines(1);
-        if(getJsonEntries().containsKey(FIELD_PLACEHOLDER)){
-            edit.setHint(getJsonEntries().get(FIELD_PLACEHOLDER).getValue().getAsString());
-        }
 
         helper.inputEdit = edit;
 
@@ -115,5 +112,10 @@ public class PXFEdit extends PXWidget{
         }
 
         edit.setFilters(FilterArray);
+        edit.setLines(1);
+
+        if(getJsonEntries().containsKey(FIELD_PLACEHOLDER)){
+            edit.setHint(getJsonEntries().get(FIELD_PLACEHOLDER).getValue().getAsString());
+        }
     }
 }

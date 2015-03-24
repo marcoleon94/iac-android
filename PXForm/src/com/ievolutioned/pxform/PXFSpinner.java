@@ -45,6 +45,7 @@ public class PXFSpinner extends PXWidget {
 
         helper.title.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
                 getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
+        helper.spinner.setAdapter(getSpinnerAdapter(view.getContext()));
         //TODO: read json to know what the state of the spinner is
 
     }
@@ -76,6 +77,21 @@ public class PXFSpinner extends PXWidget {
         params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
         spinner.setLayoutParams(params);
+        spinner.setAdapter(getSpinnerAdapter(context));
+        spinner.setSelection(0);
+        helper.spinner = spinner;
+
+        //add controls to linear parent before main control
+        linear.addView(text);
+        linear.addView(spinner);
+
+        //add controls to main container
+        v.addView(linear);
+
+        return v;
+    }
+
+    private ArrayAdapter<String> getSpinnerAdapter(Context context){
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
                 android.R.layout.simple_spinner_item );
 
@@ -89,17 +105,6 @@ public class PXFSpinner extends PXWidget {
             }
         }
 
-        spinner.setAdapter(adapter);
-        spinner.setSelection(0);
-        helper.spinner = spinner;
-
-        //add controls to linear parent before main control
-        linear.addView(text);
-        linear.addView(spinner);
-
-        //add controls to main container
-        v.addView(linear);
-
-        return v;
+        return adapter;
     }
 }

@@ -46,6 +46,10 @@ public class PXFToggleBoolean extends PXWidget {
         helper.title.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
                 getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
 
+        JsonArray array = getJsonEntries().get(FIELD_OPTIONS).getValue().getAsJsonArray();
+        helper.radioOn.setText(array.get(0).getAsString());
+        helper.radioOff.setText(array.get(1).getAsString());
+
         //TODO: read json to know what the state of the radio buttons are
     }
 
@@ -70,43 +74,38 @@ public class PXFToggleBoolean extends PXWidget {
         text.setLayoutParams(params);
         helper.title = text;
 
-        RadioGroup mRadioSwitch = new RadioGroup(context);
-        mRadioSwitch.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+        RadioGroup radioGroup = new RadioGroup(context);
+        radioGroup.setOrientation(android.widget.LinearLayout.HORIZONTAL);
         params = new RadioGroup.LayoutParams(
                 RadioGroup.LayoutParams.MATCH_PARENT, RadioGroup.LayoutParams.WRAP_CONTENT, 0.5f);
-        mRadioSwitch.setOrientation(LinearLayout.HORIZONTAL);
-        mRadioSwitch.setLayoutParams(params);
-        helper.radioGroup = mRadioSwitch;
+        radioGroup.setOrientation(LinearLayout.HORIZONTAL);
+        radioGroup.setLayoutParams(params);
+        helper.radioGroup = radioGroup;
 
-        RadioButton mRadioButtonOn = new RadioButton(context);
-        //mRadioButtonOn.setText(DEFAULT_TEXT_ON);
-        //mRadioButtonOn.setId(0);
+        RadioButton radioOn = new RadioButton(context);
         params = new RadioGroup.LayoutParams(
                 RadioGroup.LayoutParams.WRAP_CONTENT, RadioGroup.LayoutParams.WRAP_CONTENT);
-        mRadioButtonOn.setLayoutParams(params);
-        mRadioButtonOn.setTag(1);
-        helper.radioOn = mRadioButtonOn;
+        radioOn.setLayoutParams(params);
+        radioOn.setTag(1);
+        helper.radioOn = radioOn;
 
-        RadioButton mRadioButtonOff = new RadioButton(context);
-        //mRadioButtonOff.setText(DEFAULT_TEXT_OFF);
-        //mRadioButtonOff.setId(1);
+        RadioButton radioOff = new RadioButton(context);
         params = new RadioGroup.LayoutParams(
                 RadioGroup.LayoutParams.WRAP_CONTENT, RadioGroup.LayoutParams.WRAP_CONTENT);
-        mRadioButtonOff.setLayoutParams(params);
-        mRadioButtonOff.setTag(2);
-        helper.radioOff = mRadioButtonOff;
+        radioOff.setLayoutParams(params);
+        radioOff.setTag(2);
+        helper.radioOff = radioOff;
 
         JsonArray array = getJsonEntries().get(FIELD_OPTIONS).getValue().getAsJsonArray();
-        mRadioButtonOn.setText(array.get(0).getAsString());
-        mRadioButtonOff.setText(array.get(1).getAsString());
+        radioOn.setText(array.get(0).getAsString());
+        radioOff.setText(array.get(1).getAsString());
 
-        //mRadioSwitch.setOnCheckedChangeListener(radio_check);
-        mRadioSwitch.addView(mRadioButtonOn);
-        mRadioSwitch.addView(mRadioButtonOff);
+        radioGroup.addView(radioOn);
+        radioGroup.addView(radioOff);
 
         //add controls to linear parent before main container
         linear.addView(text);
-        linear.addView(mRadioSwitch);
+        linear.addView(radioGroup);
 
         //add controls to main container
         v.addView(linear);

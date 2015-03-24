@@ -1,15 +1,15 @@
 package com.ievolutioned.iac;
 
+import com.ievolutioned.pxform.PXFAdapter;
 import com.ievolutioned.pxform.PXFParser;
 import com.ievolutioned.pxform.PXFParser.PXFParserEventHandler;
-import com.ievolutioned.pxform.PXWidget;
 import com.ievolutioned.iac.view.ViewUtility;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Toast;
 
 public class PXFormActivity extends Activity {
@@ -21,31 +21,26 @@ public class PXFormActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pxform_activity);
 
-		final LinearLayout container = (LinearLayout)findViewById(R.id.PXForm_linearPanel);
+		//final LinearLayout container = (LinearLayout)findViewById(R.id.PXForm_linearPanel);
+        final ListView listView  = (ListView)findViewById(R.id.PXForm_linearPanel);
 		final AlertDialog loading = ViewUtility.getLoadingScreen(PXFormActivity.this);
 		loading.show();
 		
-		p = new PXFParser(
-				//getApplicationContext()
-				PXFormActivity.this
-				, new PXFParserEventHandler() {
-			@Override
-			public void finish(PXFParser parser, String json) {
-				for(PXWidget w : p.getWidget()){
-					for(View v : w.getViewList()){
-						container.addView(v);
-					}
-				}
-				loading.dismiss();
-			}
-			
-			@Override
-			public void error(Exception ex, String json) {
-				loading.dismiss();
-				Toast.makeText(PXFormActivity.this, "Can't parse json", Toast.LENGTH_LONG).show();
-			}
-		});
-		
-		p.parseJson(PXFParser.parseFileToString(getApplicationContext(), "FormFields_PabloUTF8.json"));
+		p = new PXFParser(new PXFParserEventHandler() {
+            @Override
+            public void finish(PXFAdapter adapter, String json) {
+                listView.setAdapter(adapter);
+                loading.dismiss();
+            }
+
+            @Override
+            public void error(Exception ex, String json) {
+                Toast.makeText(PXFormActivity.this, "can't parse json", Toast.LENGTH_SHORT).show();
+                loading.dismiss();
+            }
+        });
+
+		p.parseJson(PXFormActivity.this, PXFParser.parseFileToString(getApplicationContext(),
+                "FormFields_PabloUTF8.json"));
 	}
 }
