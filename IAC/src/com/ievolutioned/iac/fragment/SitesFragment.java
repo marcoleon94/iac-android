@@ -11,13 +11,13 @@ import com.ievolutioned.iac.R;
 /**
  * Created by Daniel on 24/03/2015.
  */
-public class FormsFragment extends Fragment {
+public class SitesFragment extends Fragment {
 
-    public static final String ARG_FORM_NAME = "ARG_FORM_NAME";
+    public static final String ARG_SITE_NAME = "ARG_SITE_NAME";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_forms, container, false);
+        View root = inflater.inflate(R.layout.fragment_sites, container, false);
         bindUI(root);
         return root;
     }
@@ -27,7 +27,7 @@ public class FormsFragment extends Fragment {
         if (args == null)
             return;
 
-        bindData(root, args.getString(ARG_FORM_NAME));
+        bindData(root, args.getString(ARG_SITE_NAME));
     }
 
     private void bindData(View root, String form) {

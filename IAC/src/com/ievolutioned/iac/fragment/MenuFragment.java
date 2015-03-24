@@ -81,5 +81,6 @@ public class MenuFragment extends Fragment {
     protected void selectItem(String item) {
         Log.d(MenuFragment.class.getName(), "Selected: " + item);
         ((MainActivity)getActivity()).selectItem(item);
+
     }
 }

@@ -40,7 +40,8 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Crashlytics.start(this);
+        if(!AppConfig.DEBUG)
+            Crashlytics.start(this);
         setContentView(R.layout.activity_login);
         bindUI();
     }
