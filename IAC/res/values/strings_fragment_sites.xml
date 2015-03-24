@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="sites_item_key">
+        <item >Recibos de nomina</item>
+        <item >Programa de reconocimiento</item>
+    </string-array>
+    <string-array name="sites_item_values">
+        <item >http://www.ievolutioned.com/</item>
+        <item >https://ievolutioned.slack.com/</item>
+    </string-array>
+
+
+</resources>

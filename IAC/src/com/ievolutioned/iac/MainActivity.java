@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 
 import com.crashlytics.android.Crashlytics;
 import com.ievolutioned.iac.fragment.FormsFragment;
@@ -84,6 +85,7 @@ public class MainActivity extends ActionBarActivity {
             }
         }
         if (mFragment != null) {
+            mFragment.setArguments(args);
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.beginTransaction()
                     .replace(R.id.activity_main_frame_container, mFragment).commit();
