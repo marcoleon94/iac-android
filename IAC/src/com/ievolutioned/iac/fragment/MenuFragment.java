@@ -17,7 +17,7 @@ import java.util.ArrayList;
 /**
  * Created by Daniel on 23/03/2015.
  */
-public class fragment_menu extends Fragment {
+public class MenuFragment extends Fragment {
 
     private String[] menuFormTitles;
     private String[] menuSitesTitles;

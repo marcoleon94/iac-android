@@ -13,10 +13,10 @@
 
     <fragment
         android:id="@+id/activity_menu"
-        android:layout_width="240dp"
+        android:layout_width="340dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:name="com.ievolutioned.iac.fragment.fragment_menu"
+        android:name="com.ievolutioned.iac.fragment.MenuFragment"
         tools:layout="@layout/fragment_menu" />
 
 </android.support.v4.widget.DrawerLayout>
