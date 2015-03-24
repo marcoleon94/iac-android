@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="nav_drawer_form_title">FORMMULARIOS</string>
+    <string name="nav_drawer_form_title">FORMULARIOS</string>
     <string-array name="nav_drawer_form_items">
         <item >Asistencia a Cursos</item>
         <item >Encuesta de Salida</item>
