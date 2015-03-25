@@ -22,84 +22,119 @@ import android.widget.TextView;
 import com.google.gson.JsonElement;
 
 public class PXFDatePicker extends PXWidget {
-	private Context context;
 
-	public PXFDatePicker(Context cont,
-			Map<String, Entry<String, JsonElement>> entry) {
-		super(cont, entry);
-		context = cont;
-	}
+    public static class HelperDatePicker extends HelperWidget{
+        protected TextView title;
+        protected LinearLayout linearDatePicker;
+        protected Button buttonDatePicker;
+    }
 
-	@Override
-	protected View addControls(Context context,
-			Map<String, Entry<String, JsonElement>> map) {
-		//layout container
-		LinearLayout linear = getGenericLinearLayout(context);
-		linear.setWeightSum(1);
+    public PXFDatePicker(Map<String, Entry<String, JsonElement>> entry) {
+        super(entry);
+    }
 
-		//field name
-		TextView text = getGenericTextView(context, 
-				map.containsKey(FIELD_TITLE) ? map.get(FIELD_TITLE).getValue().getAsString() : " ");		
-		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-				ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
-		text.setLayoutParams(params);
+    @Override
+    protected HelperWidget generateHelperClass() {
+        return new HelperDatePicker();
+    }
 
-		final Button button = new Button(context);
-		params = new LinearLayout.LayoutParams(
-				ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
-		button.setLayoutParams(params);
-		button.setText(map.containsKey(FIELD_TITLE) ? map.get(FIELD_TITLE).getValue().getAsString() : "Date Picker");
-		button.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				DatePickerFragment newFragment = new DatePickerFragment();
-				Activity activity = (Activity)PXFDatePicker.this.context;
-				newFragment.show(activity.getFragmentManager(), "timePicker");
-				newFragment.setIDatePicked(new DatePickerFragment.IDatePicked() {
-					@Override
-					public void onDateSet(DatePicker view, int year, int month, int day) {
-						button.setText(String.format(Locale.US, "%d/%d/%d", year, month, day));
-					}
-				});
-			}
-		});
+    @Override
+    public int getAdapterItemType() {
+        return PXWidget.ADAPTER_ITEM_TYPE_DATEPICKER;
+    }
 
-		//add views to the container
-		linear.addView(text);
-		linear.addView(button);
+    @Override
+    public void setWidgetData(View view) {
+        super.setWidgetData(view);
+        HelperDatePicker helper = (HelperDatePicker) view.getTag();
+        helper.title.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
+                getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
 
-		return linear;
-	}
+        //TODO: read json to know what the state of the date already set
+    }
 
-	public static class DatePickerFragment extends DialogFragment
-	implements android.app.DatePickerDialog.OnDateSetListener {
-		
-		private IDatePicked eventHandler;
+    @Override
+    protected View createControl(final Activity context) {
+        LinearLayout v = (LinearLayout) super.createControl(context);
+        HelperDatePicker helper = (HelperDatePicker) v.getTag();
 
-		public void setIDatePicked(IDatePicked callback){
-			eventHandler = callback;
-		}
-		
-		@Override
-		public Dialog onCreateDialog(Bundle savedInstanceState) {
-			// Use the current date as the default date in the picker
-			final Calendar c = Calendar.getInstance();
-			int year = c.get(Calendar.YEAR);
-			int month = c.get(Calendar.MONTH);
-			int day = c.get(Calendar.DAY_OF_MONTH);
+        //layout container
+        LinearLayout linear = getGenericLinearLayout(context);
+        linear.setWeightSum(1);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
+        linear.setLayoutParams(params);
+        helper.linearDatePicker = linear;
 
-			// Create a new instance of DatePickerDialog and return it
-			return new DatePickerDialog(getActivity(), this, year, month, day);
-		}
+        //field name
+        TextView text = getGenericTextView(context, getJsonEntries().containsKey(FIELD_TITLE) ?
+                getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
+        params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
+        text.setLayoutParams(params);
+        helper.title = text;
 
-		public void onDateSet(DatePicker view, int year, int month, int day) {
-			dismiss();
-			if(eventHandler != null)
-				eventHandler.onDateSet(view, year, month, day);
-		}
-		
-		public interface IDatePicked{
-			void onDateSet(DatePicker view, int year, int month, int day);
-		}
-	}
+        Button button = new Button(context);
+        params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
+        button.setLayoutParams(params);
+        button.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
+                getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : "Date Picker");
+        button.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerFragment newFragment = new DatePickerFragment();
+                newFragment.show(context.getFragmentManager(), "timePicker");
+                final Button my_button = (Button)v;
+                newFragment.setIDatePicked(new DatePickerFragment.IDatePicked() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int day) {
+                        my_button.setText(String.format(Locale.US, "%d/%d/%d", year, month, day));
+                    }
+                });
+            }
+        });
+        helper.buttonDatePicker = button;
+
+        //add controls to linear parent before main container
+        linear.addView(text);
+        linear.addView(button);
+
+        //add controls to main container
+        v.addView(linear);
+
+        return v;
+    }
+
+    public static class DatePickerFragment extends DialogFragment
+            implements android.app.DatePickerDialog.OnDateSetListener {
+
+        private IDatePicked eventHandler;
+
+        public void setIDatePicked(IDatePicked callback){
+            eventHandler = callback;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle saved) {
+            // Use the current date as the default date in the picker
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+
+            // Create a new instance of DatePickerDialog and return it
+            return new DatePickerDialog(getActivity(), this, year, month, day);
+        }
+
+        public void onDateSet(DatePicker view, int year, int month, int day) {
+            dismiss();
+            if(eventHandler != null)
+                eventHandler.onDateSet(view, year, month, day);
+        }
+
+        public interface IDatePicked{
+            void onDateSet(DatePicker view, int year, int month, int day);
+        }
+    }
 }

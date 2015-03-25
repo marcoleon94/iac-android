@@ -10,7 +10,6 @@ import java.util.Map;
 import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.util.Log;
 
 import com.google.gson.JsonArray;
@@ -19,193 +18,206 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class PXFParser {
-	private boolean bhasErrors = false;
-	private JsonElement jseObject;
-	private List<PXWidget> lWidgets = new ArrayList<PXWidget>();
-	private PXFParserEventHandler eventHandler;
-	//private Context cContext;
-	private final Handler handler;
-	private Activity aActivity;
+    private PXFParserEventHandler eventHandler;
 
-	public interface PXFParserEventHandler{
-		public abstract void finish(PXFParser parser, String json);
-		public abstract void error(Exception ex, String json);
-	}
+    public interface PXFParserEventHandler{
+        public abstract void finish(PXFAdapter adapter, String json);
+        public abstract void error(Exception ex, String json);
+    }
 
-	public PXFParser(Activity activity, PXFParserEventHandler callback){
-		handler = new Handler();
-		//cContext = c;
-		aActivity = activity;
-		eventHandler = callback;
-	}
+    public PXFParser(PXFParserEventHandler callback){
+        eventHandler = callback;
+    }
 
-	public List<PXWidget> getWidget(){
-		return lWidgets;
-	}
-	public JsonElement getJsonElement(){
-		return jseObject;
-	}
+    public void parseJson(final Activity activity, final String json){
+        AsyncTask<Void, Void, Void> t1 = new AsyncTask<Void, Void, Void>(){
+            @Override
+            protected Void doInBackground(Void... params1234) {
+                JsonElement json_tmp;
+                final List<PXWidget> w = new ArrayList<PXWidget>();
 
-	public boolean hasErrors(){
-		return bhasErrors;
-	}
+                try{
+                    json_tmp = new JsonParser().parse(json);
+                }catch(final Exception ex){
+                    activity.runOnUiThread(new Runnable() { @Override public void run() {
+                        ex.printStackTrace();
 
-	public void parseJson(final String json){
-		bhasErrors = false;
-		AsyncTask<Void, Void, Void> t1 = new AsyncTask<Void, Void, Void>(){
-			@Override
-			protected Void doInBackground(Void... params1234) {
-				JsonElement json_tmp;
-				final List<PXWidget> w = new ArrayList<PXWidget>();
+                        if(eventHandler != null){
+                            eventHandler.error(ex, json);
+                        }
+                    }});
+                    return null;
+                }
 
-				try{
-					json_tmp = new JsonParser().parse(json);
-				}catch(final Exception ex){
-					handler.post(new Runnable() { @Override public void run() {
-						ex.printStackTrace();
-						bhasErrors = true;
+                if(json_tmp.isJsonNull()){
+                    activity.runOnUiThread(new Runnable() { @Override public void run() {
+                        if(eventHandler != null){
+                            eventHandler.error(new Exception("Json is not valid"), json);
+                        }
+                    }});
+                    return null;
+                }
 
-						if(eventHandler != null){
-							eventHandler.error(ex, json);
-						}
-					}});
-					return null;
-				}
+                if(json_tmp.isJsonArray()){
+                    JsonArray array = json_tmp.getAsJsonArray();
 
-				if(json_tmp.isJsonNull()){
-					handler.post(new Runnable() { @Override public void run() {
-						bhasErrors = true;
+                    for(int i = 0; i < array.size(); ++i){
+                        JsonElement element = array.get(i);
 
-						if(eventHandler != null){
-							eventHandler.error(new Exception("Json is not valid"), json);
-						}
-					}});
-					return null;
-				}
+                        if(!element.isJsonObject())
+                            continue;
 
-				if(json_tmp.isJsonArray()){
-					JsonArray array = json_tmp.getAsJsonArray();					
+                        JsonObject entry = element.getAsJsonObject();
+                        final Map<String, Map.Entry<String,JsonElement>> map =
+                                new HashMap<String, Map.Entry<String,JsonElement>>();
 
-					for(int i = 0; i < array.size(); ++i){
-						JsonElement element = array.get(i);
+                        //map all the fields by key
+                        for(Map.Entry<String,JsonElement> mej : entry.entrySet()){
+                            map.put(mej.getKey(), mej);
+                        }
 
-						if(!element.isJsonObject())
-							continue;
+                        PXWidget px = getWidgetFromType(map);
+                        w.add(px);
 
-						JsonObject entry = element.getAsJsonObject();
-						final Map<String, Map.Entry<String,JsonElement>> map = 
-								new HashMap<String, Map.Entry<String,JsonElement>>();
-
-						//map all the fields by key
-						for(Map.Entry<String,JsonElement> mej : entry.entrySet()){
-							map.put(mej.getKey(), mej);
-						}
-
-						try{
-							handler.post(new Runnable() { @Override public void run() {
-								PXWidget px = getWidgetFromType(aActivity, map);
-								w.add(px);
-							}});
-						}catch(Exception ex){
-							ex.printStackTrace();
-						}
                         try {
-                            //let the thread rest
+                            // let the thread rest for a bit
                             Thread.sleep(1);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
+                }else{
+                    activity.runOnUiThread(new Runnable() {  @Override public void run() {
+                        if(eventHandler != null){
+                            eventHandler.error(new Exception("Json is not valid"), json);
+                        }
+                    }});
+                    return null;
+                }
 
-					final JsonElement json_tmp_copy = json_tmp;
-					handler.post(new Runnable() { @Override public void run() {
-						jseObject = json_tmp_copy;
-						lWidgets = w;
+                //final JsonElement json_tmp_copy = json_tmp;
+                activity.runOnUiThread(new Runnable() { @Override public void run() {
+                    if(eventHandler != null){
+                        PXFAdapter adapter = new PXFAdapter(activity, w);
+                        eventHandler.finish(adapter, json);
+                    }
+                }});
 
-						if(eventHandler != null){
-							eventHandler.finish(PXFParser.this, json);
-						}
+                return null;
+            }
+        };
+        t1.execute();
+    }
 
-					}});
-				}else{
-					handler.post(new Runnable() {  @Override public void run() {
-						bhasErrors = true;
+    public static String parseFileToString(Context context, String filename )
+    {
+        try
+        {
+            InputStream stream = context.getAssets().open( filename );
+            int size = stream.available();
 
-						if(eventHandler != null){
-							eventHandler.error(new Exception("Json is not valid"), json);
-						}
-					}});
-				}
-
-				return null;
-			}
-		};
-		t1.execute();
-	}
-
-	public static String parseFileToString(Context context, String filename )
-	{
-		try
-		{
-			InputStream stream = context.getAssets().open( filename );
-			int size = stream.available();
-
-			byte[] bytes = new byte[size];
+            byte[] bytes = new byte[size];
             stream.read(bytes);
             stream.close();
 
-			return new String( bytes, "UTF-8" );
+            return new String( bytes, "UTF-8" );
 
-		} catch ( IOException e ) {
-			Log.i("PXForm", "IOException: " + e.getMessage() );
-		}
-		return null;
-	}
+        } catch ( IOException e ) {
+            Log.i("PXForm", "IOException: " + e.getMessage() );
+        }
+        return null;
+    }
 
-	private static PXWidget getWidgetFromType(final Activity context,
-			final Map<String, Map.Entry<String,JsonElement>> map){
-		PXWidget widget = null;
+    private static PXWidget getWidgetFromType(final Map<String, Map.Entry<String,JsonElement>> map){
+        PXWidget widget = null;
 
-		//we got a well defined field
-		if(map.containsKey(PXWidget.FIELD_TYPE)){
-			if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
-					.equals(PXWidget.FIELD_TYPE_TEXT)){
-				widget = new PXFEdit(context, map);
-			} 
-			else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
-					.equals(PXWidget.FIELD_TYPE_BOOLEAN)){
-				widget = new PXFCheckBox(context, map);
-			} 
-			else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
-					.equals(PXWidget.FIELD_TYPE_DATE)){
-				widget = new PXFDatePicker(context, map);
-			} 
-			else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
-					.equals(PXWidget.FIELD_TYPE_LONGTEXT)){
-				widget = new PXFEdit(context, map);
-			} 
-			else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
-					.equals(PXWidget.FIELD_TYPE_UNSIGNED)){
-				widget = new PXFEdit(context, map);
-			}
-		} 
-		else if(map.containsKey(PXWidget.FIELD_OPTIONS)){
-			if (map.containsKey(PXWidget.FIELD_CELL) && 
-					isCELL_OPTION_SEGMENT(map.get(PXWidget.FIELD_CELL).getValue())) {
-				widget = new PXFToggleBoolean(context, map);
-			} else {
-				widget = new PXFSpinner(context, map);
-			}
-		} 
-		else if(map.containsKey(PXWidget.FIELD_ACTION)){
-			widget = new PXFButton(context, map);
-		}
+        //we got a well defined field
+        if(map.containsKey(PXWidget.FIELD_TYPE)){
+            if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
+                    .equals(PXWidget.FIELD_TYPE_TEXT)){
+                widget = new PXFEdit(map);
+            }
+            else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
+                    .equals(PXWidget.FIELD_TYPE_BOOLEAN)){
+                widget = new PXFCheckBox(map);
+            }
+            else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
+                    .equals(PXWidget.FIELD_TYPE_DATE)){
+                widget = new PXFDatePicker(map);
+            }
+            else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
+                    .equals(PXWidget.FIELD_TYPE_LONGTEXT)){
+                widget = new PXFEdit(map);
+            }
+            else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
+                    .equals(PXWidget.FIELD_TYPE_UNSIGNED)){
+                widget = new PXFEdit(map);
+            }
+        }
+        else if(map.containsKey(PXWidget.FIELD_OPTIONS)){
+            if (map.containsKey(PXWidget.FIELD_CELL) &&
+                    isCELL_OPTION_SEGMENT(map.get(PXWidget.FIELD_CELL).getValue())) {
+                widget = new PXFToggleBoolean(map);
+            } else {
+                widget = new PXFSpinner(map);
+            }
+        }
+        else if(map.containsKey(PXWidget.FIELD_ACTION)){
+            widget = new PXFButton(map);
+        }
 
-		return widget == null ? new PXFUnknownControlType(context, map) : widget;
-	}
-	
-	private static boolean isCELL_OPTION_SEGMENT(JsonElement cell){
-		return PXWidget.FIELD_CELL_OPTION_SEGMENT.equalsIgnoreCase(cell.getAsString()) || 
-				PXWidget.FIELD_CELL_OPTION_SEGMENT_CUSTOM.equalsIgnoreCase(cell.getAsString());
-	}
+        return widget == null ? new PXFUnknownControlType(map) : widget;
+    }
+
+    private static boolean isCELL_OPTION_SEGMENT(JsonElement cell){
+        return PXWidget.FIELD_CELL_OPTION_SEGMENT.equalsIgnoreCase(cell.getAsString()) ||
+                PXWidget.FIELD_CELL_OPTION_SEGMENT_CUSTOM.equalsIgnoreCase(cell.getAsString());
+    }
+
+    //private static PXWidget getWidgetFromType(final Activity context,
+    //                                          final Map<String, Map.Entry<String,JsonElement>> map){
+    //    PXWidget widget = null;
+    //
+    //    //we got a well defined field
+    //    if(map.containsKey(PXWidget.FIELD_TYPE)){
+    //        if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
+    //                .equals(PXWidget.FIELD_TYPE_TEXT)){
+    //            widget = new PXFEdit(map);
+    //        }
+    //        else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
+    //                .equals(PXWidget.FIELD_TYPE_BOOLEAN)){
+    //            widget = new PXFCheckBox(map);
+    //        }
+    //        else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
+    //                .equals(PXWidget.FIELD_TYPE_DATE)){
+    //            widget = new PXFDatePicker(map);
+    //        }
+    //        else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
+    //                .equals(PXWidget.FIELD_TYPE_LONGTEXT)){
+    //            widget = new PXFEdit(map);
+    //        }
+    //        else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
+    //                .equals(PXWidget.FIELD_TYPE_UNSIGNED)){
+    //            widget = new PXFEdit(map);
+    //        }
+    //    }
+    //    else if(map.containsKey(PXWidget.FIELD_OPTIONS)){
+    //        if (map.containsKey(PXWidget.FIELD_CELL) &&
+    //                isCELL_OPTION_SEGMENT(map.get(PXWidget.FIELD_CELL).getValue())) {
+    //            widget = new PXFToggleBoolean(map);
+    //        } else {
+    //            widget = new PXFSpinner(map);
+    //        }
+    //    }
+    //    else if(map.containsKey(PXWidget.FIELD_ACTION)){
+    //        widget = new PXFButton(map);
+    //    }
+    //
+    //    return widget == null ? new PXFUnknownControlType(map) : widget;
+    //}
+    //
+    //private static boolean isCELL_OPTION_SEGMENT(JsonElement cell){
+    //    return PXWidget.FIELD_CELL_OPTION_SEGMENT.equalsIgnoreCase(cell.getAsString()) ||
+    //            PXWidget.FIELD_CELL_OPTION_SEGMENT_CUSTOM.equalsIgnoreCase(cell.getAsString());
+    //}
 }

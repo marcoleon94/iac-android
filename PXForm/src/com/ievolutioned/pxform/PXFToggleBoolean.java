@@ -3,14 +3,12 @@ package com.ievolutioned.pxform;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import android.content.Context;
-import android.util.Log;
+import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 
 import com.google.gson.JsonArray;
@@ -18,112 +16,100 @@ import com.google.gson.JsonElement;
 
 public class PXFToggleBoolean extends PXWidget {
 
-	public PXFToggleBoolean(Context context,
-			Map<String, Entry<String, JsonElement>> entry) {
-		super(context, entry);
-	}
+    public static class HelperToggleBoolean extends HelperWidget{
+        protected TextView title;
+        protected LinearLayout linearCheckBox;
+        protected RadioGroup radioGroup;
+        protected RadioButton radioOn;
+        protected RadioButton radioOff;
+    }
 
-	@Override
-	protected View addControls(Context context,
-			Map<String, Entry<String, JsonElement>> map) {
-		//layout container
-		LinearLayout linear = getGenericLinearLayout(context);
-		linear.setWeightSum(1);
+    public PXFToggleBoolean(Map<String, Entry<String, JsonElement>> entry) {
+        super(entry);
+    }
 
-		//field name
-		TextView text = getGenericTextView(context, 
-				map.containsKey(FIELD_TITLE) ? map.get(FIELD_TITLE).getValue().getAsString() : " ");
-		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-				ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
-		text.setLayoutParams(params);
+    @Override
+    protected HelperWidget generateHelperClass() {
+        return new HelperToggleBoolean();
+    }
 
-		//initial toggle button configuration
-		CustomSwitch toggleBoolean = new CustomSwitch(context, map);
-		params = new LinearLayout.LayoutParams(
-				ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
-		toggleBoolean.setLayoutParams(params);
+    @Override
+    public int getAdapterItemType() {
+        return PXWidget.ADAPTER_ITEM_TYPE_TOGGLEBOOLEAN;
+    }
 
-		//add views to the container
-		linear.addView(text);
-		linear.addView(toggleBoolean);
+    @Override
+    public void setWidgetData(View view) {
+        super.setWidgetData(view);
+        HelperToggleBoolean helper = (HelperToggleBoolean) view.getTag();
 
-		return linear;
-	}
+        helper.title.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
+                getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
 
+        JsonArray array = getJsonEntries().get(FIELD_OPTIONS).getValue().getAsJsonArray();
+        helper.radioOn.setText(array.get(0).getAsString());
+        helper.radioOff.setText(array.get(1).getAsString());
 
-	public class CustomSwitch extends LinearLayout {
-		private static final String DEFAULT_TEXT_OFF = "No";
-		private static final String DEFAULT_TEXT_ON = "Si";
+        //TODO: read json to know what the state of the radio buttons are
+    }
 
-		private String textOff = DEFAULT_TEXT_OFF;
-		private String textOn = DEFAULT_TEXT_ON;
-		private String textSelected = textOff;
+    @Override
+    protected View createControl(Activity context) {
+        LinearLayout v = (LinearLayout) super.createControl(context);
+        HelperToggleBoolean helper = (HelperToggleBoolean) v.getTag();
 
-		private RadioGroup mRadioSwitch;
-		private RadioButton mRadioButtonOff;
-		private RadioButton mRadioButtonOn;
+        LinearLayout linear = getGenericLinearLayout(context);
+        linear.setWeightSum(1);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        linear.setLayoutParams(params);
+        linear.setOrientation(LinearLayout.HORIZONTAL);
+        helper.linearCheckBox = linear;
 
-		public CustomSwitch(Context context, Map<String, Entry<String, JsonElement>> map) {
-			super(context);
+        //field name
+        TextView text = getGenericTextView(context, getJsonEntries().containsKey(FIELD_TITLE) ?
+                getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
+        params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
+        text.setLayoutParams(params);
+        helper.title = text;
 
-			//add fields to the adapter
-			if(map.get(FIELD_OPTIONS).getValue().isJsonArray()){
-				JsonArray array = map.get(FIELD_OPTIONS).getValue().getAsJsonArray();
-				textOn = array.get(0).getAsString();
-				textOff = array.get(1).getAsString();
-			}
-			else
-				Log.e("PXFToggleBoolean", "Error: options are not a json array!");
+        RadioGroup radioGroup = new RadioGroup(context);
+        radioGroup.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+        params = new RadioGroup.LayoutParams(
+                RadioGroup.LayoutParams.MATCH_PARENT, RadioGroup.LayoutParams.WRAP_CONTENT, 0.5f);
+        radioGroup.setOrientation(LinearLayout.HORIZONTAL);
+        radioGroup.setLayoutParams(params);
+        helper.radioGroup = radioGroup;
 
-			mRadioSwitch = new RadioGroup(context);
-			mRadioSwitch.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+        RadioButton radioOn = new RadioButton(context);
+        params = new RadioGroup.LayoutParams(
+                RadioGroup.LayoutParams.WRAP_CONTENT, RadioGroup.LayoutParams.WRAP_CONTENT);
+        radioOn.setLayoutParams(params);
+        radioOn.setTag(1);
+        helper.radioOn = radioOn;
 
-			RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(
-					RadioGroup.LayoutParams.WRAP_CONTENT, 
-					RadioGroup.LayoutParams.WRAP_CONTENT);
-			
-			mRadioButtonOn = new RadioButton(context);
-			mRadioButtonOn.setText(DEFAULT_TEXT_ON);
-			mRadioButtonOn.setId(0);
-			params = new RadioGroup.LayoutParams(
-					RadioGroup.LayoutParams.WRAP_CONTENT, 
-					RadioGroup.LayoutParams.WRAP_CONTENT);
-			mRadioButtonOn.setLayoutParams(params);
-			
-			mRadioButtonOff = new RadioButton(context);
-			mRadioButtonOff.setText(DEFAULT_TEXT_OFF);
-			mRadioButtonOff.setId(1);
-			mRadioButtonOff.setLayoutParams(params);
-			
-			mRadioButtonOn.setText(textOn);
-			mRadioButtonOff.setText(textOff);
+        RadioButton radioOff = new RadioButton(context);
+        params = new RadioGroup.LayoutParams(
+                RadioGroup.LayoutParams.WRAP_CONTENT, RadioGroup.LayoutParams.WRAP_CONTENT);
+        radioOff.setLayoutParams(params);
+        radioOff.setTag(2);
+        helper.radioOff = radioOff;
 
-			mRadioSwitch.setOnCheckedChangeListener(radio_check);
-			mRadioSwitch.addView(mRadioButtonOn);
-			mRadioSwitch.addView(mRadioButtonOff);
-			CustomSwitch.this.addView(mRadioSwitch);
-		}
+        JsonArray array = getJsonEntries().get(FIELD_OPTIONS).getValue().getAsJsonArray();
+        radioOn.setText(array.get(0).getAsString());
+        radioOff.setText(array.get(1).getAsString());
 
-		public String getSelectedText() {
-			return this.textSelected;
-		}
+        radioGroup.addView(radioOn);
+        radioGroup.addView(radioOff);
 
-		private OnCheckedChangeListener radio_check = new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(RadioGroup group, int id) {
-				CustomSwitch.this.textSelected = 
-						id == mRadioButtonOff.getId() ? textOff : textOn;
-			}
-		};
-		
-		public void setTextOn(String on) {
-			this.textOn = on;
-			mRadioButtonOn.setText(on);
-		}
+        //add controls to linear parent before main container
+        linear.addView(text);
+        linear.addView(radioGroup);
 
-		public void setTextOff(String off) {
-			this.textOff = off;
-			mRadioButtonOff.setText(off);
-		}
-	}
+        //add controls to main container
+        v.addView(linear);
+
+        return v;
+    }
 }
