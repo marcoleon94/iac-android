@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="forms_item_key">
+        <item >Asistencia a Cursos</item>
+        <item >Encuesta de Salida</item>
+        <item >Encuesta de satisfaccion</item>
+    </string-array>
+    <string-array name="forms_item_values">
+        <item >FormFields_PabloUTF8.json</item>
+        <item >FormFields_PabloUTF8.json</item>
+        <item >FormFields_PabloUTF8.json</item>
+    </string-array>
+
+
+</resources>
