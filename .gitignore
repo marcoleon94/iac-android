@@ -29,3 +29,4 @@ PXForm/build/*
 .idea/dictionaries/*
 .idea/modules.xml
 .idea/misc.xml
+.idea/libraries/*
