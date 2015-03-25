@@ -76,7 +76,7 @@ public class FormsFragment extends Fragment {
             }
         });
 
-        p.parseJson(getActivity(), PXFParser.parseFileToString(getActivity(), form));
+        p.parseJson(getActivity(), PXFParser.parseFileToString(getActivity(), json));
     }
 
     /**
