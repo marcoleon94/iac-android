@@ -11,14 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /*
-
-for git:
+remove file form git:
 
 remove crashlytics files from repo, but don't
 remove "crashlytics.properties" in root:
 
  git rm -r --cached directory/filename
-
 
 force git update local repo.
 all not commited changes will be lost
@@ -27,6 +25,15 @@ all not commited changes will be lost
  git reset --hard origin/master
 
 */
+
+/*
+remove unused repo head
+
+ git branch -d -r origin/HEAD
+
+ */
+
+
 /**
  */
 public class PXFAdapter extends BaseAdapter {

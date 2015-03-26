@@ -1,7 +1,6 @@
 package com.ievolutioned.pxform;
 
 import java.util.Map;
-import java.util.Map.Entry;
 
 import android.app.Activity;
 import android.content.Context;
@@ -22,9 +21,10 @@ public class PXFSpinner extends PXWidget {
         protected TextView title;
         protected LinearLayout linearCheckBox;
         protected Spinner spinner;
+        protected ArrayAdapter<String> adapter;
     }
 
-    public PXFSpinner(Map<String, Entry<String, JsonElement>> entry) {
+    public PXFSpinner(Map<String, Map.Entry<String, JsonElement>> entry) {
         super(entry);
     }
 
@@ -45,7 +45,7 @@ public class PXFSpinner extends PXWidget {
 
         helper.title.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
                 getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
-        helper.spinner.setAdapter(getSpinnerAdapter(view.getContext()));
+        helper.spinner.setAdapter(helper.adapter);
         //TODO: read json to know what the state of the spinner is
 
     }
@@ -77,7 +77,8 @@ public class PXFSpinner extends PXWidget {
         params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
         spinner.setLayoutParams(params);
-        spinner.setAdapter(getSpinnerAdapter(context));
+        helper.adapter = getSpinnerAdapter(context);
+        spinner.setAdapter(helper.adapter);
         spinner.setSelection(0);
         helper.spinner = spinner;
 
@@ -100,7 +101,20 @@ public class PXFSpinner extends PXWidget {
             JsonArray array = getJsonEntries().get(FIELD_OPTIONS).getValue().getAsJsonArray();
 
             for(int x = 0; x < array.size(); ++x){
-                final String s = array.get(x).getAsString();
+                JsonElement sub = array.get(x);
+                String s;
+
+                if(sub.isJsonPrimitive()){
+                    s = sub.getAsString();
+                }else if(sub.isJsonObject()) {
+                    // get the array name only
+                    Map.Entry<String,JsonElement> mej =
+                            sub.getAsJsonObject().entrySet().iterator().next();
+                    s = mej.getKey();
+                } else {
+                    s = "Unknown";
+                }
+
                 adapter.add(s);
             }
         }
