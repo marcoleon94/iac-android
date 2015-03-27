@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
@@ -22,6 +23,9 @@ import android.widget.TextView;
 import com.google.gson.JsonElement;
 
 public class PXFDatePicker extends PXWidget {
+
+    private Calendar calendarState;
+    private FragmentManager fragmentManager;
 
     public static class HelperDatePicker extends HelperWidget{
         protected TextView title;
@@ -50,11 +54,14 @@ public class PXFDatePicker extends PXWidget {
         helper.title.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
                 getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
 
-        //TODO: read json to know what the state of the date already set
+        helper.buttonDatePicker.setOnClickListener(button_click);
     }
 
     @Override
-    public View createControl(final Activity context) {
+    public View createControl(Activity context) {
+        fragmentManager = context.getFragmentManager();
+        calendarState = Calendar.getInstance();
+
         LinearLayout v = (LinearLayout) super.createControl(context);
         HelperDatePicker helper = (HelperDatePicker) v.getTag();
 
@@ -80,20 +87,7 @@ public class PXFDatePicker extends PXWidget {
         button.setLayoutParams(params);
         button.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
                 getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : "Date Picker");
-        button.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DatePickerFragment newFragment = new DatePickerFragment();
-                newFragment.show(context.getFragmentManager(), "timePicker");
-                final Button my_button = (Button)v;
-                newFragment.setIDatePicked(new DatePickerFragment.IDatePicked() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int day) {
-                        my_button.setText(String.format(Locale.US, "%d/%d/%d", year, month, day));
-                    }
-                });
-            }
-        });
+        button.setOnClickListener(button_click);
         helper.buttonDatePicker = button;
 
         //add controls to linear parent before main container
@@ -108,17 +102,24 @@ public class PXFDatePicker extends PXWidget {
 
     public static class DatePickerFragment extends DialogFragment
             implements android.app.DatePickerDialog.OnDateSetListener {
-
         private IDatePicked eventHandler;
+        private Calendar calendarS;
 
         public void setIDatePicked(IDatePicked callback){
             eventHandler = callback;
         }
 
+        static DatePickerFragment getInstance(Calendar cal){
+            DatePickerFragment dial = new DatePickerFragment();
+            dial.calendarS = cal;
+            return dial;
+        }
+
+
         @Override
         public Dialog onCreateDialog(Bundle saved) {
             // Use the current date as the default date in the picker
-            final Calendar c = Calendar.getInstance();
+            Calendar c = calendarS; //Calendar.getInstance();
             int year = c.get(Calendar.YEAR);
             int month = c.get(Calendar.MONTH);
             int day = c.get(Calendar.DAY_OF_MONTH);
@@ -137,4 +138,22 @@ public class PXFDatePicker extends PXWidget {
             void onDateSet(DatePicker view, int year, int month, int day);
         }
     }
+
+    private OnClickListener button_click = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            DatePickerFragment newFragment = DatePickerFragment.getInstance(
+                    PXFDatePicker.this.calendarState);
+            newFragment.show(fragmentManager, "timePicker");
+            final Button my_button = (Button)v;
+            newFragment.setIDatePicked(new DatePickerFragment.IDatePicked() {
+                @Override
+                public void onDateSet(DatePicker view, int year, int month, int day) {
+                    PXFDatePicker.this.calendarState = Calendar.getInstance();
+                    PXFDatePicker.this.calendarState.set(year, month, day);
+                    my_button.setText(String.format(Locale.US, "%d/%d/%d", year, month, day));
+                }
+            });
+        }
+    };
 }
