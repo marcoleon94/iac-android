@@ -1,11 +1,11 @@
-package com.ievolutioned.pxform;
+package com.ievolutioned.pxform.adapters;
 
+
+import com.ievolutioned.pxform.PXWidget;
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-
-import com.google.gson.JsonElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,13 +32,10 @@ remove unused repo head
  git branch -d -r origin/HEAD
 
  */
-
-
 /**
  */
 public class PXFAdapter extends BaseAdapter {
     private List<PXWidget> lWidgets = new ArrayList<PXWidget>();
-    private JsonElement jseObject;
     private Activity aActivity;
 
     public PXFAdapter(Activity activity, List<PXWidget> widgets){
@@ -82,9 +79,5 @@ public class PXFAdapter extends BaseAdapter {
         w.setWidgetData(view);
 
         return view;
-    }
-
-    private View getWidgetFromType(PXWidget widget){
-        return widget.createControl(aActivity);
     }
 }

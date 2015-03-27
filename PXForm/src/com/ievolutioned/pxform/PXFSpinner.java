@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -15,15 +16,21 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
 public class PXFSpinner extends PXWidget {
+    //--------------------------------------
+    // variable declarations
+    private ArrayAdapter<String> adapter;
+    private int last_position = 0;
 
-
+    //-------------------------------------
+    //class and interface declaration
     public static class HelperSpinner extends HelperWidget{
         protected TextView title;
         protected LinearLayout linearCheckBox;
         protected Spinner spinner;
-        protected ArrayAdapter<String> adapter;
     }
 
+    //----------------------------------
+    //actual code implementation
     public PXFSpinner(Map<String, Map.Entry<String, JsonElement>> entry) {
         super(entry);
     }
@@ -45,13 +52,18 @@ public class PXFSpinner extends PXWidget {
 
         helper.title.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
                 getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
-        helper.spinner.setAdapter(helper.adapter);
-        //TODO: read json to know what the state of the spinner is
 
+        if(adapter == null){
+            adapter = getSpinnerAdapter(view.getContext());
+        }
+
+        helper.spinner.setOnItemSelectedListener(spinner_itemSelected);
+        helper.spinner.setAdapter(adapter);
+        helper.spinner.setSelection(last_position);
     }
 
     @Override
-    protected View createControl(Activity context) {
+    public View createControl(Activity context) {
         LinearLayout v = (LinearLayout) super.createControl(context);
         HelperSpinner helper = (HelperSpinner) v.getTag();
 
@@ -75,12 +87,13 @@ public class PXFSpinner extends PXWidget {
         //initial spinner configuration
         Spinner spinner = new Spinner(context);
         params = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 0.5f);
         spinner.setLayoutParams(params);
-        helper.adapter = getSpinnerAdapter(context);
-        spinner.setAdapter(helper.adapter);
+        adapter = getSpinnerAdapter(context);
+        spinner.setAdapter(adapter);
         spinner.setSelection(0);
         helper.spinner = spinner;
+        spinner.setOnItemSelectedListener(spinner_itemSelected);
 
         //add controls to linear parent before main control
         linear.addView(text);
@@ -121,4 +134,14 @@ public class PXFSpinner extends PXWidget {
 
         return adapter;
     }
+
+    private AdapterView.OnItemSelectedListener
+            spinner_itemSelected = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            PXFSpinner.this.last_position = position;
+        }
+
+        @Override public void onNothingSelected(AdapterView<?> parent) { }
+    };
 }

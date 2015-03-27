@@ -40,7 +40,7 @@ public class PXFButton extends PXWidget {
     }
 
     @Override
-    protected View createControl(Activity context) {
+    public View createControl(Activity context) {
         LinearLayout v = (LinearLayout)super.createControl(context);
         HelperButton helper = (HelperButton) v.getTag();
 

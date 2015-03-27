@@ -51,7 +51,6 @@ public abstract class PXWidget {
 
     protected abstract HelperWidget generateHelperClass();
     public abstract int getAdapterItemType();
-    //public abstract String getJsonResult();
 
     public static int getAdapterItemTypeCount(){
         final Integer[] ids = new Integer[]{
@@ -71,7 +70,7 @@ public abstract class PXWidget {
      * @param context
      * @return
      */
-    protected View createControl(final Activity context){
+    public View createControl(final Activity context){
         HelperWidget helper = generateHelperClass();
         LinearLayout linear = getGenericLinearLayout(context);
 
@@ -80,20 +79,12 @@ public abstract class PXWidget {
                         android.widget.AbsListView.LayoutParams.MATCH_PARENT,
                         android.widget.AbsListView.LayoutParams.WRAP_CONTENT);
 
-        //ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
-        //        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
         linear.setLayoutParams(params);
         linear.setOrientation(LinearLayout.VERTICAL);
-        TextView v = null;
 
-        if(eEntry.containsKey(PXWidget.FIELD_HEADER)){
-            v = getTextViewHead(context, eEntry);
-        }
+        TextView v = getTextViewHead(context, eEntry);
 
-        if(v != null){
-            linear.addView(v);
-        }
+        linear.addView(v);
 
         helper.container = linear;
         helper.headTextView = v;
@@ -107,7 +98,8 @@ public abstract class PXWidget {
     private TextView getTextViewHead(Context context,
                                      Map<String, Map.Entry<String,JsonElement>> map){
         TextView t = new TextView(context);
-        t.setText(map.get(FIELD_HEADER).getValue().getAsString());
+        t.setText(map.containsKey(FIELD_HEADER) ?
+                map.get(FIELD_HEADER).getValue().getAsString() : "");
         ViewGroup.LayoutParams par = new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         t.setTextSize(20.0f);
@@ -115,6 +107,8 @@ public abstract class PXWidget {
         t.setPadding(5, 80, 5, 5);
         t.setLayoutParams(par);
         t.setBackgroundColor(Color.parseColor("#DFDDE2"));
+        t.setVisibility(map.containsKey(FIELD_HEADER) ?
+                View.VISIBLE : View.GONE);
         return t;
     }
 
@@ -145,9 +139,9 @@ public abstract class PXWidget {
 
     public void setWidgetData(View view){
         HelperWidget helper = (HelperWidget) view.getTag();
-
-        if(helper.headTextView != null && eEntry.containsKey(PXWidget.FIELD_HEADER)){
-            helper.headTextView.setText(eEntry.get(FIELD_HEADER).getValue().getAsString());
-        }
+        helper.headTextView.setText(getJsonEntries().containsKey(FIELD_HEADER) ?
+                getJsonEntries().get(FIELD_HEADER).getValue().getAsString() : "");
+        helper.headTextView.setVisibility(getJsonEntries().containsKey(FIELD_HEADER) ?
+                View.VISIBLE : View.GONE);
     }
 }

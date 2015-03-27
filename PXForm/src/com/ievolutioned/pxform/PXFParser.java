@@ -21,7 +21,7 @@ public class PXFParser {
     private PXFParserEventHandler eventHandler;
 
     public interface PXFParserEventHandler{
-        public abstract void finish(PXFAdapter adapter, String json);
+        public abstract void finish(com.ievolutioned.pxform.adapters.PXFAdapter adapter, String json);
         public abstract void error(Exception ex, String json);
     }
 
@@ -98,7 +98,8 @@ public class PXFParser {
                 //final JsonElement json_tmp_copy = json_tmp;
                 activity.runOnUiThread(new Runnable() { @Override public void run() {
                     if(eventHandler != null){
-                        PXFAdapter adapter = new PXFAdapter(activity, w);
+                        com.ievolutioned.pxform.adapters.PXFAdapter adapter
+                                = new com.ievolutioned.pxform.adapters.PXFAdapter(activity, w);
                         eventHandler.finish(adapter, json);
                     }
                 }});
@@ -173,51 +174,4 @@ public class PXFParser {
         return PXWidget.FIELD_CELL_OPTION_SEGMENT.equalsIgnoreCase(cell.getAsString()) ||
                 PXWidget.FIELD_CELL_OPTION_SEGMENT_CUSTOM.equalsIgnoreCase(cell.getAsString());
     }
-
-    //private static PXWidget getWidgetFromType(final Activity context,
-    //                                          final Map<String, Map.Entry<String,JsonElement>> map){
-    //    PXWidget widget = null;
-    //
-    //    //we got a well defined field
-    //    if(map.containsKey(PXWidget.FIELD_TYPE)){
-    //        if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
-    //                .equals(PXWidget.FIELD_TYPE_TEXT)){
-    //            widget = new PXFEdit(map);
-    //        }
-    //        else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
-    //                .equals(PXWidget.FIELD_TYPE_BOOLEAN)){
-    //            widget = new PXFCheckBox(map);
-    //        }
-    //        else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
-    //                .equals(PXWidget.FIELD_TYPE_DATE)){
-    //            widget = new PXFDatePicker(map);
-    //        }
-    //        else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
-    //                .equals(PXWidget.FIELD_TYPE_LONGTEXT)){
-    //            widget = new PXFEdit(map);
-    //        }
-    //        else if(map.get(PXWidget.FIELD_TYPE).getValue().getAsString()
-    //                .equals(PXWidget.FIELD_TYPE_UNSIGNED)){
-    //            widget = new PXFEdit(map);
-    //        }
-    //    }
-    //    else if(map.containsKey(PXWidget.FIELD_OPTIONS)){
-    //        if (map.containsKey(PXWidget.FIELD_CELL) &&
-    //                isCELL_OPTION_SEGMENT(map.get(PXWidget.FIELD_CELL).getValue())) {
-    //            widget = new PXFToggleBoolean(map);
-    //        } else {
-    //            widget = new PXFSpinner(map);
-    //        }
-    //    }
-    //    else if(map.containsKey(PXWidget.FIELD_ACTION)){
-    //        widget = new PXFButton(map);
-    //    }
-    //
-    //    return widget == null ? new PXFUnknownControlType(map) : widget;
-    //}
-    //
-    //private static boolean isCELL_OPTION_SEGMENT(JsonElement cell){
-    //    return PXWidget.FIELD_CELL_OPTION_SEGMENT.equalsIgnoreCase(cell.getAsString()) ||
-    //            PXWidget.FIELD_CELL_OPTION_SEGMENT_CUSTOM.equalsIgnoreCase(cell.getAsString());
-    //}
 }
