@@ -73,7 +73,7 @@ public class PXFCheckBox extends PXWidget {
         //check box control
         CheckBox box = new CheckBox(context);
         params = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 0.5f);
         box.setLayoutParams(params);
         box.setOnCheckedChangeListener(check_listener);
         helper.checkBox = box;
