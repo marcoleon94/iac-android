@@ -12,8 +12,8 @@ import android.widget.Toast;
 
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.view.ViewUtility;
-import com.ievolutioned.pxform.adapters.PXFAdapter;
 import com.ievolutioned.pxform.PXFParser;
+import com.ievolutioned.pxform.adapters.PXFAdapter;
 
 /**
  * Created by Daniel on 24/03/2015. For project IAC
@@ -27,7 +27,19 @@ public class FormsFragment extends Fragment {
     /**
      * PXFParser parser
      */
+
+    private ListView listView;
+
     private PXFParser p;
+
+    private Bundle savedState;
+
+    public static FormsFragment newInstance() {
+        FormsFragment fragment = new FormsFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -42,21 +54,78 @@ public class FormsFragment extends Fragment {
      * @param root
      */
     private void bindUI(View root) {
+        listView = (ListView) root.findViewById(R.id.PXForm_linearPanel);
+        /*
         Bundle args = this.getArguments();
+
         if (args == null)
             return;
 
         bindData(root, args.getString(ARG_FORM_NAME));
+        */
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        // restore sate
+        if (!restoreStateFromArgs()) {
+            // first run
+            bindData(getArguments().getString(ARG_FORM_NAME));
+        }
+    }
+
+    private boolean restoreStateFromArgs() {
+        Bundle b = getArguments();
+        savedState = b.getBundle(FormsFragment.class.getName());
+        if (savedState != null) {
+            restoreState();
+            return true;
+        }
+        return false;
+    }
+
+    private void restoreState() {
+        if (savedState != null) {
+            // Call the restore
+            //listView.setSomething(savedState.getString(“text”));
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //Save state
+        saveSateToArgs();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        saveSateToArgs();
+    }
+
+    private void saveSateToArgs() {
+        if (getView() != null)
+            savedState = saveState();
+        if (savedState != null) {
+            Bundle args = getArguments();
+            args.putBundle(FormsFragment.class.getName(), savedState);
+        }
+    }
+
+    private Bundle saveState(){
+        Bundle state = new Bundle();
+        // save the current state
+        return state;
     }
 
     /**
      * Binds the data from the form
      *
-     * @param root - layout
      * @param form - the form identifier
      */
-    private void bindData(View root, String form) {
-        final ListView listView = (ListView) root.findViewById(R.id.PXForm_linearPanel);
+    private void bindData(String form) {
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
         loading.show();
 
