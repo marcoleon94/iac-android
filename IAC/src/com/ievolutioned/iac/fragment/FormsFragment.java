@@ -12,11 +12,11 @@ import android.widget.Toast;
 
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.view.ViewUtility;
-import com.ievolutioned.pxform.PXFAdapter;
+import com.ievolutioned.pxform.adapters.PXFAdapter;
 import com.ievolutioned.pxform.PXFParser;
 
 /**
- * Created by Daniel on 24/03/2015.
+ * Created by Daniel on 24/03/2015. For project IAC
  */
 public class FormsFragment extends Fragment {
 

@@ -1,6 +1,6 @@
 package com.ievolutioned.iac;
 
-import com.ievolutioned.pxform.PXFAdapter;
+import com.ievolutioned.pxform.adapters.PXFAdapter;
 import com.ievolutioned.pxform.PXFParser;
 import com.ievolutioned.pxform.PXFParser.PXFParserEventHandler;
 import com.ievolutioned.iac.view.ViewUtility;
@@ -8,7 +8,6 @@ import com.ievolutioned.iac.view.ViewUtility;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 

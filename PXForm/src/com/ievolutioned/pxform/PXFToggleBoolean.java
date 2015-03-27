@@ -54,7 +54,7 @@ public class PXFToggleBoolean extends PXWidget {
     }
 
     @Override
-    protected View createControl(Activity context) {
+    public View createControl(Activity context) {
         LinearLayout v = (LinearLayout) super.createControl(context);
         HelperToggleBoolean helper = (HelperToggleBoolean) v.getTag();
 

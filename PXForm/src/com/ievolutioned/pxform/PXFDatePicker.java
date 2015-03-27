@@ -54,7 +54,7 @@ public class PXFDatePicker extends PXWidget {
     }
 
     @Override
-    protected View createControl(final Activity context) {
+    public View createControl(final Activity context) {
         LinearLayout v = (LinearLayout) super.createControl(context);
         HelperDatePicker helper = (HelperDatePicker) v.getTag();
 

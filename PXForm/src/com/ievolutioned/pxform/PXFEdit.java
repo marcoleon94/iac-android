@@ -51,7 +51,7 @@ public class PXFEdit extends PXWidget{
     }
 
     @Override
-    protected View createControl(Activity context) {
+    public View createControl(Activity context) {
         LinearLayout v = (LinearLayout) super.createControl(context);
         HelperEdit helper = (HelperEdit) v.getTag();
 
