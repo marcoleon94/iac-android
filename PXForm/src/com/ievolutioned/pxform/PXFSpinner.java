@@ -57,6 +57,7 @@ public class PXFSpinner extends PXWidget {
             adapter = getSpinnerAdapter(view.getContext());
         }
 
+        helper.spinner.setOnItemSelectedListener(spinner_itemSelected);
         helper.spinner.setAdapter(adapter);
         helper.spinner.setSelection(last_position);
     }
@@ -138,7 +139,7 @@ public class PXFSpinner extends PXWidget {
             spinner_itemSelected = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            last_position = position;
+            PXFSpinner.this.last_position = position;
         }
 
         @Override public void onNothingSelected(AdapterView<?> parent) { }
