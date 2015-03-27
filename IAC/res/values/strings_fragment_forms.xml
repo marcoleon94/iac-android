@@ -7,9 +7,9 @@
         <item >Encuesta de satisfaccion</item>
     </string-array>
     <string-array name="forms_item_values">
-        <item >FormFields_PabloUTF8.json</item>
-        <item >FormFields_PabloUTF8.json</item>
-        <item >FormFields_PabloUTF8.json</item>
+        <item >Form.json</item>
+        <item >Form.json</item>
+        <item >Form.json</item>
     </string-array>
 
 

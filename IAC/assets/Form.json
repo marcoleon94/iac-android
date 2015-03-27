@@ -1,4 +1,4 @@
-﻿[
+[
    {
       "header":"Datos Personales",
       "key":"barcodeReader",
@@ -96,20 +96,85 @@
       "key":"reasonToLeave",
       "title":"Motivo",
       "options":[
-         "Aceptar otro Empleo",
-         "Matrimonio",
-         "Retiro",
-         "Negaron Oportunidades de Desarrollo",
-         "Problemas Personales o Familiares",
-         "Continuar Estudios",
-         "Cambio de Residencia",
-         "Enfermedad",
-         "Negocio Propio",
-         "Otro"
+         {
+            "Aceptar otro Empleo":[
+               {
+                  "key":"newCompany",
+                  "title":"Empresa",
+                  "type":"text",
+                  "placeholder":"La empresa a dónde se va"
+               },
+               {
+                  "key":"newJob",
+                  "title":"Puesto",
+                  "type":"text",
+                  "placeholder":"Su nuevo puesto"
+               },
+               {
+                  "key":"newSalary",
+                  "title":"Salario Ofrecido",
+                  "type":"unsigned",
+                  "placeholder":"0"
+               }
+            ]
+         },
+         {
+            "Matrimonio":[
+
+            ]
+         },
+         {
+            "Retiro":[
+
+            ]
+         },
+         {
+            "Negaron Oportunidades de Desarrollo":[
+
+            ]
+         },
+         {
+            "Problemas Personales o Familiares":[
+
+            ]
+         },
+         {
+            "Continuar Estudios":[
+
+            ]
+         },
+         {
+            "Cambio de Residencia":[
+
+            ]
+         },
+         {
+            "Enfermedad":[
+
+            ]
+         },
+         {
+            "Negocio Propio":[
+
+            ]
+         },
+         {
+            "Otro":[
+               {
+                  "key":"otherReason",
+                  "title":"Otra Razón",
+                  "type":"text",
+                  "placeholder":"Otra razón"
+               }
+            ]
+         }
       ],
-      "placeholder":"Ninguno",
-      "class":"NSArray",
-      "action":"presentNewForm:"
+      "placeholder":"Ninguno"
+   },
+   {
+      "header":"",
+      "title":"Siguiente",
+      "action":"atomaticBackRoot"
    },
    {
       "header":"Trabajo",
