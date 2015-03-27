@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -15,6 +16,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
 public class PXFToggleBoolean extends PXWidget {
+
+    private int radio_selected = 0;
 
     public static class HelperToggleBoolean extends HelperWidget{
         protected TextView title;
@@ -50,7 +53,19 @@ public class PXFToggleBoolean extends PXWidget {
         helper.radioOn.setText(array.get(0).getAsString());
         helper.radioOff.setText(array.get(1).getAsString());
 
-        //TODO: read json to know what the state of the radio buttons are
+        helper.radioOn.setOnCheckedChangeListener(null);
+        helper.radioOff.setOnCheckedChangeListener(null);
+
+        helper.radioGroup.clearCheck();
+
+        if(radio_selected == 1){
+            helper.radioOn.setChecked(true);
+        }else if(radio_selected == 2){
+            helper.radioOff.setChecked(true);
+        }
+
+        helper.radioOn.setOnCheckedChangeListener(box_checked);
+        helper.radioOff.setOnCheckedChangeListener(box_checked);
     }
 
     @Override
@@ -77,23 +92,25 @@ public class PXFToggleBoolean extends PXWidget {
         RadioGroup radioGroup = new RadioGroup(context);
         radioGroup.setOrientation(android.widget.LinearLayout.HORIZONTAL);
         params = new RadioGroup.LayoutParams(
-                RadioGroup.LayoutParams.MATCH_PARENT, RadioGroup.LayoutParams.WRAP_CONTENT, 0.5f);
+                RadioGroup.LayoutParams.MATCH_PARENT, RadioGroup.LayoutParams.MATCH_PARENT, 0.5f);
         radioGroup.setOrientation(LinearLayout.HORIZONTAL);
         radioGroup.setLayoutParams(params);
         helper.radioGroup = radioGroup;
 
         RadioButton radioOn = new RadioButton(context);
         params = new RadioGroup.LayoutParams(
-                RadioGroup.LayoutParams.WRAP_CONTENT, RadioGroup.LayoutParams.WRAP_CONTENT);
+                RadioGroup.LayoutParams.WRAP_CONTENT, RadioGroup.LayoutParams.MATCH_PARENT);
         radioOn.setLayoutParams(params);
         radioOn.setTag(1);
+        radioOn.setOnCheckedChangeListener(box_checked);
         helper.radioOn = radioOn;
 
         RadioButton radioOff = new RadioButton(context);
         params = new RadioGroup.LayoutParams(
-                RadioGroup.LayoutParams.WRAP_CONTENT, RadioGroup.LayoutParams.WRAP_CONTENT);
+                RadioGroup.LayoutParams.WRAP_CONTENT, RadioGroup.LayoutParams.MATCH_PARENT);
         radioOff.setLayoutParams(params);
         radioOff.setTag(2);
+        radioOff.setOnCheckedChangeListener(box_checked);
         helper.radioOff = radioOff;
 
         JsonArray array = getJsonEntries().get(FIELD_OPTIONS).getValue().getAsJsonArray();
@@ -112,4 +129,13 @@ public class PXFToggleBoolean extends PXWidget {
 
         return v;
     }
+
+    private CompoundButton.OnCheckedChangeListener box_checked
+            = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton view, boolean isChecked) {
+            if(isChecked)
+                radio_selected = Integer.parseInt(view.getTag().toString());
+        }
+    };
 }

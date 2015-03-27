@@ -87,7 +87,7 @@ public class PXFSpinner extends PXWidget {
         //initial spinner configuration
         Spinner spinner = new Spinner(context);
         params = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 0.5f);
         spinner.setLayoutParams(params);
         adapter = getSpinnerAdapter(context);
         spinner.setAdapter(adapter);
