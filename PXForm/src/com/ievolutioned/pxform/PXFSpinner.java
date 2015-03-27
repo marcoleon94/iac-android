@@ -18,8 +18,8 @@ import com.google.gson.JsonElement;
 public class PXFSpinner extends PXWidget {
     //--------------------------------------
     // variable declarations
-    protected ArrayAdapter<String> adapter;
-    protected int last_position = 0;
+    private ArrayAdapter<String> adapter;
+    private int last_position = 0;
 
     //-------------------------------------
     //class and interface declaration
@@ -135,7 +135,7 @@ public class PXFSpinner extends PXWidget {
         return adapter;
     }
 
-    protected AdapterView.OnItemSelectedListener
+    private AdapterView.OnItemSelectedListener
             spinner_itemSelected = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

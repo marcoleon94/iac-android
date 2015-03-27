@@ -1,11 +1,17 @@
 package com.ievolutioned.pxform;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import android.app.Activity;
+import android.content.Context;
+import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.text.TextWatcher;
+import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -16,10 +22,43 @@ import com.google.gson.JsonElement;
 
 public class PXFEdit extends PXWidget{
 
+    private String current_text = "";
+
     public class HelperEdit extends HelperWidget{
         protected TextView title;
-        protected EditText inputEdit;
+        protected EditTextCustom inputEdit;
         protected LinearLayout linearEdit;
+    }
+
+    public class EditTextCustom extends EditText{
+        private List<TextWatcher> watcherList;
+
+        public EditTextCustom(Context context) { super(context); }
+        public EditTextCustom(Context context, AttributeSet attrs) { super(context, attrs); }
+        public EditTextCustom(Context context, AttributeSet attrs, int defStyle) {
+            super(context, attrs, defStyle);
+        }
+
+        @Override
+        public void addTextChangedListener(TextWatcher watcher) {
+            if(EditTextCustom.this.watcherList == null)
+                EditTextCustom.this.watcherList = new ArrayList<TextWatcher>();
+
+            EditTextCustom.this.watcherList.add(watcher);
+
+            super.addTextChangedListener(watcher);
+        }
+
+        public void removeAllTextChangedListener(){
+            if(EditTextCustom.this.watcherList != null){
+
+                for(TextWatcher t: EditTextCustom.this.watcherList){
+                    EditTextCustom.this.removeTextChangedListener(t);
+                }
+
+                EditTextCustom.this.watcherList.clear();
+            }
+        }
     }
 
     public PXFEdit(Map<String, Entry<String, JsonElement>> entry) {
@@ -45,9 +84,9 @@ public class PXFEdit extends PXWidget{
                 getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
 
         editConfigureTypeOfInput(helper.inputEdit, getJsonEntries());
-
-        //TODO: read json to know what the state of the EditText is
-        //helper.inputEdit.setText( );
+        helper.inputEdit.removeAllTextChangedListener();
+        helper.inputEdit.addTextChangedListener(edit_watcher);
+        helper.inputEdit.setText(current_text);
     }
 
     @Override
@@ -73,12 +112,12 @@ public class PXFEdit extends PXWidget{
         helper.title = text;
 
         //edit input control
-        EditText edit = new EditText(context);
+        EditTextCustom edit = new EditTextCustom(context);
         params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
         edit.setLayoutParams(params);
         editConfigureTypeOfInput(edit, getJsonEntries());
-
+        edit.addTextChangedListener(edit_watcher);
         helper.inputEdit = edit;
 
         //add controls to linear parent before main container
@@ -118,4 +157,13 @@ public class PXFEdit extends PXWidget{
             edit.setHint(getJsonEntries().get(FIELD_PLACEHOLDER).getValue().getAsString());
         }
     }
+
+    private TextWatcher edit_watcher = new TextWatcher() {
+        @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+        @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
+        @Override
+        public void afterTextChanged(Editable s) {
+            current_text = s == null ? "" : s.toString();
+        }
+    };
 }
