@@ -1,5 +1,6 @@
 package com.ievolutioned.pxform;
 
+import java.util.List;
 import java.util.Map;
 
 import com.google.gson.JsonElement;
@@ -43,14 +44,23 @@ public abstract class PXWidget {
     public static final int ADAPTER_ITEM_TYPE_TOGGLEBOOLEAN = 6;
 
     private Map<String, Map.Entry<String,JsonElement>> eEntry;
+    private int jsonLevel = 0;
+    private String jsonKeyParent = "";
+    private PXWidgetHandler eventHandler = null;
+
+    protected abstract HelperWidget generateHelperClass();
+    public abstract int getAdapterItemType();
+
+    public interface PXWidgetHandler{
+        public boolean addChildWidgets(PXWidget parent, int selected_index);
+        public boolean removeChildWidgets(PXWidget parent);
+        public void notifyDataSetChanges();
+    }
 
     public static abstract class HelperWidget{
         protected LinearLayout container;
         protected TextView headTextView;
     }
-
-    protected abstract HelperWidget generateHelperClass();
-    public abstract int getAdapterItemType();
 
     public static int getAdapterItemTypeCount(){
         final Integer[] ids = new Integer[]{
@@ -136,6 +146,19 @@ public abstract class PXWidget {
     public Map<String, Map.Entry<String,JsonElement>> getJsonEntries(){
         return eEntry;
     }
+
+    public int getJsonLevel(){ return jsonLevel; }
+    public String getJsonKeyParent(){ return jsonKeyParent; }
+    public PXWidgetHandler getEventHandler() { return eventHandler; }
+
+    public void setJsonLevel(int level){ jsonLevel = level; }
+    public void setJsonKeyParent(String parent){
+        if(parent == null)
+            parent = "";
+
+        jsonKeyParent = parent;
+    }
+    public void setEventHandler(PXWidgetHandler callback){ eventHandler = callback; }
 
     public void setWidgetData(View view){
         HelperWidget helper = (HelperWidget) view.getTag();
