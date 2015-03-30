@@ -97,21 +97,19 @@ public class PXFAdapter extends BaseAdapter {
             PXWidget widget;
             int index = -1;
             final int size = PXFAdapter.this.lWidgets.size();
+            JsonArray array;
+            JsonElement sub;
 
-            if(!parent.getJsonEntries().containsKey(PXWidget.FIELD_KEY) || existControls(parent) ||
-                    !parent.getJsonEntries().get(PXWidget.FIELD_OPTIONS).getValue().isJsonArray())
+            if(!parent.getJsonEntries().containsKey(PXWidget.FIELD_KEY)
+                    || existControls(parent)
+                    || !parent.getJsonEntries().get(PXWidget.FIELD_OPTIONS).getValue().isJsonArray())
                 return false;
 
-            JsonArray array = parent.getJsonEntries().get(PXWidget.FIELD_OPTIONS)
-                    .getValue().getAsJsonArray();
-            JsonElement sub = array.get(selected_index);
+            array = parent.getJsonEntries().get(PXWidget.FIELD_OPTIONS).getValue().getAsJsonArray();
+            sub = array.get(selected_index);
 
-            if(!sub.isJsonObject() || sub.getAsJsonObject().entrySet().size() < 1 ||
-                    !sub.getAsJsonObject().entrySet().iterator().hasNext() ||
-                    !sub.getAsJsonObject().entrySet().iterator().next().getValue().isJsonArray())
-                return false;
-
-            if(!sub.isJsonObject() || sub.getAsJsonObject().entrySet().size() < 1
+            if(!sub.isJsonObject()
+                    || sub.getAsJsonObject().entrySet().size() < 1
                     || !sub.getAsJsonObject().entrySet().iterator().hasNext()
                     || !sub.getAsJsonObject().entrySet().iterator().next().getValue().isJsonArray())
                 return false;
@@ -146,9 +144,9 @@ public class PXFAdapter extends BaseAdapter {
             for(PXWidget w : PXFAdapter.this.lWidgets){
                 index++;
 
-                if(w.getJsonLevel() != parent.getJsonLevel() ||
-                        !w.getJsonEntries().containsKey(PXWidget.FIELD_KEY) ||
-                        !w.getJsonEntries().get(PXWidget.FIELD_KEY).equals(
+                if(w.getJsonLevel() != parent.getJsonLevel()
+                        || !w.getJsonEntries().containsKey(PXWidget.FIELD_KEY)
+                        || !w.getJsonEntries().get(PXWidget.FIELD_KEY).equals(
                                 parent.getJsonEntries().get(PXWidget.FIELD_KEY)))
                     continue;
 
