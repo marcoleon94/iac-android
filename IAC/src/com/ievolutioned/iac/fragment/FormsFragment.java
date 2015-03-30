@@ -1,9 +1,12 @@
 package com.ievolutioned.iac.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,14 +60,14 @@ public class FormsFragment extends Fragment {
      */
     private void bindUI(View root) {
         listView = (ListView) root.findViewById(R.id.PXForm_linearPanel);
-        /*
-        Bundle args = this.getArguments();
 
-        if (args == null)
-            return;
-
-        bindData(root, args.getString(ARG_FORM_NAME));
-        */
+        root.findViewById(R.id.fragment_forms_buttonTest).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(i, 100);
+            }
+        });
     }
 
     @Override
@@ -170,4 +173,16 @@ public class FormsFragment extends Fragment {
         return null;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //TODO: Get request code and notify list data has changed
+        if (requestCode == 100) {
+            if (resultCode == Activity.RESULT_OK)
+                Toast.makeText(getActivity(), "OK", Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(getActivity(), "NO", Toast.LENGTH_SHORT).show();
+        }
+
+    }
 }

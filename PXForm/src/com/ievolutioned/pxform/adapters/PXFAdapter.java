@@ -100,8 +100,7 @@ public class PXFAdapter extends BaseAdapter implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel out, int flags) {
-        if (lWidgets != null)
-            out.writeArray(lWidgets.toArray());
+        //TODO: write to parcel
     }
 
     public static final Parcelable.Creator<PXFAdapter> CREATOR = new Parcelable.Creator<PXFAdapter>() {
@@ -116,4 +115,5 @@ public class PXFAdapter extends BaseAdapter implements Parcelable {
             return new PXFAdapter[size];
         }
     };
+
 }
