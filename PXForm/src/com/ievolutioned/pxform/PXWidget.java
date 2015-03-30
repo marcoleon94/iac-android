@@ -2,16 +2,22 @@ package com.ievolutioned.pxform;
 
 import java.util.Map;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import org.json.JSONObject;
 
 public abstract class PXWidget {
     public static final String FIELD_HEADER      = "header"     ;
@@ -43,6 +49,8 @@ public abstract class PXWidget {
     public static final int ADAPTER_ITEM_TYPE_TOGGLEBOOLEAN = 6;
 
     private Map<String, Map.Entry<String,JsonElement>> eEntry;
+
+    private String key = "";
 
     public static abstract class HelperWidget{
         protected LinearLayout container;
@@ -143,5 +151,53 @@ public abstract class PXWidget {
                 getJsonEntries().get(FIELD_HEADER).getValue().getAsString() : "");
         helper.headTextView.setVisibility(getJsonEntries().containsKey(FIELD_HEADER) ?
                 View.VISIBLE : View.GONE);
+
+        if (getJsonEntries().get(FIELD_KEY) != null)
+            setKey(getJsonEntries().get(FIELD_KEY).getValue().toString());
     }
+
+    public void setKey(String key){
+        this.key = key;
+    }
+    public String getKey(){
+        return this.key;
+    }
+
+    public JsonElement getWidgetData() {
+        JsonObject data = new JsonObject();
+        if (this instanceof PXFEdit) {
+            data.addProperty(getKey(), ((PXFEdit) this).toString());
+        } else if (this instanceof PXFCheckBox) {
+            data.addProperty(getKey(), ((PXFCheckBox) this).toString());
+        } else if (this instanceof PXFDatePicker) {
+            data.addProperty(getKey(), ((PXFDatePicker) this).toString());
+        } else if (this instanceof PXFSpinner) {
+            data.addProperty(getKey(), ((PXFSpinner) this).toString());
+        } else if (this instanceof PXFToggleBoolean) {
+            data.addProperty(getKey(), ((PXFToggleBoolean) this).toString());
+        } else if (this instanceof PXFUnknownControlType) {
+            Log.d(PXFUnknownControlType.class.getName(), "Unknown");
+        } else {
+            data.addProperty(getKey(), "");
+        }
+        return data;
+    }
+
+    public String getWidgetDataString() {
+        if (this instanceof PXFEdit) {
+            return ((PXFEdit) this).toString();
+        } else if (this instanceof PXFCheckBox) {
+            return ((PXFCheckBox) this).toString();
+        } else if (this instanceof PXFDatePicker) {
+            return ((PXFDatePicker) this).toString();
+        } else if (this instanceof PXFSpinner) {
+            return ((PXFSpinner) this).toString();
+        } else if (this instanceof PXFToggleBoolean) {
+            return ((PXFToggleBoolean) this).toString();
+        } else if (this instanceof PXFUnknownControlType) {
+            Log.d(PXFUnknownControlType.class.getName(), "Unknown");
+        }
+        return "";
+    }
+
 }

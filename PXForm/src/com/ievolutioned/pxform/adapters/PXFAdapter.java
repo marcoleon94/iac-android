@@ -54,6 +54,9 @@ public class PXFAdapter extends BaseAdapter implements Parcelable {
     public void setActivity(Activity activity){
         aActivity = activity;
     }
+    public List<PXWidget> getItems() {
+        return lWidgets;
+    }
 
     @Override
     public int getCount() {

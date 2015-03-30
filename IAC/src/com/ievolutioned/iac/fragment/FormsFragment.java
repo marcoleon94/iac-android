@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,8 +65,9 @@ public class FormsFragment extends Fragment {
         root.findViewById(R.id.fragment_forms_buttonTest).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(i, 100);
+                /*Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(i, 100);*/
+                p.save((PXFAdapter)listView.getAdapter());
             }
         });
     }
@@ -151,6 +153,11 @@ public class FormsFragment extends Fragment {
             public void error(Exception ex, String json) {
                 Toast.makeText(getActivity(), "can't parse json", Toast.LENGTH_SHORT).show();
                 loading.dismiss();
+            }
+
+            @Override
+            public void onSaved(String json) {
+                Log.d("Forms Saved", json);
             }
         });
 

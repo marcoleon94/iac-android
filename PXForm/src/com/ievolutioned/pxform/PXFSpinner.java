@@ -144,4 +144,13 @@ public class PXFSpinner extends PXWidget {
 
         @Override public void onNothingSelected(AdapterView<?> parent) { }
     };
+
+    @Override
+    public String toString() {
+        try {
+            return adapter == null ? "" : adapter.getItem(last_position);
+        } catch (Exception e) {
+            return "";
+        }
+    }
 }

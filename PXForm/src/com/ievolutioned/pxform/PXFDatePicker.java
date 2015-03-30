@@ -156,4 +156,9 @@ public class PXFDatePicker extends PXWidget {
             });
         }
     };
+
+    @Override
+    public String toString() {
+        return this.calendarState == null? "":this.calendarState.toString();
+    }
 }
