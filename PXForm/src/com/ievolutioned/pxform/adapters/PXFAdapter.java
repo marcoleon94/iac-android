@@ -1,11 +1,14 @@
 package com.ievolutioned.pxform.adapters;
 
 
-import com.ievolutioned.pxform.PXWidget;
 import android.app.Activity;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+
+import com.ievolutioned.pxform.PXWidget;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,14 +35,23 @@ remove unused repo head
  git branch -d -r origin/HEAD
 
  */
+
 /**
  */
-public class PXFAdapter extends BaseAdapter {
+public class PXFAdapter extends BaseAdapter implements Parcelable {
     private List<PXWidget> lWidgets = new ArrayList<PXWidget>();
     private Activity aActivity;
 
-    public PXFAdapter(Activity activity, List<PXWidget> widgets){
+    private PXFAdapter(Parcel in) {
+        this.lWidgets = in.readArrayList(PXWidget.class.getClassLoader());
+    }
+
+    public PXFAdapter(Activity activity, List<PXWidget> widgets) {
         lWidgets = widgets;
+        aActivity = activity;
+    }
+
+    public void setActivity(Activity activity){
         aActivity = activity;
     }
 
@@ -72,7 +84,7 @@ public class PXFAdapter extends BaseAdapter {
     public View getView(int pos, View view, ViewGroup group) {
         final PXWidget w = getItem(pos);
 
-        if(view == null){
+        if (view == null) {
             view = w.createControl(aActivity);
         }
 
@@ -80,4 +92,28 @@ public class PXFAdapter extends BaseAdapter {
 
         return view;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+        if (lWidgets != null)
+            out.writeArray(lWidgets.toArray());
+    }
+
+    public static final Parcelable.Creator<PXFAdapter> CREATOR = new Parcelable.Creator<PXFAdapter>() {
+
+        @Override
+        public PXFAdapter createFromParcel(Parcel source) {
+            return new PXFAdapter(source);
+        }
+
+        @Override
+        public PXFAdapter[] newArray(int size) {
+            return new PXFAdapter[size];
+        }
+    };
 }

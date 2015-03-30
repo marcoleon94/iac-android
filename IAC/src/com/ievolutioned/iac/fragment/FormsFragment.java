@@ -24,6 +24,8 @@ public class FormsFragment extends Fragment {
      * Argument key for bundle extras
      */
     public static final String ARG_FORM_NAME = "ARG_FORM_NAME";
+
+    public static final String ARG_LIST_FORM = "ARG_LIST_FORM";
     /**
      * PXFParser parser
      */
@@ -89,6 +91,9 @@ public class FormsFragment extends Fragment {
         if (savedState != null) {
             // Call the restore
             //listView.setSomething(savedState.getString(“text”));
+            PXFAdapter adapter = savedState.getParcelable(ARG_LIST_FORM);
+            adapter.setActivity(getActivity());
+            listView.setAdapter(adapter);
         }
     }
 
@@ -114,9 +119,10 @@ public class FormsFragment extends Fragment {
         }
     }
 
-    private Bundle saveState(){
+    private Bundle saveState() {
         Bundle state = new Bundle();
         // save the current state
+        state.putParcelable(ARG_LIST_FORM, (PXFAdapter) listView.getAdapter());
         return state;
     }
 
