@@ -1,8 +1,8 @@
 package com.ievolutioned.iac;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -11,7 +11,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 
 import com.crashlytics.android.Crashlytics;
 import com.ievolutioned.iac.fragment.FormsFragment;
@@ -87,8 +86,10 @@ public class MainActivity extends ActionBarActivity {
         if (mFragment != null) {
             mFragment.setArguments(args);
             FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.activity_main_frame_container, mFragment).commit();
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.activity_main_frame_container, mFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
             setTitle(item);
             mDrawerLayout.closeDrawers();
         }
@@ -122,5 +123,13 @@ public class MainActivity extends ActionBarActivity {
         super.setTitle(title);
     }
 
-
+    @Override
+    public void onBackPressed() {
+        FragmentManager fragmentManager = getFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            fragmentManager.popBackStackImmediate();
+            fragmentManager.beginTransaction().commit();
+        } else
+            super.onBackPressed();
+    }
 }
