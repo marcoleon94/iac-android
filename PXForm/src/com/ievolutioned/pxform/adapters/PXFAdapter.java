@@ -114,8 +114,8 @@ public class PXFAdapter extends BaseAdapter implements Parcelable {
     public void writeToParcel(Parcel out, int flags) {
         //TODO: write to parcel
     }
-    
-        public static final Parcelable.Creator<PXFAdapter> CREATOR = new Parcelable.Creator<PXFAdapter>() {
+
+    public static final Parcelable.Creator<PXFAdapter> CREATOR = new Parcelable.Creator<PXFAdapter>() {
 
         @Override
         public PXFAdapter createFromParcel(Parcel source) {
@@ -127,7 +127,7 @@ public class PXFAdapter extends BaseAdapter implements Parcelable {
             return new PXFAdapter[size];
         }
     };
-    
+
     private PXWidget.PXWidgetHandler widgetHandler = new PXWidget.PXWidgetHandler() {
         @Override
         public boolean addChildWidgets(PXWidget parent, int selected_index) {
@@ -185,7 +185,7 @@ public class PXFAdapter extends BaseAdapter implements Parcelable {
                 if(w.getJsonLevel() != parent.getJsonLevel()
                         || !w.getJsonEntries().containsKey(PXWidget.FIELD_KEY)
                         || !w.getJsonEntries().get(PXWidget.FIELD_KEY).equals(
-                                parent.getJsonEntries().get(PXWidget.FIELD_KEY)))
+                        parent.getJsonEntries().get(PXWidget.FIELD_KEY)))
                     continue;
 
                 break;
