@@ -37,6 +37,11 @@ public class PXFormActivity extends Activity {
                 Toast.makeText(PXFormActivity.this, "can't parse json", Toast.LENGTH_SHORT).show();
                 loading.dismiss();
             }
+
+            @Override
+            public void onSaved(String json) {
+
+            }
         });
 
 		p.parseJson(PXFormActivity.this, PXFParser.parseFileToString(getApplicationContext(),
