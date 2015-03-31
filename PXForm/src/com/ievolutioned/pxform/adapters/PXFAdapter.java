@@ -205,7 +205,6 @@ public class PXFAdapter extends BaseAdapter implements Parcelable {
         @Override
         public boolean removeChildWidgets(PXWidget parent) {
             final int level = parent.getJsonLevel() + 1;
-            boolean removed = false;
             final int size = PXFAdapter.this.lWidgets.size();
 
             if(!parent.getJsonEntries().containsKey(PXWidget.FIELD_KEY))
@@ -221,7 +220,6 @@ public class PXFAdapter extends BaseAdapter implements Parcelable {
                         .equals(w.getJsonKeyParent()))
                     continue;
 
-                removed = true;
                 PXFAdapter.this.lWidgets.remove(i);
             }
 
