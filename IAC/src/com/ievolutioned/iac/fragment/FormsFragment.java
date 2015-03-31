@@ -1,9 +1,13 @@
 package com.ievolutioned.iac.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +16,8 @@ import android.widget.Toast;
 
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.view.ViewUtility;
-import com.ievolutioned.pxform.adapters.PXFAdapter;
 import com.ievolutioned.pxform.PXFParser;
+import com.ievolutioned.pxform.adapters.PXFAdapter;
 
 /**
  * Created by Daniel on 24/03/2015. For project IAC
@@ -24,10 +28,24 @@ public class FormsFragment extends Fragment {
      * Argument key for bundle extras
      */
     public static final String ARG_FORM_NAME = "ARG_FORM_NAME";
+
+    public static final String ARG_LIST_FORM = "ARG_LIST_FORM";
     /**
      * PXFParser parser
      */
+
+    private ListView listView;
+
     private PXFParser p;
+
+    private Bundle savedState;
+
+    public static FormsFragment newInstance() {
+        FormsFragment fragment = new FormsFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -42,21 +60,83 @@ public class FormsFragment extends Fragment {
      * @param root
      */
     private void bindUI(View root) {
-        Bundle args = this.getArguments();
-        if (args == null)
-            return;
+        listView = (ListView) root.findViewById(R.id.PXForm_linearPanel);
 
-        bindData(root, args.getString(ARG_FORM_NAME));
+        root.findViewById(R.id.fragment_forms_buttonTest).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(i, 100);*/
+                p.save((PXFAdapter)listView.getAdapter());
+            }
+        });
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        // restore sate
+        if (!restoreStateFromArgs()) {
+            // first run
+            bindData(getArguments().getString(ARG_FORM_NAME));
+        }
+    }
+
+    private boolean restoreStateFromArgs() {
+        Bundle b = getArguments();
+        savedState = b.getBundle(FormsFragment.class.getName());
+        if (savedState != null) {
+            restoreState();
+            return true;
+        }
+        return false;
+    }
+
+    private void restoreState() {
+        if (savedState != null) {
+            // Call the restore
+            //listView.setSomething(savedState.getString(“text”));
+            PXFAdapter adapter = savedState.getParcelable(ARG_LIST_FORM);
+            adapter.setActivity(getActivity());
+            listView.setAdapter(adapter);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //Save state
+        saveSateToArgs();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        saveSateToArgs();
+    }
+
+    private void saveSateToArgs() {
+        if (getView() != null)
+            savedState = saveState();
+        if (savedState != null) {
+            Bundle args = getArguments();
+            args.putBundle(FormsFragment.class.getName(), savedState);
+        }
+    }
+
+    private Bundle saveState() {
+        Bundle state = new Bundle();
+        // save the current state
+        state.putParcelable(ARG_LIST_FORM, (PXFAdapter) listView.getAdapter());
+        return state;
     }
 
     /**
      * Binds the data from the form
      *
-     * @param root - layout
      * @param form - the form identifier
      */
-    private void bindData(View root, String form) {
-        final ListView listView = (ListView) root.findViewById(R.id.PXForm_linearPanel);
+    private void bindData(String form) {
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
         loading.show();
 
@@ -73,6 +153,11 @@ public class FormsFragment extends Fragment {
             public void error(Exception ex, String json) {
                 Toast.makeText(getActivity(), "can't parse json", Toast.LENGTH_SHORT).show();
                 loading.dismiss();
+            }
+
+            @Override
+            public void onSaved(String json) {
+                Log.d("Forms Saved", json);
             }
         });
 
@@ -95,4 +180,16 @@ public class FormsFragment extends Fragment {
         return null;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //TODO: Get request code and notify list data has changed
+        if (requestCode == 100) {
+            if (resultCode == Activity.RESULT_OK)
+                Toast.makeText(getActivity(), "OK", Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(getActivity(), "NO", Toast.LENGTH_SHORT).show();
+        }
+
+    }
 }

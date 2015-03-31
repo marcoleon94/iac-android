@@ -95,4 +95,9 @@ public class PXFCheckBox extends PXWidget {
             PXFCheckBox.this.isChecked = isChecked;
         }
     };
+
+    @Override
+    public String toString() {
+        return String.valueOf(isChecked);
+    }
 }

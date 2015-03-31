@@ -138,4 +138,9 @@ public class PXFToggleBoolean extends PXWidget {
                 radio_selected = Integer.parseInt(view.getTag().toString());
         }
     };
+
+    @Override
+    public String toString() {
+        return String.valueOf(radio_selected);
+    }
 }

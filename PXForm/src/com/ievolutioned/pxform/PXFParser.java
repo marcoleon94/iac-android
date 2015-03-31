@@ -10,30 +10,77 @@ import java.util.Map;
 import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.ievolutioned.pxform.adapters.PXFAdapter;
 
 public class PXFParser {
     private PXFParserEventHandler eventHandler;
 
+    private JsonElement json_tmp;
+
     public interface PXFParserEventHandler{
         public abstract void finish(com.ievolutioned.pxform.adapters.PXFAdapter adapter, String json);
         public abstract void error(Exception ex, String json);
+        public abstract void onSaved(String json);
     }
 
     public PXFParser(PXFParserEventHandler callback){
         eventHandler = callback;
     }
 
+    public void save(PXFAdapter adapter) {
+        final List<PXWidget> widgets = adapter.getItems();
+        if(widgets == null)
+            eventHandler.error(new RuntimeException("Empty widgets"),null);
+        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... voids) {
+                String json = getSavedControls(widgets);
+                return json;
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                eventHandler.onSaved(result);
+            }
+        };
+        task.execute();
+    }
+
+    private String getSavedControls(List<PXWidget> widgets) {
+        if(json_tmp == null)
+            eventHandler.error(new RuntimeException("Json null"), null);
+
+        JsonArray array = json_tmp.getAsJsonArray();
+        for (PXWidget w : widgets) {
+            if(TextUtils.isEmpty(w.getKey()))
+            continue;
+
+            setDataToProperties(w,array);
+        }
+        return array.toString();
+    }
+
+    private void setDataToProperties(PXWidget w, JsonArray array) {
+        for (JsonElement element : array) {
+            JsonObject object = element.getAsJsonObject();
+            if (object.has("key") && object.get("key").getAsString().equalsIgnoreCase(w.getKey().replace("\"", "")))
+                object.addProperty("response", w.getWidgetDataString());
+        }
+    }
+
     public void parseJson(final Activity activity, final String json){
         AsyncTask<Void, Void, Void> t1 = new AsyncTask<Void, Void, Void>(){
             @Override
             protected Void doInBackground(Void... params1234) {
-                JsonElement json_tmp;
+
                 final List<PXWidget> w = new ArrayList<PXWidget>();
 
                 try{
