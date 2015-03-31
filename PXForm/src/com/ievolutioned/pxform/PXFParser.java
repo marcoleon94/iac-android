@@ -176,7 +176,7 @@ public class PXFParser {
         return null;
     }
 
-    private static PXWidget getWidgetFromType(final Map<String, Map.Entry<String,JsonElement>> map){
+    public static PXWidget getWidgetFromType(final Map<String, Map.Entry<String,JsonElement>> map){
         PXWidget widget = null;
 
         //we got a well defined field
