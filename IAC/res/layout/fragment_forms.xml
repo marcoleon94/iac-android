@@ -4,9 +4,13 @@
     android:layout_height="match_parent"
     android:background="@color/background_gray_light"
     android:orientation="vertical">
+    <Button
+        android:id="@+id/fragment_forms_buttonTest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Test"/>
 
-    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/PXForm_linearPanel">

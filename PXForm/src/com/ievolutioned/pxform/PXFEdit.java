@@ -166,4 +166,8 @@ public class PXFEdit extends PXWidget{
             current_text = s == null ? "" : s.toString();
         }
     };
+
+    public String toString(){
+        return this.current_text;
+    }
 }
