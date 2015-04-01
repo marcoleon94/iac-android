@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 
 import android.app.Activity;
 import android.content.Context;
@@ -42,8 +44,7 @@ public class PXFParser {
         AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... voids) {
-                String json = getSavedControls(widgets);
-                return json;
+                return getSavedControls(widgets);
             }
 
             @Override
@@ -54,9 +55,22 @@ public class PXFParser {
         task.execute();
     }
 
+    public String getSavedState(PXFAdapter adapter) {
+        final List<PXWidget> widgets = adapter.getItems();
+        if (widgets == null)
+            return null;
+        if (adapter.getParcelJson() == null)
+            return null;
+        this.json_tmp = new JsonParser().parse(adapter.getParcelJson());
+        return getSavedControls(widgets);
+    }
+
     private String getSavedControls(List<PXWidget> widgets) {
-        if(json_tmp == null)
+        if(json_tmp == null && eventHandler != null)
             eventHandler.error(new RuntimeException("Json null"), null);
+
+        if(json_tmp.isJsonNull())
+            return null;
 
         JsonArray array = json_tmp.getAsJsonArray();
         for (PXWidget w : widgets) {
@@ -147,6 +161,7 @@ public class PXFParser {
                     if(eventHandler != null){
                         com.ievolutioned.pxform.adapters.PXFAdapter adapter
                                 = new com.ievolutioned.pxform.adapters.PXFAdapter(activity, w);
+                        adapter.setParcelJson(json);
                         eventHandler.finish(adapter, json);
                     }
                 }});

@@ -9,6 +9,7 @@ import com.ievolutioned.pxform.PXFUnknownControlType;
 import android.app.Activity;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -17,7 +18,6 @@ import com.ievolutioned.pxform.PXWidget;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -50,13 +50,24 @@ public class PXFAdapter extends BaseAdapter implements Parcelable {
     private List<PXWidget> lWidgets = new ArrayList<PXWidget>();
     private Activity aActivity;
 
+    private String parcelJson = "";
+
     private PXFAdapter(Parcel in) {
-        this.lWidgets = in.readArrayList(PXWidget.class.getClassLoader());
+        Log.e("Parcel in",in.toString());
+        this.parcelJson = in.readString();
     }
 
     public PXFAdapter(Activity activity, List<PXWidget> widgets) {
         lWidgets = widgets;
         aActivity = activity;
+    }
+
+    public String getParcelJson() {
+        return parcelJson;
+    }
+
+    public void setParcelJson(String parcelJson) {
+        this.parcelJson = parcelJson;
     }
 
     public void setActivity(Activity activity){
@@ -112,7 +123,10 @@ public class PXFAdapter extends BaseAdapter implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel out, int flags) {
-        //TODO: write to parcel
+        PXFParser p = new PXFParser(null);
+        String json = p.getSavedState(this);
+        if(json != null)
+            out.writeString(json);
     }
 
     public static final Parcelable.Creator<PXFAdapter> CREATOR = new Parcelable.Creator<PXFAdapter>() {
