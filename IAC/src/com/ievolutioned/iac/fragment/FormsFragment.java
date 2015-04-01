@@ -40,13 +40,6 @@ public class FormsFragment extends Fragment {
 
     private Bundle savedState;
 
-    public static FormsFragment newInstance() {
-        FormsFragment fragment = new FormsFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_forms, container, false);
@@ -61,15 +54,6 @@ public class FormsFragment extends Fragment {
      */
     private void bindUI(View root) {
         listView = (ListView) root.findViewById(R.id.PXForm_linearPanel);
-
-        root.findViewById(R.id.fragment_forms_buttonTest).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                /*Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(i, 100);*/
-                p.save((PXFAdapter)listView.getAdapter());
-            }
-        });
     }
 
     @Override
@@ -95,7 +79,6 @@ public class FormsFragment extends Fragment {
     private void restoreState() {
         if (savedState != null) {
             // Call the restore
-            //listView.setSomething(savedState.getString(“text”));
             PXFAdapter adapter = savedState.getParcelable(ARG_LIST_FORM);
             adapter.setActivity(getActivity());
             listView.setAdapter(adapter);
@@ -183,13 +166,6 @@ public class FormsFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //TODO: Get request code and notify list data has changed
-        if (requestCode == 100) {
-            if (resultCode == Activity.RESULT_OK)
-                Toast.makeText(getActivity(), "OK", Toast.LENGTH_SHORT).show();
-            else
-                Toast.makeText(getActivity(), "NO", Toast.LENGTH_SHORT).show();
-        }
-
+        // If barcode/QR is needed
     }
 }
