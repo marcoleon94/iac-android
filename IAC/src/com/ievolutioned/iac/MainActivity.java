@@ -12,8 +12,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.ievolutioned.iac.fragment.FormsFragment;
 import com.ievolutioned.iac.fragment.SitesFragment;
 import com.ievolutioned.iac.util.AppConfig;
@@ -137,5 +140,12 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        IntentResult barcodeResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (barcodeResult != null) {
+            //TODO: Set result on control
+            Toast.makeText(this,barcodeResult.getContents(),Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+        }
     }
 }
