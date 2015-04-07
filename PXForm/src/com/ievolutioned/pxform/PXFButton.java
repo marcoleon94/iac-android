@@ -15,12 +15,18 @@ import com.google.zxing.integration.android.IntentIntegrator;
 
 public class PXFButton extends PXWidget {
 
+    View.OnClickListener clickListener = null;
+
     public class HelperButton extends HelperWidget{
         protected Button button;
     }
 
     public PXFButton(Map<String, Entry<String, JsonElement>> entry) {
         super(entry);
+    }
+
+    public void setClickListener(final View.OnClickListener clickListener) {
+        this.clickListener = clickListener;
     }
 
     @Override
@@ -69,6 +75,7 @@ public class PXFButton extends PXWidget {
     private void setButtonAction(final Button b, final Activity context, final String action) {
         if (b == null)
             return;
+        /*
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -76,6 +83,9 @@ public class PXFButton extends PXWidget {
                 openCamera(context);
             }
         });
+        */
+        if(clickListener != null)
+            b.setOnClickListener(clickListener);
     }
 
     private void openCamera(Activity context) {

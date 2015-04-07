@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.view.ViewUtility;
 import com.ievolutioned.pxform.PXFParser;
@@ -144,7 +146,7 @@ public class FormsFragment extends Fragment {
             }
         });
 
-        p.parseJson(getActivity(), PXFParser.parseFileToString(getActivity(), json));
+        p.parseJson(getActivity(), PXFParser.parseFileToString(getActivity(), json), button_handler);
     }
 
     /**
@@ -163,9 +165,23 @@ public class FormsFragment extends Fragment {
         return null;
     }
 
+    private View.OnClickListener button_handler= new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            IntentIntegrator.forFragment(FormsFragment.this).initiateScan();
+        }
+    };
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        //super.onActivityResult(requestCode, resultCode, data);
         // If barcode/QR is needed
+        IntentResult barcodeResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (barcodeResult != null) {
+            //TODO: Set result on control
+            Toast.makeText(getActivity(),barcodeResult.getContents(),Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+        }
     }
 }

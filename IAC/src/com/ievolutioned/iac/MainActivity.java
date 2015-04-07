@@ -140,6 +140,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        /*
         IntentResult barcodeResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (barcodeResult != null) {
             //TODO: Set result on control
@@ -147,5 +148,6 @@ public class MainActivity extends ActionBarActivity {
         } else {
             Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
         }
+        */
     }
 }
