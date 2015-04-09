@@ -4,6 +4,7 @@ package com.ievolutioned.pxform.adapters;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.ievolutioned.pxform.PXFParser;
 import com.ievolutioned.pxform.PXFUnknownControlType;
 import android.app.Activity;
@@ -142,129 +143,150 @@ public class PXFAdapter extends BaseAdapter implements Parcelable {
         }
     };
 
-    private PXWidget.PXWidgetHandler widgetHandler = new PXWidget.PXWidgetHandler() {
-        @Override
-        public boolean addChildWidgets(PXWidget parent, int selected_index) {
-            List<PXWidget> wl = new ArrayList<PXWidget>();
-            PXWidget widget;
-            int index = -1;
-            final int size = PXFAdapter.this.lWidgets.size();
-            JsonArray array;
-            JsonElement sub;
+    private PXWidget.PXWidgetHandler widgetHandler;
+    {
+        widgetHandler = new PXWidget.PXWidgetHandler() {
+            @Override
+            public boolean addChildWidgets(PXWidget parent, int selected_index) {
+                List<PXWidget> wl = new ArrayList<PXWidget>();
+                PXWidget widget;
+                int index = -1;
+                final int size = PXFAdapter.this.lWidgets.size();
+                JsonArray array;
+                JsonElement sub;
 
-            if(!parent.getJsonEntries().containsKey(PXWidget.FIELD_KEY)
-                    || existControls(parent)
-                    || !parent.getJsonEntries().get(PXWidget.FIELD_OPTIONS).getValue().isJsonArray())
-                return false;
+                if (!parent.getJsonEntries().containsKey(PXWidget.FIELD_KEY)
+                        || existControls(parent)
+                        || !parent.getJsonEntries().get(PXWidget.FIELD_OPTIONS).getValue().isJsonArray())
+                    return false;
 
-            array = parent.getJsonEntries().get(PXWidget.FIELD_OPTIONS).getValue().getAsJsonArray();
-            sub = array.get(selected_index);
+                array = parent.getJsonEntries().get(PXWidget.FIELD_OPTIONS).getValue().getAsJsonArray();
+                sub = array.get(selected_index);
 
-            if(!sub.isJsonObject()
-                    || sub.getAsJsonObject().entrySet().size() < 1
-                    || !sub.getAsJsonObject().entrySet().iterator().hasNext()
-                    || !sub.getAsJsonObject().entrySet().iterator().next().getValue().isJsonArray())
-                return false;
+                if (!sub.isJsonObject()
+                        || sub.getAsJsonObject().entrySet().size() < 1
+                        || !sub.getAsJsonObject().entrySet().iterator().hasNext()
+                        || !sub.getAsJsonObject().entrySet().iterator().next().getValue().isJsonArray())
+                    return false;
 
-            array = sub.getAsJsonObject().entrySet().iterator().next().getValue().getAsJsonArray();
+                array = sub.getAsJsonObject().entrySet().iterator().next().getValue().getAsJsonArray();
 
-            for(int z = 0; z < array.size(); ++z) {
-                JsonObject entry = array.get(z).getAsJsonObject();
+                for (int z = 0; z < array.size(); ++z) {
+                    JsonObject entry = array.get(z).getAsJsonObject();
 
-                if (entry.entrySet().size() < 1)
-                    continue;
+                    if (entry.entrySet().size() < 1)
+                        continue;
 
-                Map<String, Map.Entry<String, JsonElement>> map
-                        = new HashMap<String, Map.Entry<String, JsonElement>>();
+                    Map<String, Map.Entry<String, JsonElement>> map
+                            = new HashMap<String, Map.Entry<String, JsonElement>>();
 
-                //map all the fields by key
-                for (Map.Entry<String, JsonElement> mej : entry.entrySet()) {
-                    map.put(mej.getKey(), mej);
+                    //map all the fields by key
+                    for (Map.Entry<String, JsonElement> mej : entry.entrySet()) {
+                        map.put(mej.getKey(), mej);
+                    }
+
+                    widget = PXFParser.getWidgetFromType(map);
+
+                    if (widget == null || widget instanceof PXFUnknownControlType)
+                        continue;
+
+                    widget.setJsonLevel(parent.getJsonLevel() + 1);
+                    widget.setJsonKeyParent(parent.getJsonEntries().get(PXWidget.FIELD_KEY)
+                            .getValue().getAsString());
+                    wl.add(widget);
                 }
 
-                widget = PXFParser.getWidgetFromType(map);
+                for (PXWidget w : PXFAdapter.this.lWidgets) {
+                    index++;
 
-                if (widget == null || widget instanceof PXFUnknownControlType)
-                    continue;
+                    if (w.getJsonLevel() != parent.getJsonLevel()
+                            || !w.getJsonEntries().containsKey(PXWidget.FIELD_KEY)
+                            || !w.getJsonEntries().get(PXWidget.FIELD_KEY).equals(
+                            parent.getJsonEntries().get(PXWidget.FIELD_KEY)))
+                        continue;
 
-                widget.setJsonLevel(parent.getJsonLevel() + 1);
-                widget.setJsonKeyParent(parent.getJsonEntries().get(PXWidget.FIELD_KEY)
-                        .getValue().getAsString());
-                wl.add(widget);
-            }
-
-            for(PXWidget w : PXFAdapter.this.lWidgets){
-                index++;
-
-                if(w.getJsonLevel() != parent.getJsonLevel()
-                        || !w.getJsonEntries().containsKey(PXWidget.FIELD_KEY)
-                        || !w.getJsonEntries().get(PXWidget.FIELD_KEY).equals(
-                        parent.getJsonEntries().get(PXWidget.FIELD_KEY)))
-                    continue;
-
-                break;
-            }
-
-            if(index > -1){
-                for(PXWidget w : wl){
-                    PXFAdapter.this.lWidgets.add(++index, w);
+                    break;
                 }
-            }else{
-                //what to do, what to do..
+
+                if (index > -1) {
+                    for (PXWidget w : wl) {
+                        PXFAdapter.this.lWidgets.add(++index, w);
+                    }
+                } else {
+                    //what to do, what to do..
+                }
+
+                return size != PXFAdapter.this.lWidgets.size();
             }
 
-            return size != PXFAdapter.this.lWidgets.size();
-        }
+            @Override
+            public boolean removeChildWidgets(PXWidget parent) {
+                final int level = parent.getJsonLevel() + 1;
+                final int size = PXFAdapter.this.lWidgets.size();
 
-        @Override
-        public boolean removeChildWidgets(PXWidget parent) {
-            final int level = parent.getJsonLevel() + 1;
-            final int size = PXFAdapter.this.lWidgets.size();
+                if (!parent.getJsonEntries().containsKey(PXWidget.FIELD_KEY))
+                    return false;
 
-            if(!parent.getJsonEntries().containsKey(PXWidget.FIELD_KEY))
+                for (int i = PXFAdapter.this.lWidgets.size() - 1; i >= 0; --i) {
+                    PXWidget w = PXFAdapter.this.lWidgets.get(i);
+
+                    if (w.getJsonLevel() != level)
+                        continue;
+
+                    if (!parent.getJsonEntries().get(PXWidget.FIELD_KEY).getValue().getAsString()
+                            .equals(w.getJsonKeyParent()))
+                        continue;
+
+                    PXFAdapter.this.lWidgets.remove(i);
+                }
+
+                return size != PXFAdapter.this.lWidgets.size();
+            }
+
+            private boolean existControls(PXWidget parent) {
+                final int level = parent.getJsonLevel() + 1;
+
+                if (!parent.getJsonEntries().containsKey(PXWidget.FIELD_KEY))
+                    return true;
+
+                for (int i = PXFAdapter.this.lWidgets.size() - 1; i >= 0; --i) {
+                    PXWidget w = PXFAdapter.this.lWidgets.get(i);
+
+                    if (w.getJsonLevel() != level)
+                        continue;
+
+                    if (!parent.getJsonEntries().get(PXWidget.FIELD_KEY).getValue().getAsString()
+                            .equals(w.getJsonKeyParent()))
+                        continue;
+
+                    return true;
+                }
+
                 return false;
-
-            for(int i = PXFAdapter.this.lWidgets.size() - 1; i >= 0; --i){
-                PXWidget w = PXFAdapter.this.lWidgets.get(i);
-
-                if(w.getJsonLevel() != level)
-                    continue;
-
-                if(!parent.getJsonEntries().get(PXWidget.FIELD_KEY).getValue().getAsString()
-                        .equals(w.getJsonKeyParent()))
-                    continue;
-
-                PXFAdapter.this.lWidgets.remove(i);
             }
 
-            return size != PXFAdapter.this.lWidgets.size();
-        }
-
-        private boolean existControls(PXWidget parent){
-            final int level = parent.getJsonLevel() + 1;
-
-            if(!parent.getJsonEntries().containsKey(PXWidget.FIELD_KEY))
-                return true;
-
-            for(int i = PXFAdapter.this.lWidgets.size() - 1; i >= 0; --i){
-                PXWidget w = PXFAdapter.this.lWidgets.get(i);
-
-                if(w.getJsonLevel() != level)
-                    continue;
-
-                if(!parent.getJsonEntries().get(PXWidget.FIELD_KEY).getValue().getAsString()
-                        .equals(w.getJsonKeyParent()))
-                    continue;
-
-                return true;
+            @Override
+            public void notifyDataSetChanges() {
+                PXFAdapter.this.notifyDataSetChanged();
             }
 
-            return false;
-        }
-
-        @Override
-        public void notifyDataSetChanges() {
-            PXFAdapter.this.notifyDataSetChanged();
-        }
-    };
+            @Override
+            public boolean setWidgetValue(PXWidget parent, String field,  Object value) {
+                try {
+                    JsonElement v = new JsonParser().parse(value.toString());
+                    if(parent.getJsonEntries().containsKey(field)) {
+                        parent.getJsonEntries().get(field).setValue(v);
+                        return true;
+                    }
+                    else
+                        Log.d(PXFAdapter.class.getName(), "Can not find the field: "+field);
+                }
+                catch (Exception e){
+                    Log.e(PXFAdapter.class.getName(),e.getMessage(),e);
+                    return false;
+                }
+                return false;
+            }
+        };
+    }
 }
