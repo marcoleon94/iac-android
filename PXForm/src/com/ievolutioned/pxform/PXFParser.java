@@ -6,16 +6,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 
 import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -26,6 +24,8 @@ public class PXFParser {
     private PXFParserEventHandler eventHandler;
 
     private JsonElement json_tmp;
+
+    protected View.OnClickListener clickListener = null;
 
     public interface PXFParserEventHandler{
         public abstract void finish(com.ievolutioned.pxform.adapters.PXFAdapter adapter, String json);
@@ -90,6 +90,12 @@ public class PXFParser {
         }
     }
 
+
+    public void parseJson(final Activity activity, final String json, View.OnClickListener clickListener){
+        this.clickListener = clickListener;
+        parseJson(activity,json);
+    }
+
     public void parseJson(final Activity activity, final String json){
         AsyncTask<Void, Void, Void> t1 = new AsyncTask<Void, Void, Void>(){
             @Override
@@ -138,6 +144,8 @@ public class PXFParser {
                         }
 
                         PXWidget px = getWidgetFromType(map);
+                        if(px instanceof PXFButton && clickListener != null)
+                            ((PXFButton) px).setClickListener(clickListener);
                         w.add(px);
 
                         try {

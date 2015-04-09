@@ -61,6 +61,7 @@ public abstract class PXWidget {
         public boolean addChildWidgets(PXWidget parent, int selected_index);
         public boolean removeChildWidgets(PXWidget parent);
         public void notifyDataSetChanges();
+        public boolean setWidgetValue(PXWidget parent, String field, Object value);
     }
 
     private String key = "";

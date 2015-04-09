@@ -12,9 +12,10 @@ buildscript {
 
 apply plugin: 'crashlytics'
 
-repositories{
+repositories {
     mavenCentral()
     maven { url 'http://download.crashlytics.com/maven' }
+    maven { url 'http://dl.bintray.com/journeyapps/maven' }
 }
 
 dependencies {
@@ -23,6 +24,14 @@ dependencies {
     compile 'com.crashlytics.android:crashlytics:1.+'
     compile 'com.android.support:appcompat-v7:22.0.0'
     compile 'com.android.support:support-v4:20.0.0'
+
+    // Supports Android 4.0.3 and later (API level 15)
+    // compile 'com.journeyapps:zxing-android-embedded:2.3.0@aar'
+    // Supports Android 2.1 and later (API level 7), but not optimal for later Android versions.
+    compile 'com.journeyapps:zxing-android-legacy:2.3.0@aar'
+    //  Version 3.0.x of zxing core contains some code that is not compatible on Android 2.2 and earlier.
+    compile 'com.google.zxing:core:3.2.0'
+    compile 'com.journeyapps:zxing-android-integration:2.3.0@aar'
 }
 
 android {
