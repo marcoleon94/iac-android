@@ -15,10 +15,18 @@ import com.google.zxing.integration.android.IntentIntegrator;
 
 public class PXFButton extends PXWidget {
 
+    public static final String ACTION_OPEN_CAMERA ="openCamera:";
+    public static final String ACTION_SUBMIT = "submitRegistrationForm:";
+    public static final String ACTION_BACK_ROOT = "atomaticBackRoot";
+
     View.OnClickListener clickListener = null;
 
     public class HelperButton extends HelperWidget{
         protected Button button;
+        protected String action;
+        public PXFButton getPXFButton(){
+            return PXFButton.this;
+        }
     }
 
     public PXFButton(Map<String, Entry<String, JsonElement>> entry) {
@@ -35,8 +43,15 @@ public class PXFButton extends PXWidget {
         HelperButton h = (HelperButton) view.getTag();
         h.button.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
                 getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
+        h.button.setTag(h);
+        h.action = getJsonEntries().containsKey(FIELD_ACTION) ?
+                getJsonEntries().get(FIELD_ACTION).getValue().getAsString() : null;
     }
 
+    public static String getAction(View view){
+        HelperButton h = (HelperButton) view.getTag();
+        return h.action;
+    }
 
 
     @Override

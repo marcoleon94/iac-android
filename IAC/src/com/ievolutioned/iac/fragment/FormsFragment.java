@@ -1,16 +1,16 @@
 package com.ievolutioned.iac.fragment;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -18,6 +18,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.view.ViewUtility;
+import com.ievolutioned.pxform.PXFButton;
 import com.ievolutioned.pxform.PXFParser;
 import com.ievolutioned.pxform.adapters.PXFAdapter;
 
@@ -41,6 +42,11 @@ public class FormsFragment extends Fragment {
     private PXFParser p;
 
     private Bundle savedState;
+
+    /*
+    Button special cases?
+     */
+    private Button mButtonBarCode;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -168,20 +174,43 @@ public class FormsFragment extends Fragment {
     private View.OnClickListener button_handler= new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            IntentIntegrator.forFragment(FormsFragment.this).initiateScan();
+            String action = getAction(v);
+            if (action == null)
+                return;
+
+            if (action.equalsIgnoreCase(PXFButton.ACTION_OPEN_CAMERA)) {
+                IntentIntegrator.forFragment(FormsFragment.this).initiateScan();
+                mButtonBarCode = (Button)v;
+            } else if (action.equalsIgnoreCase(PXFButton.ACTION_SUBMIT)) {
+
+            } else if (action.equalsIgnoreCase(PXFButton.ACTION_BACK_ROOT)) {
+
+            } else {
+                // Unregistered action
+                Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+            }
+
         }
     };
 
+    private String getAction(View v) {
+        return PXFButton.getAction(v);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //super.onActivityResult(requestCode, resultCode, data);
-        // If barcode/QR is needed
-        IntentResult barcodeResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if (barcodeResult != null) {
-            //TODO: Set result on control
-            Toast.makeText(getActivity(),barcodeResult.getContents(),Toast.LENGTH_SHORT).show();
-        } else {
+        // For Barcode reader
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null || !TextUtils.isEmpty(result.getContents())) {
+            //TODO: How to know clicked view on activity result
+            Toast.makeText(getActivity(), result.getContents(), Toast.LENGTH_SHORT).show();
+            if (mButtonBarCode != null) {
+                PXFButton pxfButton = ((PXFButton.HelperButton) mButtonBarCode.getTag()).getPXFButton();
+                if (pxfButton.getEventHandler().setWidgetValue(pxfButton, PXFButton.FIELD_TITLE,
+                        result.getContents()))
+                    pxfButton.getEventHandler().notifyDataSetChanges();
+            }
+        } else
             Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
-        }
     }
 }

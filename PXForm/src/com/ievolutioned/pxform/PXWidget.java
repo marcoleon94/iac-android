@@ -38,8 +38,6 @@ public abstract class PXWidget {
     public static final String FIELD_TYPE_LONGTEXT = "longtext";
     public static final String FIELD_TYPE_UNSIGNED = "unsigned";
 
-    public static final String FIELD_ACTION_OPEN_CAMERA ="openCamera";
-
     public static final String FIELD_CELL_OPTION_SEGMENT = "FXFormOptionSegmentsCell";
     public static final String FIELD_CELL_OPTION_SEGMENT_CUSTOM = "FXFormOptionSegmentsCellCustom";
 
@@ -63,6 +61,7 @@ public abstract class PXWidget {
         public boolean addChildWidgets(PXWidget parent, int selected_index);
         public boolean removeChildWidgets(PXWidget parent);
         public void notifyDataSetChanges();
+        public boolean setWidgetValue(PXWidget parent, String field, Object value);
     }
 
     private String key = "";
