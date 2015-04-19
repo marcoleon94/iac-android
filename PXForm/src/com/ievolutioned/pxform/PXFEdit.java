@@ -24,7 +24,7 @@ public class PXFEdit extends PXWidget{
 
     private String current_text = "";
 
-    public class HelperEdit extends HelperWidget{
+    public static class HelperEdit extends HelperWidget{
         protected TextView title;
         protected EditTextCustom inputEdit;
         protected LinearLayout linearEdit;
