@@ -27,4 +27,9 @@ public class AppConfig {
      * IAC web API initial admin token, it must be saved, replaced by the login response
      */
     public static final String API_ADMIN_TOKEN = "bff4cd1726e4133675e3c38bb47d6b4c";
+
+    /**
+     * IAC web API date format for headers
+     */
+    public static final String API_DATE_FORMAT = "yyyy-MM-dd";
 }
