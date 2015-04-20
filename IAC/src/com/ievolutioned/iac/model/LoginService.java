@@ -2,11 +2,18 @@ package com.ievolutioned.iac.model;
 
 import android.os.AsyncTask;
 
+import com.ievolutioned.iac.net.HttpGetParam;
+import com.ievolutioned.iac.net.HttpHeader;
+import com.ievolutioned.iac.net.NetUtil;
+import com.ievolutioned.iac.util.AppConfig;
+
 /**
  * Manages the log in / out services for the user on the system
  * Created by Daniel on 20/03/2015.
  */
 public class LoginService {
+
+    private static final String URL_LOGIN = "https://iacgroup.herokuapp.com/api/services/access";
 
     private AsyncTask<Void, Void, LoginResponse> task;
 
@@ -24,6 +31,11 @@ public class LoginService {
                 if (isCancelled())
                     return null;
                 try {
+                    HttpGetParam params = new HttpGetParam();
+                    params.add("email", email);
+                    params.add("password", pass);
+                    HttpHeader headers = getLoginHeaders();
+                    String response = NetUtil.post(URL_LOGIN,params,headers,null);
                     return new LoginResponse(true, null, null);
                 } catch (Exception e) {
                     return new LoginResponse(false, e.getMessage(), e);
@@ -44,6 +56,13 @@ public class LoginService {
         task.execute();
     }
 
+    private static HttpHeader getLoginHeaders(){
+        HttpHeader headers = new HttpHeader();
+        headers.add("X-version", AppConfig.API_VERSION);
+        headers.add("X-token",AppConfig.API_TOKEN);
+
+        return headers;
+    }
 
     /**
      * Logs the user out of system
