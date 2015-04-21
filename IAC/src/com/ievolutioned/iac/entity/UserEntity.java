@@ -1,13 +1,20 @@
 package com.ievolutioned.iac.entity;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * User entity class. Determines the attributes to consider for a single User in the system
  *
  * Created by Daniel on 21/04/2015.
  */
 public class UserEntity {
+
     private String status;
+
+    @SerializedName("admin_token")
     private String adminToken;
+
+    @SerializedName("admin_email")
     private String adminEmail;
 
     public String getStatus() {

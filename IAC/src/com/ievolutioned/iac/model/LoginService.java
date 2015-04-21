@@ -2,6 +2,8 @@ package com.ievolutioned.iac.model;
 
 import android.os.AsyncTask;
 
+import com.google.gson.Gson;
+import com.ievolutioned.iac.entity.UserEntity;
 import com.ievolutioned.iac.net.HttpGetParam;
 import com.ievolutioned.iac.net.HttpHeader;
 import com.ievolutioned.iac.net.NetUtil;
@@ -41,18 +43,26 @@ public class LoginService {
                     return null;
                 try {
                     if (deviceId == null) {
-                        callback.onError(new LoginResponse(false, "Device id is null", null));
+                        callback.onError(new LoginResponse(false, null, "Device id is null", null));
                         this.cancel(true);
                     }
                     HttpGetParam params = new HttpGetParam();
                     params.add("iac_id", id);
                     params.add("password", pass);
+
                     HttpHeader headers = getLoginHeaders();
-                    //{"status":"success","admin_token":"847429867a1c19d149c10b5e8be762bd","admin_email":"silvano@ievolutioned.com"}
+
+                    // Get response
                     String response = NetUtil.get(URL_LOGIN, params, headers);
-                    return new LoginResponse(true, response, null);
+                    if(response == null)
+                        return new LoginResponse(false,null,"No response", null);
+
+                    //Parse response
+                    Gson g = new Gson();
+                    UserEntity user = g.fromJson(response, UserEntity.class);
+                    return new LoginResponse(true, user, response, null);
                 } catch (Exception e) {
-                    return new LoginResponse(false, e.getMessage(), e);
+                    return new LoginResponse(false, null, e.getMessage(), e);
                 }
             }
 
@@ -70,12 +80,16 @@ public class LoginService {
         task.execute();
     }
 
+    /**
+     * Gets the login headers by default
+     * @return a HttpHeader
+     */
     private HttpHeader getLoginHeaders() {
         HttpHeader headers = new HttpHeader();
 
         String xVersion = AppConfig.API_VERSION;
         String xToken = AppConfig.API_TOKEN; // d4e9a9414181819f3a47ff1ddd9b2ca3
-        String xAdminToken = "nosession";//AppConfig.API_ADMIN_TOKEN; //bff4cd1726e4133675e3c38bb47d6b4c
+        String xAdminToken = "nosession";
         String controller = "services";
         String action = "access";
 
@@ -112,9 +126,9 @@ public class LoginService {
                 if (isCancelled())
                     return null;
                 try {
-                    return new LoginResponse(false, null, null);
+                    return new LoginResponse(false, null, null, null);
                 } catch (Exception e) {
-                    return new LoginResponse(true, e.getMessage(), e);
+                    return new LoginResponse(true, null, e.getMessage(), e);
                 }
             }
 
@@ -151,7 +165,7 @@ public class LoginService {
      */
     protected void hanldeResult(final LoginHandler callback, final LoginResponse response) {
         if (response == null)
-            callback.onError(new LoginResponse(false, "Service error", new RuntimeException()));
+            callback.onError(new LoginResponse(false, null, "Service error", new RuntimeException()));
         else if (response.e != null)
             callback.onError(response);
         else
@@ -176,11 +190,13 @@ public class LoginService {
         public String msg;
         public Throwable e;
         public boolean logged;
+        public UserEntity user;
 
-        public LoginResponse(final boolean logged, final String msg, final Throwable e) {
+        public LoginResponse(final boolean logged, final UserEntity user, final String msg, final Throwable e) {
             this.msg = msg;
             this.e = e;
             this.logged = logged;
+            this.user = user;
         }
     }
 }
