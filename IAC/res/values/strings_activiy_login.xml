@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="activity_login_title">ACCOUTN</string>
-    <string name="activity_login_email">Email</string>
-    <string name="activity_login_password">Password</string>
-    <string name="activity_login_sing_in">Sing in</string>
+    <string name="activity_login_title">CUENTA</string>
+    <string name="activity_login_email">ID empleado</string>
+    <string name="activity_login_password">Contraseña</string>
+    <string name="activity_login_sing_in">Entrar</string>
 
 </resources>
