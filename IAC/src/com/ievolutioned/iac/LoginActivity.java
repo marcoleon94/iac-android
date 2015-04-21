@@ -92,7 +92,7 @@ public class LoginActivity extends Activity {
         EditText[] forms = {mEmail, mPassword};
         for (EditText f : forms) {
             if (TextUtils.isEmpty(f.getText())) {
-                showToast("*Required field");
+                showToast(R.string.activity_login_required_field);
                 f.requestFocus();
                 return false;
             }
@@ -106,6 +106,9 @@ public class LoginActivity extends Activity {
      *
      * @param msg
      */
+    private void showToast(int msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
     private void showToast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
@@ -138,7 +141,6 @@ public class LoginActivity extends Activity {
     private LoginService.LoginHandler login_handler = new LoginService.LoginHandler() {
         @Override
         public void onSuccess(LoginService.LoginResponse response) {
-            showToast("Logged in");
             loading(false);
             saveToken(response.user.getAdminToken());
             startMainActivity();
