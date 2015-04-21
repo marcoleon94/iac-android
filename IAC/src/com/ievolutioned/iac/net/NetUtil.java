@@ -100,20 +100,21 @@ public class NetUtil {
             if (headers != null)
                 setHeaderToHttpURLConnection(connection, headers);
 
-            //if (json != null) {
-            String postLength = String.valueOf(json.getBytes("UTF-8").length);
-            connection.setRequestProperty("Content-Length", postLength);
-            connection.setRequestProperty("Content-Type",
-                    "application/json; charset=UTF-8");
-            connection.setRequestProperty("Connection", "keep-alive");
-            connection.connect();
-            OutputStream os = connection.getOutputStream();
-            os.write(json.getBytes("UTF-8"));
-            os.flush();
-            os.close();
-            //}
+            if (json != null) {
+                String postLength = String.valueOf(json.getBytes("UTF-8").length);
+                connection.setRequestProperty("Content-Length", postLength);
+                connection.setRequestProperty("Content-Type",
+                        "application/json; charset=UTF-8");
+                connection.setRequestProperty("Connection", "keep-alive");
+                connection.connect();
+                OutputStream os = connection.getOutputStream();
+                os.write(json.getBytes("UTF-8"));
+                os.flush();
+                os.close();
+            }
+            else
+                connection.connect();
 
-            //connection.connect();
             if (connection.getResponseCode() >= 400) {
                 throw new IOException(connection.getResponseCode() + ":"
                         + readStream(connection.getErrorStream()));
