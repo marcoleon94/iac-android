@@ -43,13 +43,7 @@ public class FormsFragment extends Fragment {
     private ListView listView;
 
     private PXFParser p;
-
     private Bundle savedState;
-
-    /*
-    Button special cases?
-     */
-    //private Button mButtonBarCode;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -193,48 +187,8 @@ public class FormsFragment extends Fragment {
         }
     };
 
-
-    //private View.OnClickListener button_handler= new View.OnClickListener() {
-    //    @Override
-    //    public void onClick(View v) {
-    //        String action = getAction(v);
-    //        if (action == null)
-    //            return;
-    //
-    //        if (action.equalsIgnoreCase(PXFButton.ACTION_OPEN_CAMERA)) {
-    //            IntentIntegrator.forFragment(FormsFragment.this).initiateScan();
-    //            mButtonBarCode = (Button)v;
-    //        } else if (action.equalsIgnoreCase(PXFButton.ACTION_SUBMIT)) {
-    //
-    //        } else if (action.equalsIgnoreCase(PXFButton.ACTION_BACK_ROOT)) {
-    //
-    //        } else {
-    //            // Unregistered action
-    //            Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
-    //        }
-    //
-    //    }
-    //};
-
-    //private String getAction(View v) {
-    //    return PXFButton.getAction(v);
-    //}
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // For Barcode reader
-        //IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        //if (result != null || !TextUtils.isEmpty(result.getContents())) {
-        //    //TODO: How to know clicked view on activity result
-        //    Toast.makeText(getActivity(), result.getContents(), Toast.LENGTH_SHORT).show();
-        //    if (mButtonBarCode != null) {
-        //        PXFButton pxfButton = ((PXFButton.HelperButton) mButtonBarCode.getTag()).getPXFButton();
-        //        if (pxfButton.getEventHandler().setWidgetValue(pxfButton, PXFButton.FIELD_TITLE,
-        //                result.getContents()))
-        //            pxfButton.getEventHandler().notifyDataSetChanges();
-        //    }
-        //} else
-        //    Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null || !TextUtils.isEmpty(result.getContents())) {
             Toast.makeText(getActivity(), result.getContents(), Toast.LENGTH_SHORT).show();

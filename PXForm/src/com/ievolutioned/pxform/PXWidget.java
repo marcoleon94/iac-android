@@ -44,8 +44,6 @@ public abstract class PXWidget {
     public static final int ADAPTER_ITEM_TYPE_SUBMENUBUTTON = 7;
 
     private Map<String, Map.Entry<String,JsonElement>> eEntry;
-    //private int jsonLevel = 0;
-    //private String jsonKeyParent = "";
     private String fieldKey = "";
     private PXWidgetHandler eventHandler = null;
 
@@ -53,10 +51,7 @@ public abstract class PXWidget {
     public abstract int getAdapterItemType();
 
     public interface PXWidgetHandler{
-        //public boolean addChildWidgets(PXWidget parent, int selected_index);
-        //public boolean removeChildWidgets(PXWidget parent);
         public void notifyDataSetChanges();
-        //public boolean setWidgetValue(PXWidget parent, String field, Object value);
         public void onClick(PXWidget parent);
     }
 
@@ -147,22 +142,6 @@ public abstract class PXWidget {
     }
     public PXWidget(Map<String, Map.Entry<String,JsonElement>> entry){ eEntry = entry; }
     public Map<String, Map.Entry<String,JsonElement>> getJsonEntries(){ return eEntry; }
-    //public int getJsonLevel(){
-    //    return jsonLevel;
-    //}
-    //public String getJsonKeyParent(){
-    //    return jsonKeyParent;
-    //}
-
-    //public void setJsonLevel(int level){
-    //    jsonLevel = level;
-    //}
-    //public void setJsonKeyParent(String parent){
-    //    if(parent == null)
-    //        parent = "";
-    //
-    //    jsonKeyParent = parent;
-    //}
     public void setWidgetData(View view){
         HelperWidget helper = (HelperWidget) view.getTag();
         helper.headTextView.setText(getJsonEntries().containsKey(FIELD_HEADER) ?
@@ -177,47 +156,7 @@ public abstract class PXWidget {
     public void setKey(String key){ fieldKey = key; }
     public String getKey(){ return fieldKey; }
 
-    //public JsonElement getWidgetData() {
-    //    JsonObject data = new JsonObject();
-    //    //if (this instanceof PXFEdit) {
-    //    //    data.addProperty(getKey(), ((PXFEdit) this).toString());
-    //    //} else if (this instanceof PXFCheckBox) {
-    //    //    data.addProperty(getKey(), ((PXFCheckBox) this).toString());
-    //    //} else if (this instanceof PXFDatePicker) {
-    //    //    data.addProperty(getKey(), ((PXFDatePicker) this).toString());
-    //    //} else if (this instanceof PXFSpinner) {
-    //    //    data.addProperty(getKey(), ((PXFSpinner) this).toString());
-    //    //} else if (this instanceof PXFToggleBoolean) {
-    //    //    data.addProperty(getKey(), ((PXFToggleBoolean) this).toString());
-    //    //} else if (this instanceof PXFUnknownControlType) {
-    //    //    Log.d(PXFUnknownControlType.class.getName(), "Unknown");
-    //    //} else {
-    //    //    data.addProperty(getKey(), "");
-    //    //}
-    //    if (this instanceof PXFUnknownControlType) {
-    //        Log.d(PXFUnknownControlType.class.getName(), "Unknown");
-    //    }
-    //    else{
-    //        data.addProperty(getKey(), toString());
-    //    }
-    //    return data;
-    //}
     public String getWidgetDataString() {
-        /*
-        if (this instanceof PXFEdit) {
-            return ((PXFEdit) this).toString();
-        } else if (this instanceof PXFCheckBox) {
-            return ((PXFCheckBox) this).toString();
-        } else if (this instanceof PXFDatePicker) {
-            return ((PXFDatePicker) this).toString();
-        } else if (this instanceof PXFSpinner) {
-            return ((PXFSpinner) this).toString();
-        } else if (this instanceof PXFToggleBoolean) {
-            return ((PXFToggleBoolean) this).toString();
-        } else if (this instanceof PXFUnknownControlType) {
-            Log.d(PXFUnknownControlType.class.getName(), "Unknown");
-        }
-        */
         return this instanceof PXFUnknownControlType ? "" : toString();
     }
 }
