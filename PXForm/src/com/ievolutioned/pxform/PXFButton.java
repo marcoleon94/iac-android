@@ -15,27 +15,29 @@ import com.google.zxing.integration.android.IntentIntegrator;
 
 public class PXFButton extends PXWidget {
 
+    public static final String ACTION_NONE = "NONE";
     public static final String ACTION_OPEN_CAMERA ="openCamera:";
     public static final String ACTION_SUBMIT = "submitRegistrationForm:";
     public static final String ACTION_BACK_ROOT = "automaticBackRoot";
 
-    View.OnClickListener clickListener = null;
+    //View.OnClickListener clickListener = null;
+    private Activity contextActivity;
+    //private String buttonAction;
 
-    public class HelperButton extends HelperWidget{
+    public static class HelperButton extends HelperWidget{
         protected Button button;
-        protected String action;
-        public PXFButton getPXFButton(){
-            return PXFButton.this;
-        }
+        //public PXFButton getPXFButton(){
+        //    return PXFButton.this;
+        //}
     }
 
     public PXFButton(Map<String, Entry<String, JsonElement>> entry) {
         super(entry);
     }
 
-    public void setClickListener(final View.OnClickListener clickListener) {
-        this.clickListener = clickListener;
-    }
+    //public void setClickListener(final View.OnClickListener clickListener) {
+    //    this.clickListener = clickListener;
+    //}
 
     @Override
     public void setWidgetData(View view) {
@@ -43,16 +45,16 @@ public class PXFButton extends PXWidget {
         HelperButton h = (HelperButton) view.getTag();
         h.button.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
                 getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
-        h.button.setTag(h);
-        h.action = getJsonEntries().containsKey(FIELD_ACTION) ?
-                getJsonEntries().get(FIELD_ACTION).getValue().getAsString() : null;
+        h.button.setOnClickListener(onclick);
+        //h.button.setTag(h);
+        //h.action = getJsonEntries().containsKey(FIELD_ACTION) ?
+        //        getJsonEntries().get(FIELD_ACTION).getValue().getAsString() : null;
     }
 
-    public static String getAction(View view){
-        HelperButton h = (HelperButton) view.getTag();
-        return h.action;
-    }
-
+    //public static String getAction(View view){
+    //    HelperButton h = (HelperButton) view.getTag();
+    //    return h.action;
+    //}
 
     @Override
     protected HelperButton generateHelperClass() {
@@ -66,6 +68,8 @@ public class PXFButton extends PXWidget {
 
     @Override
     public View createControl(Activity context) {
+        contextActivity = context;
+
         LinearLayout v = (LinearLayout)super.createControl(context);
         HelperButton helper = (HelperButton) v.getTag();
 
@@ -75,11 +79,15 @@ public class PXFButton extends PXWidget {
         button.setLayoutParams(par);
         button.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
                 getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
+        button.setOnClickListener(onclick);
         helper.button = button;
 
+        //buttonAction = getJsonEntries().containsKey(FIELD_ACTION) ?
+        //        getJsonEntries().get(FIELD_ACTION).getValue().getAsString() : ACTION_NONE;
+
         //action
-        if (getJsonEntries().containsKey(FIELD_ACTION))
-            setButtonAction(button, context , getJsonEntries().get(FIELD_ACTION).getValue().getAsString());
+        //if (getJsonEntries().containsKey(FIELD_ACTION))
+        //    setButtonAction(button, context , getJsonEntries().get(FIELD_ACTION).getValue().getAsString());
 
         //add controls to main container
         v.addView(button);
@@ -87,25 +95,36 @@ public class PXFButton extends PXWidget {
         return v;
     }
 
-    private void setButtonAction(final Button b, final Activity context, final String action) {
-        if (b == null)
-            return;
+    //private void setButtonAction(final Button b, final Activity context, final String action) {
+    //    if (b == null)
+    //        return;
         /*
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: Validate action
+                // T ODO: Validate action
                 openCamera(context);
             }
         });
         */
-        if(clickListener != null)
-            b.setOnClickListener(clickListener);
-    }
+    //if(clickListener != null)
+    //    b.setOnClickListener(clickListener);
+    //}
 
-    private void openCamera(Activity context) {
-        //TODO: Arguments
-        IntentIntegrator scanIntegrator = new IntentIntegrator(context);
-        scanIntegrator.initiateScan();
-    }
+    //private void openCamera(Activity context) {
+    //TO DO: Arguments
+    //    IntentIntegrator scanIntegrator = new IntentIntegrator(context);
+    //    scanIntegrator.initiateScan();
+    //}
+
+    private View.OnClickListener onclick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(getEventHandler() != null) {
+                getEventHandler().onClick(PXFButton.this);
+            }
+            IntentIntegrator scanIntegrator = new IntentIntegrator(contextActivity);
+            scanIntegrator.initiateScan();
+        }
+    };
 }

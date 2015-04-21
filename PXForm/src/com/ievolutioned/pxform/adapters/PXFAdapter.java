@@ -1,12 +1,8 @@
 package com.ievolutioned.pxform.adapters;
 
-
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ievolutioned.pxform.PXFParser;
-import com.ievolutioned.pxform.PXFUnknownControlType;
 import android.app.Activity;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -18,9 +14,7 @@ import android.widget.BaseAdapter;
 import com.ievolutioned.pxform.PXWidget;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /*
 remove file form git:
@@ -50,8 +44,16 @@ remove unused repo head
 public class PXFAdapter extends BaseAdapter implements Parcelable {
     private List<PXWidget> lWidgets = new ArrayList<PXWidget>();
     private Activity aActivity;
-
+    private AdapterEventHandler eventHandler;
     private String parcelJson = "";
+
+    public interface AdapterEventHandler {
+        void onClick(PXWidget widget);
+    }
+
+    public void setAdapterEventHandler(AdapterEventHandler callback){
+        eventHandler = callback;
+    }
 
     private PXFAdapter(Parcel in) {
         Log.e("Parcel in",in.toString());
@@ -268,27 +270,29 @@ public class PXFAdapter extends BaseAdapter implements Parcelable {
             PXFAdapter.this.notifyDataSetChanged();
         }
 
-        @Override
-        public boolean setWidgetValue(PXWidget parent, String field,  Object value) {
-            try {
-                JsonElement v = new JsonParser().parse(value.toString());
-                if(parent.getJsonEntries().containsKey(field)) {
-                    parent.getJsonEntries().get(field).setValue(v);
-                    return true;
-                }
-                else
-                    Log.d(PXFAdapter.class.getName(), "Can not find the field: "+field);
-            }
-            catch (Exception e){
-                Log.e(PXFAdapter.class.getName(),e.getMessage(),e);
-                return false;
-            }
-            return false;
-        }
+        //@Override
+        //public boolean setWidgetValue(PXWidget parent, String field,  Object value) {
+        //    try {
+        //        JsonElement v = new JsonParser().parse(value.toString());
+        //        if(parent.getJsonEntries().containsKey(field)) {
+        //            parent.getJsonEntries().get(field).setValue(v);
+        //            return true;
+        //        }
+        //        else
+        //            Log.d(PXFAdapter.class.getName(), "Can not find the field: "+field);
+        //    }
+        //    catch (Exception e){
+        //        Log.e(PXFAdapter.class.getName(),e.getMessage(),e);
+        //        return false;
+        //    }
+        //    return false;
+        //}
 
         @Override
         public void onClick(PXWidget parent) {
-
+            if(eventHandler != null){
+                eventHandler.onClick(parent);
+            }
         }
     };
 }
