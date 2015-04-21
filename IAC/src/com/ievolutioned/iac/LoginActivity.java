@@ -138,7 +138,8 @@ public class LoginActivity extends Activity {
         public void onSuccess(LoginService.LoginResponse response) {
             showToast("Logged in");
             loading(false);
-            startActivity(new Intent(getBaseContext(), MainActivity.class));
+            saveToken(response.user.getAdminToken());
+            startMainActivity();
         }
 
         @Override
@@ -153,4 +154,12 @@ public class LoginActivity extends Activity {
             loading(false);
         }
     };
+
+    private void startMainActivity(){
+        startActivity(new Intent(getBaseContext(), MainActivity.class));
+    }
+
+    private void saveToken(String token){
+
+    }
 }
