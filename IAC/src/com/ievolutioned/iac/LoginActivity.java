@@ -14,6 +14,8 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.ievolutioned.iac.model.LoginService;
 import com.ievolutioned.iac.util.AppConfig;
+import com.ievolutioned.iac.util.AppPreferences;
+import com.ievolutioned.iac.util.LogUtil;
 
 /**
  * Log in activity class. Manages the log in actions
@@ -155,11 +157,18 @@ public class LoginActivity extends Activity {
         }
     };
 
-    private void startMainActivity(){
+    private void startMainActivity() {
         startActivity(new Intent(getBaseContext(), MainActivity.class));
     }
 
-    private void saveToken(String token){
-
+    private void saveToken(String token) {
+        if (token == null)
+            return;
+        LogUtil.d(LoginActivity.class.getName(),"token: "+token);
+        try {
+            AppPreferences.setAdminToken(this, token);
+        } catch (Exception e) {
+            LogUtil.e(LoginActivity.class.getName(), "Can not set ADMIN TOKEN", e);
+        }
     }
 }
