@@ -75,7 +75,7 @@ public class PXFParser {
         JsonArray array = json_tmp.getAsJsonArray();
         for (PXWidget w : widgets) {
             if(TextUtils.isEmpty(w.getKey()))
-            continue;
+                continue;
 
             setDataToProperties(w,array);
         }
@@ -229,6 +229,8 @@ public class PXFParser {
             if (map.containsKey(PXWidget.FIELD_CELL) &&
                     isCELL_OPTION_SEGMENT(map.get(PXWidget.FIELD_CELL).getValue())) {
                 widget = new PXFToggleBoolean(map);
+            } else if(isSubForm(map.get(PXWidget.FIELD_OPTIONS).getValue())){
+                widget = new PXFSubMenuButton(map);
             } else {
                 widget = new PXFSpinner(map);
             }
@@ -243,5 +245,34 @@ public class PXFParser {
     private static boolean isCELL_OPTION_SEGMENT(JsonElement cell){
         return PXWidget.FIELD_CELL_OPTION_SEGMENT.equalsIgnoreCase(cell.getAsString()) ||
                 PXWidget.FIELD_CELL_OPTION_SEGMENT_CUSTOM.equalsIgnoreCase(cell.getAsString());
+    }
+
+    private static boolean isSubForm(JsonElement cell){
+        int index = -1;
+        JsonArray array;
+        JsonElement sub;
+
+        if(!cell.isJsonArray())
+            return false;
+
+        array = cell.getAsJsonArray();
+
+        for (int z = 0; z < array.size(); ++z) {
+
+            if(!array.get(z).isJsonObject())
+                continue;
+
+            sub = array.get(z).getAsJsonObject();
+
+            if (!sub.isJsonObject()
+                    || sub.getAsJsonObject().entrySet().size() < 1
+                    || !sub.getAsJsonObject().entrySet().iterator().hasNext()
+                    || !sub.getAsJsonObject().entrySet().iterator().next().getValue().isJsonArray())
+                continue;
+
+            return true;
+        }
+
+        return false;
     }
 }

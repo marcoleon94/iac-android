@@ -1,24 +1,17 @@
 package com.ievolutioned.pxform;
 
-import java.util.List;
 import java.util.Map;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import org.json.JSONObject;
 
 public abstract class PXWidget {
     public static final String FIELD_HEADER      = "header"     ;
@@ -48,24 +41,28 @@ public abstract class PXWidget {
     public static final int ADAPTER_ITEM_TYPE_EDIT = 4;
     public static final int ADAPTER_ITEM_TYPE_SPINNER = 5;
     public static final int ADAPTER_ITEM_TYPE_TOGGLEBOOLEAN = 6;
+    public static final int ADAPTER_ITEM_TYPE_SUBMENUBUTTON = 7;
 
     private Map<String, Map.Entry<String,JsonElement>> eEntry;
-    private int jsonLevel = 0;
-    private String jsonKeyParent = "";
+    //private int jsonLevel = 0;
+    //private String jsonKeyParent = "";
+    private String fieldKey = "";
     private PXWidgetHandler eventHandler = null;
 
     protected abstract HelperWidget generateHelperClass();
     public abstract int getAdapterItemType();
 
     public interface PXWidgetHandler{
-        public boolean addChildWidgets(PXWidget parent, int selected_index);
-        public boolean removeChildWidgets(PXWidget parent);
+        //public boolean addChildWidgets(PXWidget parent, int selected_index);
+        //public boolean removeChildWidgets(PXWidget parent);
         public void notifyDataSetChanges();
         public boolean setWidgetValue(PXWidget parent, String field, Object value);
+        public void onClick(PXWidget parent);
     }
 
-    private String key = "";
-
+    /**
+     * Base class for helper list adapter item
+     */
     public static abstract class HelperWidget{
         protected LinearLayout container;
         protected TextView headTextView;
@@ -80,14 +77,18 @@ public abstract class PXWidget {
                 ADAPTER_ITEM_TYPE_EDIT,
                 ADAPTER_ITEM_TYPE_SPINNER,
                 ADAPTER_ITEM_TYPE_TOGGLEBOOLEAN,
+                ADAPTER_ITEM_TYPE_SUBMENUBUTTON,
         };
         return ids.length;
     }
+
+    public PXWidgetHandler getEventHandler() { return eventHandler; }
+    public void setEventHandler(PXWidgetHandler callback){ eventHandler = callback; }
     /**
      * Get a LinearLayout view container, if the map contains a PXWidget.FIELD_HEADER
      *
-     * @param context
-     * @return
+     * @param context used to create the view
+     * @return return a LinearLayout container
      */
     public View createControl(final Activity context){
         HelperWidget helper = generateHelperClass();
@@ -111,7 +112,6 @@ public abstract class PXWidget {
 
         return linear;
     }
-
     /**
      */
     private TextView getTextViewHead(Context context,
@@ -130,14 +130,12 @@ public abstract class PXWidget {
                 View.VISIBLE : View.GONE);
         return t;
     }
-
     protected TextView getGenericTextView(Context context, String text){
         TextView t = new TextView(context);
         t.setText(text);
         t.setPadding(5, 2, 2, 5);
         return t;
     }
-
     protected LinearLayout getGenericLinearLayout(Context context){
         LinearLayout l = new LinearLayout(context);
         l.setOrientation(LinearLayout.HORIZONTAL);
@@ -147,28 +145,24 @@ public abstract class PXWidget {
         l.setBackgroundColor(Color.parseColor("#ECEAEC"));
         return l;
     }
+    public PXWidget(Map<String, Map.Entry<String,JsonElement>> entry){ eEntry = entry; }
+    public Map<String, Map.Entry<String,JsonElement>> getJsonEntries(){ return eEntry; }
+    //public int getJsonLevel(){
+    //    return jsonLevel;
+    //}
+    //public String getJsonKeyParent(){
+    //    return jsonKeyParent;
+    //}
 
-    public PXWidget(Map<String, Map.Entry<String,JsonElement>> entry){
-        eEntry = entry;
-    }
-
-    public Map<String, Map.Entry<String,JsonElement>> getJsonEntries(){
-        return eEntry;
-    }
-
-    public int getJsonLevel(){ return jsonLevel; }
-    public String getJsonKeyParent(){ return jsonKeyParent; }
-    public PXWidgetHandler getEventHandler() { return eventHandler; }
-
-    public void setJsonLevel(int level){ jsonLevel = level; }
-    public void setJsonKeyParent(String parent){
-        if(parent == null)
-            parent = "";
-
-        jsonKeyParent = parent;
-    }
-    public void setEventHandler(PXWidgetHandler callback){ eventHandler = callback; }
-
+    //public void setJsonLevel(int level){
+    //    jsonLevel = level;
+    //}
+    //public void setJsonKeyParent(String parent){
+    //    if(parent == null)
+    //        parent = "";
+    //
+    //    jsonKeyParent = parent;
+    //}
     public void setWidgetData(View view){
         HelperWidget helper = (HelperWidget) view.getTag();
         helper.headTextView.setText(getJsonEntries().containsKey(FIELD_HEADER) ?
@@ -180,34 +174,36 @@ public abstract class PXWidget {
             setKey(getJsonEntries().get(FIELD_KEY).getValue().toString());
     }
 
-    public void setKey(String key){
-        this.key = key;
-    }
-    public String getKey(){
-        return this.key;
-    }
+    public void setKey(String key){ fieldKey = key; }
+    public String getKey(){ return fieldKey; }
 
-    public JsonElement getWidgetData() {
-        JsonObject data = new JsonObject();
-        if (this instanceof PXFEdit) {
-            data.addProperty(getKey(), ((PXFEdit) this).toString());
-        } else if (this instanceof PXFCheckBox) {
-            data.addProperty(getKey(), ((PXFCheckBox) this).toString());
-        } else if (this instanceof PXFDatePicker) {
-            data.addProperty(getKey(), ((PXFDatePicker) this).toString());
-        } else if (this instanceof PXFSpinner) {
-            data.addProperty(getKey(), ((PXFSpinner) this).toString());
-        } else if (this instanceof PXFToggleBoolean) {
-            data.addProperty(getKey(), ((PXFToggleBoolean) this).toString());
-        } else if (this instanceof PXFUnknownControlType) {
-            Log.d(PXFUnknownControlType.class.getName(), "Unknown");
-        } else {
-            data.addProperty(getKey(), "");
-        }
-        return data;
-    }
-
+    //public JsonElement getWidgetData() {
+    //    JsonObject data = new JsonObject();
+    //    //if (this instanceof PXFEdit) {
+    //    //    data.addProperty(getKey(), ((PXFEdit) this).toString());
+    //    //} else if (this instanceof PXFCheckBox) {
+    //    //    data.addProperty(getKey(), ((PXFCheckBox) this).toString());
+    //    //} else if (this instanceof PXFDatePicker) {
+    //    //    data.addProperty(getKey(), ((PXFDatePicker) this).toString());
+    //    //} else if (this instanceof PXFSpinner) {
+    //    //    data.addProperty(getKey(), ((PXFSpinner) this).toString());
+    //    //} else if (this instanceof PXFToggleBoolean) {
+    //    //    data.addProperty(getKey(), ((PXFToggleBoolean) this).toString());
+    //    //} else if (this instanceof PXFUnknownControlType) {
+    //    //    Log.d(PXFUnknownControlType.class.getName(), "Unknown");
+    //    //} else {
+    //    //    data.addProperty(getKey(), "");
+    //    //}
+    //    if (this instanceof PXFUnknownControlType) {
+    //        Log.d(PXFUnknownControlType.class.getName(), "Unknown");
+    //    }
+    //    else{
+    //        data.addProperty(getKey(), toString());
+    //    }
+    //    return data;
+    //}
     public String getWidgetDataString() {
+        /*
         if (this instanceof PXFEdit) {
             return ((PXFEdit) this).toString();
         } else if (this instanceof PXFCheckBox) {
@@ -221,7 +217,7 @@ public abstract class PXWidget {
         } else if (this instanceof PXFUnknownControlType) {
             Log.d(PXFUnknownControlType.class.getName(), "Unknown");
         }
-        return "";
+        */
+        return this instanceof PXFUnknownControlType ? "" : toString();
     }
-
 }

@@ -17,7 +17,7 @@ public class PXFButton extends PXWidget {
 
     public static final String ACTION_OPEN_CAMERA ="openCamera:";
     public static final String ACTION_SUBMIT = "submitRegistrationForm:";
-    public static final String ACTION_BACK_ROOT = "atomaticBackRoot";
+    public static final String ACTION_BACK_ROOT = "automaticBackRoot";
 
     View.OnClickListener clickListener = null;
 

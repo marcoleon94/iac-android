@@ -16,8 +16,8 @@ public class PXFormActivity extends Activity {
 	PXFParser p;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	protected void onCreate(Bundle saved) {
+		super.onCreate(saved);
 		setContentView(R.layout.pxform_activity);
 
 		//final LinearLayout container = (LinearLayout)findViewById(R.id.PXForm_linearPanel);
