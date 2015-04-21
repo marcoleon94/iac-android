@@ -40,7 +40,7 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(!AppConfig.DEBUG)
+        if (!AppConfig.DEBUG)
             Crashlytics.start(this);
         setContentView(R.layout.activity_login);
         bindUI();
@@ -70,7 +70,7 @@ public class LoginActivity extends Activity {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.activity_login_btnLogIn:
-                    if(AppConfig.DEBUG) {
+                    if (AppConfig.DEBUG) {
                         logIn();
                         break;
                     }
@@ -125,8 +125,9 @@ public class LoginActivity extends Activity {
      */
     private void logIn() {
         loading(true);
-        LoginService loginService = new LoginService();
-        loginService.logIn(mEmail.getText().toString().trim(), mPassword.getText().toString().trim(), login_handler);
+        LoginService loginService = new LoginService(AppConfig.getUUID(this));
+        loginService.logIn(mEmail.getText().toString().trim(), mPassword.getText().toString().trim(),
+                login_handler);
     }
 
     /**
@@ -142,7 +143,7 @@ public class LoginActivity extends Activity {
 
         @Override
         public void onError(LoginService.LoginResponse response) {
-            showToast("Logged in");
+            showToast("Error: " + response.msg);
             loading(false);
         }
 

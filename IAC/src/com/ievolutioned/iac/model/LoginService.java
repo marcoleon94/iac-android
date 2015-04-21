@@ -6,6 +6,9 @@ import com.ievolutioned.iac.net.HttpGetParam;
 import com.ievolutioned.iac.net.HttpHeader;
 import com.ievolutioned.iac.net.NetUtil;
 import com.ievolutioned.iac.util.AppConfig;
+import com.ievolutioned.iac.util.FormatUtil;
+
+import java.util.Date;
 
 /**
  * Manages the log in / out services for the user on the system
@@ -17,26 +20,37 @@ public class LoginService {
 
     private AsyncTask<Void, Void, LoginResponse> task;
 
+    private String deviceId = null;
+
+    public LoginService(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
     /**
      * Logs the user in the system
      *
-     * @param email
+     * @param id
      * @param pass
      * @param callback a LoginHandler callback handler
      */
-    public void logIn(final String email, final String pass, final LoginHandler callback) {
+    public void logIn(final String id, final String pass, final LoginHandler callback) {
         task = new AsyncTask<Void, Void, LoginResponse>() {
             @Override
             protected LoginResponse doInBackground(Void... voids) {
                 if (isCancelled())
                     return null;
                 try {
+                    if (deviceId == null) {
+                        callback.onError(new LoginResponse(false, "Device id is null", null));
+                        this.cancel(true);
+                    }
                     HttpGetParam params = new HttpGetParam();
-                    params.add("email", email);
+                    params.add("iac_id", id);
                     params.add("password", pass);
                     HttpHeader headers = getLoginHeaders();
-                    String response = NetUtil.post(URL_LOGIN,params,headers,null);
-                    return new LoginResponse(true, null, null);
+                    //{"status":"success","admin_token":"847429867a1c19d149c10b5e8be762bd","admin_email":"silvano@ievolutioned.com"}
+                    String response = NetUtil.get(URL_LOGIN, params, headers);
+                    return new LoginResponse(true, response, null);
                 } catch (Exception e) {
                     return new LoginResponse(false, e.getMessage(), e);
                 }
@@ -44,7 +58,7 @@ public class LoginService {
 
             @Override
             protected void onPostExecute(LoginResponse response) {
-                hanldeResult(callback,response);
+                hanldeResult(callback, response);
             }
 
             @Override
@@ -56,10 +70,31 @@ public class LoginService {
         task.execute();
     }
 
-    private static HttpHeader getLoginHeaders(){
+    private HttpHeader getLoginHeaders() {
         HttpHeader headers = new HttpHeader();
-        headers.add("X-version", AppConfig.API_VERSION);
-        headers.add("X-token",AppConfig.API_TOKEN);
+
+        String xVersion = AppConfig.API_VERSION;
+        String xToken = AppConfig.API_TOKEN; // d4e9a9414181819f3a47ff1ddd9b2ca3
+        String xAdminToken = "nosession";//AppConfig.API_ADMIN_TOKEN; //bff4cd1726e4133675e3c38bb47d6b4c
+        String controller = "services";
+        String action = "access";
+
+        String reversedID = FormatUtil.reverseString(this.deviceId);
+        String xDate = FormatUtil.dateDefaultFormat(new Date());
+        String xDevice = this.deviceId;
+
+        //String preSecret = #{X-token}-#{controller}-#{action}-#{X-version}-#{device_id.reverse}-#{X-admin-token}-#{X-device-date}
+        String preSecret = String.format("%s-%s-%s-%s-%s-%s-%s", xToken, controller, action,
+                xVersion, reversedID, xAdminToken, xDate);
+        String xSecret = FormatUtil.md5(preSecret);
+
+        headers.add("X-version", xVersion);
+        headers.add("X-token", xToken);
+        headers.add("X-admin-token", xAdminToken);
+        headers.add("X-device-id", xDevice);
+        headers.add("X-device-date", xDate);
+        headers.add("X-secret", xSecret);
+
 
         return headers;
     }
