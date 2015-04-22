@@ -38,22 +38,6 @@ public class MainActivity extends ActionBarActivity {
             Crashlytics.start(this);
         setContentView(R.layout.activity_main);
         bindUI();
-        FormService fs = new FormService(AppConfig.getUUID(this), AppPreferences.getAdminToken(this));
-        fs.getForms(new FormService.ServiceHandler() {
-            @Override
-            public void onSuccess(FormService.FormResponse response) {
-                LogUtil.d(MainActivity.class.getName(), response.msg);
-            }
-
-            @Override
-            public void onError(FormService.FormResponse response) {
-                LogUtil.e(MainActivity.class.getName(), response.msg, response.e);
-            }
-
-            @Override
-            public void onCancel() {
-            }
-        });
     }
 
     private void bindUI() {
