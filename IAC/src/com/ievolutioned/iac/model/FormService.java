@@ -2,13 +2,25 @@ package com.ievolutioned.iac.model;
 
 import android.os.AsyncTask;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.ievolutioned.iac.net.HttpGetParam;
+import com.ievolutioned.iac.net.HttpHeader;
+import com.ievolutioned.iac.net.NetUtil;
+import com.ievolutioned.iac.util.AppConfig;
+import com.ievolutioned.iac.util.FormatUtil;
+
+import java.util.Date;
+
 /**
  * Provides the forms loaded on the system
- *
+ * <p/>
  * Created by Daniel on 22/04/2015.
  */
 public class FormService {
-    private static final String URL_LOGIN = "https://iacgroup.herokuapp.com/api/services/access";
+    private static final String URL_FORM_ALL = "https://iacgroup.herokuapp.com/api/inquests";
+
+    private static final String JSON_INQUESTS = "inquests";
 
     private AsyncTask<Void, Void, FormResponse> task;
 
@@ -16,14 +28,85 @@ public class FormService {
 
     private String adminToken = null;
 
-    public FormService(String deviceId, String adminToken){
+    public FormService(String deviceId, String adminToken) {
         this.deviceId = deviceId;
         this.adminToken = adminToken;
     }
 
-    protected void hanldeResult(final LoginHandler callback, final FormResponse response) {
+    public void getForms(final ServiceHandler callback) {
+        task = new AsyncTask<Void, Void, FormResponse>() {
+            @Override
+            protected FormResponse doInBackground(Void... p) {
+                if (isCancelled())
+                    return null;
+                try {
+                    if (deviceId == null || adminToken == null) {
+                        callback.onError(new FormResponse(null, "Params are null", null));
+                        this.cancel(true);
+                    }
+                    HttpGetParam params = new HttpGetParam();
+
+                    HttpHeader headers = getFormHeaders();
+
+                    String response = NetUtil.get(URL_FORM_ALL, params, headers);
+
+                    if (response != null) {
+                        JsonElement json = new JsonParser().parse(response);
+                        if (!json.isJsonNull())
+                            return new FormResponse(json.getAsJsonObject().get(JSON_INQUESTS), response, null);
+                    }
+                    return null;
+                } catch (Exception e) {
+                    return new FormResponse(null, e.getMessage(), e);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(FormResponse response) {
+                hanldeResult(callback, response);
+            }
+
+            @Override
+            protected void onCancelled() {
+                super.onCancelled();
+                callback.onCancel();
+            }
+        };
+        task.execute();
+    }
+
+    private HttpHeader getFormHeaders() {
+        HttpHeader headers = new HttpHeader();
+
+        String xVersion = AppConfig.API_VERSION;
+        String xToken = AppConfig.API_TOKEN;
+        String xAdminToken = adminToken;
+        String controller = "inquests";
+        String action = "index";
+
+        String reversedID = FormatUtil.reverseString(this.deviceId);
+        String xDate = FormatUtil.dateDefaultFormat(new Date());
+        String xDevice = this.deviceId;
+
+        //String preSecret = #{X-token}-#{controller}-#{action}-#{X-version}-#{device_id.reverse}-#{X-admin-token}-#{X-device-date}
+        String preSecret = String.format("%s-%s-%s-%s-%s-%s-%s", xToken, controller, action,
+                xVersion, reversedID, xAdminToken, xDate);
+        String xSecret = FormatUtil.md5(preSecret);
+
+        headers.add("X-version", xVersion);
+        headers.add("X-token", xToken);
+        headers.add("X-admin-token", xAdminToken);
+        headers.add("X-device-id", xDevice);
+        headers.add("X-device-date", xDate);
+        headers.add("X-secret", xSecret);
+
+
+        return headers;
+    }
+
+    protected void hanldeResult(final ServiceHandler callback, final FormResponse response) {
         if (response == null)
-            callback.onError(new FormResponse("Service error", new RuntimeException()));
+            callback.onError(new FormResponse(null, "Service error", new RuntimeException()));
         else if (response.e != null)
             callback.onError(response);
         else
@@ -33,7 +116,7 @@ public class FormService {
     /**
      * form service handler
      */
-    public interface LoginHandler {
+    public interface ServiceHandler {
         public void onSuccess(final FormResponse response);
 
         public void onError(final FormResponse response);
@@ -42,8 +125,11 @@ public class FormService {
     }
 
 
-    public class FormResponse extends ResponseBase{
-        public FormResponse(String msg, Throwable e){
+    public class FormResponse extends ResponseBase {
+        public JsonElement json;
+
+        public FormResponse(JsonElement json, String msg, Throwable e) {
+            this.json = json;
             this.msg = msg;
             this.e = e;
         }

@@ -46,6 +46,8 @@ public class LoginActivity extends Activity {
             Crashlytics.start(this);
         setContentView(R.layout.activity_login);
         bindUI();
+        mEmail.setText("12345678");
+        mPassword.setText("12345678");
     }
 
     /**
@@ -109,6 +111,7 @@ public class LoginActivity extends Activity {
     private void showToast(int msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
+
     private void showToast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
@@ -166,7 +169,7 @@ public class LoginActivity extends Activity {
     private void saveToken(String token) {
         if (token == null)
             return;
-        LogUtil.d(LoginActivity.class.getName(),"token: "+token);
+        LogUtil.d(LoginActivity.class.getName(), "token: " + token);
         try {
             AppPreferences.setAdminToken(this, token);
         } catch (Exception e) {
