@@ -142,7 +142,7 @@ public class FormService {
 
                     //Get headers
                     HttpHeader headers = getFormHeaders(ACTION_SHOW);
-                    
+
                     // Get response
                     String response = NetUtil.get(URL_FORM + idForm, null, headers);
 
