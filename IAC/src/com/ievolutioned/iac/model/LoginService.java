@@ -186,9 +186,7 @@ public class LoginService {
     /**
      * Login response class, manages the response from service
      */
-    public class LoginResponse {
-        public String msg;
-        public Throwable e;
+    public class LoginResponse extends ResponseBase {
         public boolean logged;
         public UserEntity user;
 
