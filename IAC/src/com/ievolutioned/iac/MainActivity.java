@@ -19,7 +19,10 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.ievolutioned.iac.fragment.FormsFragment;
 import com.ievolutioned.iac.fragment.SitesFragment;
+import com.ievolutioned.iac.model.FormService;
 import com.ievolutioned.iac.util.AppConfig;
+import com.ievolutioned.iac.util.AppPreferences;
+import com.ievolutioned.iac.util.LogUtil;
 
 
 public class MainActivity extends ActionBarActivity {
