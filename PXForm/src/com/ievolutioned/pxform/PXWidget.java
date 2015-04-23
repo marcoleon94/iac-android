@@ -7,6 +7,7 @@ import com.google.gson.JsonElement;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,9 +48,6 @@ public abstract class PXWidget {
     private String fieldKey = "";
     private PXWidgetHandler eventHandler = null;
 
-    protected abstract HelperWidget generateHelperClass();
-    public abstract int getAdapterItemType();
-
     public interface PXWidgetHandler{
         public void notifyDataSetChanges();
         public void onClick(PXWidget parent);
@@ -76,6 +74,9 @@ public abstract class PXWidget {
         };
         return ids.length;
     }
+
+    protected abstract HelperWidget generateHelperClass();
+    public abstract int getAdapterItemType();
 
     public PXWidgetHandler getEventHandler() { return eventHandler; }
     public void setEventHandler(PXWidgetHandler callback){ eventHandler = callback; }
@@ -142,6 +143,12 @@ public abstract class PXWidget {
     }
     public PXWidget(Map<String, Map.Entry<String,JsonElement>> entry){ eEntry = entry; }
     public Map<String, Map.Entry<String,JsonElement>> getJsonEntries(){ return eEntry; }
+
+    /**
+     * Used by the adapter to fill the information of the widget, extended widget should call
+     * this super method.
+     * @param view
+     */
     public void setWidgetData(View view){
         HelperWidget helper = (HelperWidget) view.getTag();
         helper.headTextView.setText(getJsonEntries().containsKey(FIELD_HEADER) ?
@@ -152,10 +159,19 @@ public abstract class PXWidget {
         if (getJsonEntries().get(FIELD_KEY) != null)
             setKey(getJsonEntries().get(FIELD_KEY).getValue().toString());
     }
-
+    /**
+     * Set the ID of the field and should be unique at the same level of the form, no validation
+     * is perform for repeated IDs. Nested forms can use the same ID.
+     * @param key
+     */
     public void setKey(String key){ fieldKey = key; }
+    /**
+     * The {@link com.ievolutioned.pxform.PXWidget#FIELD_KEY} value, the ID of the field and should
+     * unique at the same level of the form, still <b>nested forms can have the same ID</b>.
+     *
+     * @return String with the FIELD_KEY found
+     */
     public String getKey(){ return fieldKey; }
-
     public String getWidgetDataString() {
         return this instanceof PXFUnknownControlType ? "" : toString();
     }

@@ -133,12 +133,10 @@ public class PXFAdapter extends BaseAdapter implements Parcelable {
     }
 
     public static final Parcelable.Creator<PXFAdapter> CREATOR = new Parcelable.Creator<PXFAdapter>() {
-
         @Override
         public PXFAdapter createFromParcel(Parcel source) {
             return new PXFAdapter(source);
         }
-
         @Override
         public PXFAdapter[] newArray(int size) {
             return new PXFAdapter[size];

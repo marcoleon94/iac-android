@@ -21,10 +21,7 @@ import com.ievolutioned.pxform.adapters.PXFAdapter;
 
 public class PXFParser {
     private PXFParserEventHandler eventHandler;
-
     private JsonElement json_tmp;
-
-    //protected View.OnClickListener clickListener = null;
 
     public interface PXFParserEventHandler{
         public abstract void finish(com.ievolutioned.pxform.adapters.PXFAdapter adapter, String json);
@@ -142,10 +139,6 @@ public class PXFParser {
                         }
 
                         PXWidget px = getWidgetFromType(map);
-
-                        //if(px instanceof PXFButton && clickListener != null)
-                        //    ((PXFButton) px).setClickListener(clickListener);
-
                         w.add(px);
 
                         try {
