@@ -12,7 +12,11 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.ievolutioned.iac.model.LoginService;
+import com.ievolutioned.iac.model.UserService;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.util.LogUtil;
@@ -48,6 +52,38 @@ public class LoginActivity extends Activity {
         bindUI();
         mEmail.setText("12345678");
         mPassword.setText("12345678");
+
+        String uuid = AppConfig.getUUID(this);
+        String at = AppPreferences.getAdminToken(this);
+        int inquestId = 9;
+        String iacId = "32006988";
+
+        JsonElement json = new JsonParser().parse("{\"response\":{\"gained\":\"No\",\"newJob\":\"\",\"salary\":\"Si\",\"values\":\"Nada\",\"bossWhy\":\"mala onda\",\"opinion\":\"Regular\",\"benefits\":\"Regular\",\"identity\":\"Nada\",\"training\":\"Malo\",\"gainedWhy\":\"\",\"newSalary\":\"\",\"salaryWhy\":\"\",\"teammates\":\"Bueno\",\"unionized\":\"Malo\",\"workplace\":\"Regular\",\"employeeID\":\"32006785\",\"newCompany\":\"\",\"opinionWhy\":\"\",\"trainingOk\":\"Si\",\"benefitsWhy\":\"\",\"bossOpinion\":\"Malo\",\"otherReason\":\"\",\"trainingWhy\":\"por que no me enseñaron nada\",\"unionizedWhy\":\"¿¿ funcionas,no tengo idea tu si ?????\",\"workPromises\":\"No\",\"departmentWhy\":\"\",\"reasonToLeave\":\"Matrimonio\",\"trainingOkWhy\":\"\",\"humanResources\":\"Regular\",\"workInteresting\":\"Si\",\"dateOfWithdrawal\":\"04/10/2015\",\"trainingReceived\":\"Si\",\"departmentOpinion\":\"Regular\",\"humanResourcesWhy\":\"\",\"salaryExpectations\":\"No\",\"trainingReceivedWhy\":\"\",\"humanResourcesService\":\"No\",\"workInterestingAnswer\":\"123 Por ser asi\",\"departmentWithMostRelation\":\"Ingeniería\"}}");
+
+        JsonObject j = new JsonObject();
+        j.addProperty("inquest_id", "9");
+        j.addProperty("iac_id", "32000011");
+        j.add("user_response", json);
+
+        UserService us = new UserService(AppConfig.getUUID(this), AppPreferences.getAdminToken(this));
+        us.create(inquestId, iacId, j.getAsJsonObject().toString(), new UserService.ServiceHandler() {
+            @Override
+            public void onSuccess(UserService.UserResponse response) {
+                LogUtil.d(MainActivity.class.getName(), response.msg);
+            }
+
+            @Override
+            public void onError(UserService.UserResponse response) {
+                LogUtil.e(MainActivity.class.getName(), response.msg, response.e);
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        });
+
+
     }
 
     /**

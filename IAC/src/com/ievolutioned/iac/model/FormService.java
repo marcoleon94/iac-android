@@ -188,7 +188,7 @@ public class FormService {
         String xDate = FormatUtil.dateDefaultFormat(new Date());
         String xDevice = this.deviceId;
 
-        //String preSecret = #{X-token}-#{controller}-#{action}-#{X-version}-#{device_id.reverse}-#{X-admin-token}-#{X-device-date}
+        //#{X-token}-#{controller}-#{action}-#{X-version}-#{device_id.reverse}-#{X-admin-token}-#{X-device-date}
         String preSecret = String.format("%s-%s-%s-%s-%s-%s-%s", xToken, CONTROLLER, action,
                 xVersion, reversedID, xAdminToken, xDate);
         String xSecret = FormatUtil.md5(preSecret);

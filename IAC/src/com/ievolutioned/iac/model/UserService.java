@@ -7,6 +7,10 @@ import com.google.gson.JsonParser;
 import com.ievolutioned.iac.net.HttpGetParam;
 import com.ievolutioned.iac.net.HttpHeader;
 import com.ievolutioned.iac.net.NetUtil;
+import com.ievolutioned.iac.util.AppConfig;
+import com.ievolutioned.iac.util.FormatUtil;
+
+import java.util.Date;
 
 /**
  * Provides the submit and save forms loaded on the system
@@ -20,6 +24,8 @@ public class UserService {
     private static final String ACTION_CREATE = "create";
 
     private static final String ACTION_UPDATE = "update";
+
+    private static final String CONTROLLER = "user_responses";
 
     /**
      * Required as the unique ID of device for secret
@@ -42,7 +48,7 @@ public class UserService {
     private AsyncTask<Void, Void, UserResponse> task;
 
 
-    public void create(final String json , final ServiceHandler callback){
+    public void create(final int inquestId, final String iacId, final String json, final ServiceHandler callback) {
         task = new AsyncTask<Void, Void, UserResponse>() {
             @Override
             protected UserResponse doInBackground(Void... p) {
@@ -56,10 +62,10 @@ public class UserService {
                     HttpGetParam params = new HttpGetParam();
 
                     //Get headers
-                    HttpHeader headers = new HttpHeader();
+                    HttpHeader headers = getUserHeaders(ACTION_CREATE);
 
                     // Get response
-                    String response = NetUtil.get(URL, params, headers);
+                    String response = NetUtil.post(URL, null, headers, json);
 
                     if (response != null) {
                         JsonElement json = new JsonParser().parse(response);
@@ -86,7 +92,7 @@ public class UserService {
         task.execute();
     }
 
-    public void update(final String json , final ServiceHandler callback){
+    public void update(final String json, final ServiceHandler callback) {
         task = new AsyncTask<Void, Void, UserResponse>() {
             @Override
             protected UserResponse doInBackground(Void... p) {
@@ -103,7 +109,7 @@ public class UserService {
                     HttpHeader headers = new HttpHeader();
 
                     // Get response
-                    String response = NetUtil.get(URL, params, headers);
+                    String response = NetUtil.post(URL, params, headers, json);
 
                     if (response != null) {
                         JsonElement json = new JsonParser().parse(response);
@@ -130,6 +136,33 @@ public class UserService {
         task.execute();
     }
 
+
+    private HttpHeader getUserHeaders(String action) {
+        HttpHeader headers = new HttpHeader();
+
+        String xVersion = AppConfig.API_VERSION;
+        String xToken = AppConfig.API_TOKEN;
+        String xAdminToken = adminToken;
+
+        String reversedID = FormatUtil.reverseString(this.deviceId);
+        String xDate = FormatUtil.dateDefaultFormat(new Date());
+        String xDevice = this.deviceId;
+
+        //String preSecret = #{X-token}-#{controller}-#{action}-#{X-version}-#{device_id.reverse}-#{X-admin-token}-#{X-device-date}
+        String preSecret = String.format("%s-%s-%s-%s-%s-%s-%s", xToken, CONTROLLER, action,
+                xVersion, reversedID, xAdminToken, xDate);
+        String xSecret = FormatUtil.md5(preSecret);
+
+        headers.add("X-version", xVersion);
+        headers.add("X-token", xToken);
+        headers.add("X-admin-token", xAdminToken);
+        headers.add("X-device-id", xDevice);
+        headers.add("X-device-date", xDate);
+        headers.add("X-secret", xSecret);
+
+
+        return headers;
+    }
 
     /**
      * Handles the result on callback

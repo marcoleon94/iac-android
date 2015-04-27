@@ -13,7 +13,7 @@ import java.util.Map;
 
 /**
  * Network connection manager class. Performs a set of operation about networking
- *
+ * <p/>
  * Created by Daniel on 13/04/2015.
  */
 public class NetUtil {
@@ -34,12 +34,9 @@ public class NetUtil {
     /**
      * GET method, gets a simple response
      *
-     * @param url
-     *            - The full URL of the service
-     * @param params
-     *            - A set of GET parameters
-     * @param headers
-     *            - A set of headers
+     * @param url     - The full URL of the service
+     * @param params  - A set of GET parameters
+     * @param headers - A set of headers
      * @return the server response.
      * @throws Exception
      */
@@ -75,14 +72,10 @@ public class NetUtil {
     /**
      * POST method, gets a post request
      *
-     * @param url
-     *            the URL
-     * @param params
-     *            a set of HttpGetParam
-     * @param headers
-     *            a set of HttpHeader
-     * @param json
-     *            a JSON string
+     * @param url     the URL
+     * @param params  a set of HttpGetParam
+     * @param headers a set of HttpHeader
+     * @param json    a JSON string
      * @return the response
      * @throws Exception
      */
@@ -111,13 +104,12 @@ public class NetUtil {
                 os.write(json.getBytes("UTF-8"));
                 os.flush();
                 os.close();
-            }
-            else
+            } else
                 connection.connect();
 
             if (connection.getResponseCode() >= 400) {
-                throw new IOException(connection.getResponseCode() + ":"
-                        + readStream(connection.getErrorStream()));
+                throw new IOException(connection.getResponseCode() + ":" +
+                        readStream(connection.getErrorStream()));
             }
             return readStream(connection.getInputStream());
         } catch (Exception e) {
@@ -131,8 +123,7 @@ public class NetUtil {
     /**
      * Reads the input stream.
      *
-     * @param inputStream
-     *            a InputStream
+     * @param inputStream a InputStream
      * @return a String that contains the <b>inputStream</b>
      * @throws IOException
      */
@@ -154,10 +145,8 @@ public class NetUtil {
     /**
      * Sets headers to a HttpURLConnection object
      *
-     * @param conn
-     *            the HttpURLConnection
-     * @param headers
-     *            a HttpHeader
+     * @param conn    the HttpURLConnection
+     * @param headers a HttpHeader
      */
     private static void setHeaderToHttpURLConnection(HttpURLConnection conn,
                                                      HttpHeader headers) {
