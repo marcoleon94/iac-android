@@ -1,8 +1,7 @@
 package com.ievolutioned.iac.entity;
 
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
-
-import java.util.Date;
 
 /**
  * Inquest entity class. Contains the main attributes for the result of user services
@@ -18,11 +17,11 @@ public class InquestEntity {
     private long userId;
     @SerializedName("inquest_id")
     private long inquestId;
-    private String response;
+    private JsonElement response;
     @SerializedName("created_at")
-    private Date createdAt;
+    private String createdAt;
     @SerializedName("updated_at")
-    private Date updatedAt;
+    private String updatedAt;
 
     public long getId() {
         return id;
@@ -48,27 +47,28 @@ public class InquestEntity {
         this.inquestId = inquestId;
     }
 
-    public String getResponse() {
+    public JsonElement getResponse() {
         return response;
     }
 
-    public void setResponse(String response) {
+    public void setResponse(JsonElement response) {
         this.response = response;
     }
 
-    public Date getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getUpdatedAt() {
+    public String getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(String
+                                     updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

@@ -2,8 +2,11 @@ package com.ievolutioned.iac.model;
 
 import android.os.AsyncTask;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.ievolutioned.iac.entity.InquestEntity;
 import com.ievolutioned.iac.net.HttpGetParam;
 import com.ievolutioned.iac.net.HttpHeader;
 import com.ievolutioned.iac.net.NetUtil;
@@ -68,9 +71,10 @@ public class UserService {
                     String response = NetUtil.post(URL, null, headers, json);
 
                     if (response != null) {
-                        JsonElement json = new JsonParser().parse(response);
-                        if (!json.isJsonNull())
-                            return new UserResponse(response, null);
+                        InquestEntity inquestEntity = new Gson().fromJson(response,
+                                InquestEntity.class);
+                        if (inquestEntity != null)
+                            return new UserResponse(inquestEntity, response, null);
                     }
                     return null;
                 } catch (Exception e) {
@@ -112,9 +116,10 @@ public class UserService {
                     String response = NetUtil.post(URL, params, headers, json);
 
                     if (response != null) {
-                        JsonElement json = new JsonParser().parse(response);
-                        if (!json.isJsonNull())
-                            return new UserResponse(response, null);
+                        InquestEntity inquestEntity = new Gson().fromJson(response,
+                                InquestEntity.class);
+                        if (inquestEntity != null)
+                            return new UserResponse(inquestEntity, response, null);
                     }
                     return null;
                 } catch (Exception e) {
@@ -191,7 +196,16 @@ public class UserService {
     }
 
     public class UserResponse extends ResponseBase {
+
+        public InquestEntity inquest;
+
         public UserResponse(String msg, Throwable e) {
+            this.msg = msg;
+            this.e = e;
+        }
+
+        public UserResponse(InquestEntity i, String msg, Throwable e) {
+            this.inquest = i;
             this.msg = msg;
             this.e = e;
         }
