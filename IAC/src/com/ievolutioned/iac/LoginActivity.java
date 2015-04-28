@@ -53,8 +53,9 @@ public class LoginActivity extends Activity {
         mEmail.setText("12345678");
         mPassword.setText("12345678");
 
-        /*
 
+
+        /*
         String uuid = AppConfig.getUUID(this);
         String at = AppPreferences.getAdminToken(this);
         int inquestId = 9;
@@ -64,12 +65,12 @@ public class LoginActivity extends Activity {
         JsonElement json = new JsonParser().parse("{\"response\":{\"gained\":\"No\",\"newJob\":\"\",\"salary\":\"Si\",\"values\":\"Nada\",\"bossWhy\":\"mala onda\",\"opinion\":\"Regular\",\"benefits\":\"Regular\",\"identity\":\"Nada\",\"training\":\"Malo\",\"gainedWhy\":\"\",\"newSalary\":\"\",\"salaryWhy\":\"\",\"teammates\":\"Bueno\",\"unionized\":\"Malo\",\"workplace\":\"Regular\",\"employeeID\":\"32006785\",\"newCompany\":\"\",\"opinionWhy\":\"\",\"trainingOk\":\"Si\",\"benefitsWhy\":\"\",\"bossOpinion\":\"Malo\",\"otherReason\":\"\",\"trainingWhy\":\"por que no me enseñaron nada\",\"unionizedWhy\":\"¿¿ funcionas,no tengo idea tu si ?????\",\"workPromises\":\"No\",\"departmentWhy\":\"\",\"reasonToLeave\":\"Matrimonio\",\"trainingOkWhy\":\"\",\"humanResources\":\"Regular\",\"workInteresting\":\"Si\",\"dateOfWithdrawal\":\"04/10/2015\",\"trainingReceived\":\"Si\",\"departmentOpinion\":\"Regular\",\"humanResourcesWhy\":\"\",\"salaryExpectations\":\"No\",\"trainingReceivedWhy\":\"\",\"humanResourcesService\":\"No\",\"workInterestingAnswer\":\"123 Por ser asi\",\"departmentWithMostRelation\":\"Ingeniería\"}}");
 
         JsonObject j = new JsonObject();
-        //j.addProperty("inquest_id", "9");
-        //j.addProperty("iac_id", "32000011");
+        j.addProperty("inquest_id", "9");
+        j.addProperty("iac_id", "32000011");
         j.add("user_response", json);
 
         UserService us = new UserService(AppConfig.getUUID(this), AppPreferences.getAdminToken(this));
-        us.update(idUpdate, j.getAsJsonObject().toString(), new UserService.ServiceHandler() {
+        us.create(j.getAsJsonObject().toString(), new UserService.ServiceHandler() {
             @Override
             public void onSuccess(UserService.UserResponse response) {
                 LogUtil.d(MainActivity.class.getName(), response.msg);

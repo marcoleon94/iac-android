@@ -7,49 +7,43 @@ import com.ievolutioned.iac.entity.InquestEntity;
 import com.ievolutioned.iac.net.HttpHeader;
 import com.ievolutioned.iac.net.NetResponse;
 import com.ievolutioned.iac.net.NetUtil;
-import com.ievolutioned.iac.util.AppConfig;
-import com.ievolutioned.iac.util.FormatUtil;
-
-import java.util.Date;
 
 /**
  * Provides the submit and save forms loaded on the system
  * <p/>
  * Created by Daniel on 23/04/2015.
  */
-public class UserService {
-
-    private static final String URL = "https://iacgroup.herokuapp.com/api/user_responses/";
-
-    private static final String ACTION_CREATE = "create";
-
-    private static final String ACTION_UPDATE = "update";
-
-    private static final String CONTROLLER = "user_responses";
+public class UserService extends ServiceBase {
 
     /**
-     * Required as the unique ID of device for secret
+     * Instantiates a UserService object with the current parameters
+     *
+     * @param deviceId   - The device id
+     * @param adminToken - the admin token
      */
-    private String deviceId = null;
-
-    /**
-     * Required admin token to access on system
-     */
-    private String adminToken = null;
-
     public UserService(String deviceId, String adminToken) {
-        this.deviceId = deviceId;
-        this.adminToken = adminToken;
+        super(deviceId, adminToken);
     }
 
     /**
-     * AsyncTask task for service
+     * Creates a inquest response of the user
+     *
+     * @param json     - The response JSON, for example
+     *                 <code>
+     *                 {
+     *                 inquest_id: //id especifico del formulario
+     *                 iac_id: // usuario del que esta contestando el formulario
+     *                 // user_response debe ser un json con la siguiente estructura y cuidar los caracteres de escape
+     *                 user_response:
+     *                 {
+     *                 response: { key:"value", key:"value"...}
+     *                 }
+     *                 }
+     *                 </code>
+     * @param callback - the callback of service
      */
-    private AsyncTask<Void, Void, UserResponse> task;
-
-
-    public void create(final int inquestId, final String iacId, final String json, final ServiceHandler callback) {
-        task = new AsyncTask<Void, Void, UserResponse>() {
+    public void create(final String json, final ServiceHandler callback) {
+        task = new AsyncTask<Void, Void, ResponseBase>() {
             @Override
             protected UserResponse doInBackground(Void... p) {
                 if (isCancelled())
@@ -61,10 +55,10 @@ public class UserService {
                     }
 
                     //Get headers
-                    HttpHeader headers = getUserHeaders(ACTION_CREATE);
+                    HttpHeader headers = getHeaders(ACTION_CREATE, CONTROLLER_USER);
 
                     // Get response
-                    NetResponse response = NetUtil.post(URL, null, headers, json);
+                    NetResponse response = NetUtil.post(URL_USER, null, headers, json);
 
                     if (response != null) {
                         InquestEntity inquestEntity = new Gson().fromJson(response.result,
@@ -79,8 +73,8 @@ public class UserService {
             }
 
             @Override
-            protected void onPostExecute(UserResponse response) {
-                hanldeResult(callback, response);
+            protected void onPostExecute(ResponseBase response) {
+                hanldeResult(callback, (UserResponse) response);
             }
 
             @Override
@@ -92,8 +86,19 @@ public class UserService {
         task.execute();
     }
 
+    /**
+     * Updates a inquest response by its id
+     *
+     * @param id       - The id of the inquest
+     * @param json     - The response JSON, for example <code> {// user_response debe ser un json con la siguiente estructura y cuidar los caracteres de escape
+     *                 user_response:{
+     *                 response: { key:"value", key:"value"...}
+     *                 }}
+     *                 </code>
+     * @param callback - the callback of service
+     */
     public void update(final int id, final String json, final ServiceHandler callback) {
-        task = new AsyncTask<Void, Void, UserResponse>() {
+        task = new AsyncTask<Void, Void, ResponseBase>() {
             @Override
             protected UserResponse doInBackground(Void... p) {
                 if (isCancelled())
@@ -105,10 +110,10 @@ public class UserService {
                     }
 
                     //Get headers
-                    HttpHeader headers = getUserHeaders(ACTION_UPDATE);
+                    HttpHeader headers = getHeaders(ACTION_UPDATE, CONTROLLER_USER);
 
                     // Get response
-                    NetResponse response = NetUtil.put(URL + id, null, headers, json);
+                    NetResponse response = NetUtil.put(URL_USER + id, null, headers, json);
 
                     if (response != null) {
                         InquestEntity inquestEntity = new Gson().fromJson(response.result,
@@ -123,8 +128,8 @@ public class UserService {
             }
 
             @Override
-            protected void onPostExecute(UserResponse response) {
-                hanldeResult(callback, response);
+            protected void onPostExecute(ResponseBase response) {
+                hanldeResult(callback, (UserResponse) response);
             }
 
             @Override
@@ -134,34 +139,6 @@ public class UserService {
             }
         };
         task.execute();
-    }
-
-
-    private HttpHeader getUserHeaders(String action) {
-        HttpHeader headers = new HttpHeader();
-
-        String xVersion = AppConfig.API_VERSION;
-        String xToken = AppConfig.API_TOKEN;
-        String xAdminToken = adminToken;
-
-        String reversedID = FormatUtil.reverseString(this.deviceId);
-        String xDate = FormatUtil.dateDefaultFormat(new Date());
-        String xDevice = this.deviceId;
-
-        //String preSecret = #{X-token}-#{controller}-#{action}-#{X-version}-#{device_id.reverse}-#{X-admin-token}-#{X-device-date}
-        String preSecret = String.format("%s-%s-%s-%s-%s-%s-%s", xToken, CONTROLLER, action,
-                xVersion, reversedID, xAdminToken, xDate);
-        String xSecret = FormatUtil.md5(preSecret);
-
-        headers.add("X-version", xVersion);
-        headers.add("X-token", xToken);
-        headers.add("X-admin-token", xAdminToken);
-        headers.add("X-device-id", xDevice);
-        headers.add("X-device-date", xDate);
-        headers.add("X-secret", xSecret);
-
-
-        return headers;
     }
 
     /**

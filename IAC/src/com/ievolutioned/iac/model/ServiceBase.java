@@ -10,17 +10,37 @@ import com.ievolutioned.iac.util.FormatUtil;
 import java.util.Date;
 
 /**
+ * Service base class. Contains the main features of services
+ *
  * Created by Daniel on 28/04/2015.
  */
 public abstract class ServiceBase {
     protected static final String URL_LOGIN = "https://iacgroup.herokuapp.com/api/services/access";
+    protected static final String URL_USER = "https://iacgroup.herokuapp.com/api/user_responses/";
 
     protected static final String ACTION_LOGIN = "access";
+    protected static final String ACTION_CREATE = "create";
+    protected static final String ACTION_UPDATE = "update";
 
     protected static final String CONTROLLER_LOGIN = "services";
+    protected static final String CONTROLLER_USER = "user_responses";
 
+
+
+
+
+
+    /**
+     * AsyncTask task for service
+     */
     protected AsyncTask<Void, Void, ResponseBase> task;
+    /**
+     * Required as the unique ID of device for secret
+     */
     protected String deviceId = null;
+    /**
+     * Required admin token to access on system
+     */
     protected String adminToken = null;
 
     public ServiceBase(String deviceId, String adminToken) {

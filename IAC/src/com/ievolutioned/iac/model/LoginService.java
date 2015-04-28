@@ -8,10 +8,6 @@ import com.ievolutioned.iac.net.HttpGetParam;
 import com.ievolutioned.iac.net.HttpHeader;
 import com.ievolutioned.iac.net.NetResponse;
 import com.ievolutioned.iac.net.NetUtil;
-import com.ievolutioned.iac.util.AppConfig;
-import com.ievolutioned.iac.util.FormatUtil;
-
-import java.util.Date;
 
 /**
  * Manages the log in / out services for the user on the system
@@ -19,8 +15,16 @@ import java.util.Date;
  */
 public class LoginService extends ServiceBase {
 
+    /**
+     * Admin token for log in.
+     */
     private static final String adminToken = "nosession";
 
+    /**
+     * Instantiates a LoginService with the current parameters
+     *
+     * @param deviceId - The device id
+     */
     public LoginService(String deviceId) {
         super(deviceId, adminToken);
     }
@@ -28,8 +32,8 @@ public class LoginService extends ServiceBase {
     /**
      * Logs the user in the system
      *
-     * @param id
-     * @param pass
+     * @param id       - The id of the user
+     * @param pass     - The password
      * @param callback a LoginHandler callback handler
      */
     public void logIn(final String id, final String pass, final LoginHandler callback) {
@@ -82,7 +86,7 @@ public class LoginService extends ServiceBase {
     /**
      * Logs the user out of system
      *
-     * @param token
+     * @param token - The token
      * @param callback a LoginHandler callback handler
      */
     public void logOut(final String token, final LoginHandler callback) {
