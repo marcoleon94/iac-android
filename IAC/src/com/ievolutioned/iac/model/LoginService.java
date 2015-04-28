@@ -6,10 +6,12 @@ import com.google.gson.Gson;
 import com.ievolutioned.iac.entity.UserEntity;
 import com.ievolutioned.iac.net.HttpGetParam;
 import com.ievolutioned.iac.net.HttpHeader;
+import com.ievolutioned.iac.net.NetResponse;
 import com.ievolutioned.iac.net.NetUtil;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.FormatUtil;
 
+import java.net.HttpURLConnection;
 import java.util.Date;
 
 /**
@@ -53,14 +55,16 @@ public class LoginService {
                     HttpHeader headers = getLoginHeaders();
 
                     // Get response
-                    String response = NetUtil.get(URL_LOGIN, params, headers);
+                    NetResponse response = NetUtil.get(URL_LOGIN, params, headers);
                     if(response == null)
                         return new LoginResponse(false,null,"No response", null);
+                    if(response.isBadStatus())
+                        return new LoginResponse(false, null, response.toString(), null);
 
                     //Parse response
                     Gson g = new Gson();
-                    UserEntity user = g.fromJson(response, UserEntity.class);
-                    return new LoginResponse(true, user, response, null);
+                    UserEntity user = g.fromJson(response.result, UserEntity.class);
+                    return new LoginResponse(true, user, response.result, null);
                 } catch (Exception e) {
                     return new LoginResponse(false, null, e.getMessage(), e);
                 }

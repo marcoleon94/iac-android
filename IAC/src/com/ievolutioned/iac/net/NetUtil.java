@@ -2,6 +2,8 @@ package com.ievolutioned.iac.net;
 
 import android.util.Log;
 
+import com.ievolutioned.iac.util.LogUtil;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,16 +22,6 @@ public class NetUtil {
     private static final String METHOD_GET = "GET";
     private static final String METHOD_POST = "POST";
     private static final String METHOD_PUT = "PUT";
-    /**
-     * GET method, gets a simple response
-     *
-     * @param url - The full URL of the service
-     * @return the server response
-     * @throws Exception
-     */
-    public static String get(String url) throws Exception {
-        return get(url, null, null);
-    }
 
     /**
      * GET method, gets a simple response
@@ -38,90 +30,57 @@ public class NetUtil {
      * @param params  - A set of GET parameters
      * @param headers - A set of headers
      * @return the server response.
-     * @throws Exception
+     * @throws Exception public static String get(String url, HttpGetParam params, HttpHeader headers)
      */
-    public static String get(String url, HttpGetParam params, HttpHeader headers)
+    public static NetResponse get(String url, HttpGetParam params, HttpHeader headers)
             throws Exception {
-        HttpURLConnection connection = null;
-        if (params != null)
-            url += "?" + params.toString();
-
-        try {
-            URL contentUrl = new URL(url);
-            connection = (HttpURLConnection) contentUrl.openConnection();
-            connection.setRequestMethod(METHOD_GET);
-            connection.setRequestProperty("Accept", "*/*");
-
-            if (headers != null)
-                setHeaderToHttpURLConnection(connection, headers);
-
-            connection.connect();
-            if (connection.getResponseCode() >= 400) {
-                throw new IOException(connection.getResponseCode() + ":"
-                        + readStream(connection.getErrorStream()));
-            }
-            return readStream(connection.getInputStream());
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            if (connection != null)
-                connection.disconnect();
-        }
+        return getContent(url, METHOD_GET, params, headers, null);
     }
 
     /**
      * POST method, gets a post request
      *
-     * @param url     the URL
-     * @param params  a set of HttpGetParam
-     * @param headers a set of HttpHeader
-     * @param json    a JSON string
+     * @param url     - The full URL of the service
+     * @param params  - A set of GET parameters
+     * @param headers - A set of headers
+     * @param json    - A JSON string
+     * @return the response
+     * @throws Exception public static String post(String url, HttpGetParam params,
+     */
+
+    public static NetResponse post(String url, HttpGetParam params,
+                                   HttpHeader headers, String json) throws Exception {
+        return getContent(url, METHOD_POST, params, headers, json);
+    }
+
+    /**
+     * PUT method, updates a request
+     *
+     * @param url     - The full URL of the service
+     * @param params  - A set of GET parameters
+     * @param headers - A set of headers
+     * @param json    - A JSON string
      * @return the response
      * @throws Exception
      */
-    public static String post(String url, HttpGetParam params,
-                              HttpHeader headers, String json) throws Exception {
-        HttpURLConnection connection = null;
-        if (params != null)
-            url += "?" + params.toString();
-
-        try {
-            URL contentUrl = new URL(url);
-            connection = (HttpURLConnection) contentUrl.openConnection();
-            connection.setRequestMethod(METHOD_POST);
-
-            if (headers != null)
-                setHeaderToHttpURLConnection(connection, headers);
-
-            if (json != null) {
-                String postLength = String.valueOf(json.getBytes("UTF-8").length);
-                connection.setRequestProperty("Content-Length", postLength);
-                connection.setRequestProperty("Content-Type",
-                        "application/json; charset=UTF-8");
-                connection.setRequestProperty("Connection", "keep-alive");
-                connection.connect();
-                OutputStream os = connection.getOutputStream();
-                os.write(json.getBytes("UTF-8"));
-                os.flush();
-                os.close();
-            } else
-                connection.connect();
-
-            if (connection.getResponseCode() >= 400) {
-                throw new IOException(connection.getResponseCode() + ":" +
-                        readStream(connection.getErrorStream()));
-            }
-            return readStream(connection.getInputStream());
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            if (connection != null)
-                connection.disconnect();
-        }
+    public static NetResponse put(String url, HttpGetParam params,
+                                  HttpHeader headers, String json) throws Exception {
+        return getContent(url, METHOD_PUT, params, headers, json);
     }
 
-    public static String put(String url, HttpGetParam params,
-                              HttpHeader headers, String json) throws Exception {
+    /**
+     * Gets the content of a http request
+     *
+     * @param url     - The full URL of the service
+     * @param method  - The method POST, GET, PUT, and so on.
+     * @param params  - A set of GET parameters
+     * @param headers - A set of headers
+     * @param json    - A JSON string
+     * @return the response
+     * @throws Exception
+     */
+    private static NetResponse getContent(String url, final String method, final HttpGetParam params,
+                                          final HttpHeader headers, final String json) throws Exception {
         HttpURLConnection connection = null;
         if (params != null)
             url += "?" + params.toString();
@@ -129,8 +88,7 @@ public class NetUtil {
         try {
             URL contentUrl = new URL(url);
             connection = (HttpURLConnection) contentUrl.openConnection();
-            connection.setRequestMethod(METHOD_PUT);
-            connection.setDoOutput(true);
+            connection.setRequestMethod(method);
 
             if (headers != null)
                 setHeaderToHttpURLConnection(connection, headers);
@@ -149,16 +107,18 @@ public class NetUtil {
             } else
                 connection.connect();
 
-            if (connection.getResponseCode() >= 400) {
-                throw new IOException(connection.getResponseCode() + ":" +
-                        readStream(connection.getErrorStream()));
+            int status = connection.getResponseCode();
+            if (status >= HttpURLConnection.HTTP_BAD_REQUEST) {
+                throw new IOException(status + ":" + readStream(connection.getErrorStream()));
             }
-            return readStream(connection.getInputStream());
+            return new NetResponse(readStream(connection.getInputStream()), status);
         } catch (Exception e) {
+            LogUtil.e(NetUtil.class.getName(), e.getMessage(), e);
             throw e;
         } finally {
             if (connection != null)
                 connection.disconnect();
+
         }
     }
 

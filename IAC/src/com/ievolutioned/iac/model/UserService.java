@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import com.google.gson.Gson;
 import com.ievolutioned.iac.entity.InquestEntity;
 import com.ievolutioned.iac.net.HttpHeader;
+import com.ievolutioned.iac.net.NetResponse;
 import com.ievolutioned.iac.net.NetUtil;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.FormatUtil;
@@ -63,13 +64,13 @@ public class UserService {
                     HttpHeader headers = getUserHeaders(ACTION_CREATE);
 
                     // Get response
-                    String response = NetUtil.post(URL, null, headers, json);
+                    NetResponse response = NetUtil.post(URL, null, headers, json);
 
                     if (response != null) {
-                        InquestEntity inquestEntity = new Gson().fromJson(response,
+                        InquestEntity inquestEntity = new Gson().fromJson(response.result,
                                 InquestEntity.class);
                         if (inquestEntity != null)
-                            return new UserResponse(inquestEntity, response, null);
+                            return new UserResponse(inquestEntity, response.result, null);
                     }
                     return null;
                 } catch (Exception e) {
@@ -107,13 +108,13 @@ public class UserService {
                     HttpHeader headers = getUserHeaders(ACTION_UPDATE);
 
                     // Get response
-                    String response = NetUtil.put(URL + id, null, headers, json);
+                    NetResponse response = NetUtil.put(URL + id, null, headers, json);
 
                     if (response != null) {
-                        InquestEntity inquestEntity = new Gson().fromJson(response,
+                        InquestEntity inquestEntity = new Gson().fromJson(response.result,
                                 InquestEntity.class);
                         if (inquestEntity != null)
-                            return new UserResponse(inquestEntity, response, null);
+                            return new UserResponse(inquestEntity, response.result, null);
                     }
                     return null;
                 } catch (Exception e) {

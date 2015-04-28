@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.ievolutioned.iac.net.HttpGetParam;
 import com.ievolutioned.iac.net.HttpHeader;
+import com.ievolutioned.iac.net.NetResponse;
 import com.ievolutioned.iac.net.NetUtil;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.FormatUtil;
@@ -95,12 +96,13 @@ public class FormService {
                     HttpHeader headers = getFormHeaders(ACTION_INDEX);
 
                     // Get response
-                    String response = NetUtil.get(URL_FORM, params, headers);
+                    NetResponse response = NetUtil.get(URL_FORM, params, headers);
 
                     if (response != null) {
-                        JsonElement json = new JsonParser().parse(response);
+                        JsonElement json = new JsonParser().parse(response.result);
                         if (!json.isJsonNull())
-                            return new FormResponse(json.getAsJsonObject().get(JSON_INQUESTS), response, null);
+                            return new FormResponse(json.getAsJsonObject().get(JSON_INQUESTS),
+                                    response.result, null);
                     }
                     return null;
                 } catch (Exception e) {
@@ -144,12 +146,13 @@ public class FormService {
                     HttpHeader headers = getFormHeaders(ACTION_SHOW);
 
                     // Get response
-                    String response = NetUtil.get(URL_FORM + idForm, null, headers);
+                    NetResponse response = NetUtil.get(URL_FORM + idForm, null, headers);
 
                     if (response != null) {
-                        JsonElement json = new JsonParser().parse(response);
+                        JsonElement json = new JsonParser().parse(response.result);
                         if (!json.isJsonNull())
-                            return new FormResponse(json.getAsJsonObject().get(JSON_INQUEST), response, null);
+                            return new FormResponse(json.getAsJsonObject().get(JSON_INQUEST),
+                                    response.result, null);
                     }
                     return null;
                 } catch (Exception e) {
