@@ -167,15 +167,34 @@ public class UserService extends ServiceBase {
         public void onCancel();
     }
 
+    /**
+     * User response class. Manages the JSON elements of this response
+     */
     public class UserResponse extends ResponseBase {
 
+        /**
+         * InquestEntity inquest
+         */
         public InquestEntity inquest;
 
+        /**
+         * Instantiates a UserResponse object with the current parameters
+         *
+         * @param msg - The message
+         * @param e   - The error
+         */
         public UserResponse(String msg, Throwable e) {
             this.msg = msg;
             this.e = e;
         }
 
+        /**
+         * Instantiates a UserResponse object with the current parameters
+         *
+         * @param i   - The inquest
+         * @param msg - The message
+         * @param e   - The error
+         */
         public UserResponse(InquestEntity i, String msg, Throwable e) {
             this.inquest = i;
             this.msg = msg;

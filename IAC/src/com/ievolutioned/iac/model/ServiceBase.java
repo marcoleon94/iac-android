@@ -2,7 +2,6 @@ package com.ievolutioned.iac.model;
 
 import android.os.AsyncTask;
 
-import com.ievolutioned.iac.net.HttpGetParam;
 import com.ievolutioned.iac.net.HttpHeader;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.FormatUtil;
@@ -11,23 +10,57 @@ import java.util.Date;
 
 /**
  * Service base class. Contains the main features of services
- *
+ * <p/>
  * Created by Daniel on 28/04/2015.
  */
 public abstract class ServiceBase {
+
+    /**
+     * URL for user log in on server
+     */
     protected static final String URL_LOGIN = "https://iacgroup.herokuapp.com/api/services/access";
+    /**
+     * URL for user responses
+     */
     protected static final String URL_USER = "https://iacgroup.herokuapp.com/api/user_responses/";
+    /**
+     * URL for form or inquests on the server
+     */
+    protected static final String URL_FORM = "https://iacgroup.herokuapp.com/api/inquests/";
 
+    /**
+     * Action for login
+     */
     protected static final String ACTION_LOGIN = "access";
+    /**
+     * Action for create inquest response
+     */
     protected static final String ACTION_CREATE = "create";
+    /**
+     * Action for update inquest response
+     */
     protected static final String ACTION_UPDATE = "update";
+    /**
+     * Action for get all inquest
+     */
+    protected static final String ACTION_INDEX = "index";
+    /**
+     * Action for get a single inquest
+     */
+    protected static final String ACTION_SHOW = "show";
 
+    /**
+     * Controller constant for login services
+     */
     protected static final String CONTROLLER_LOGIN = "services";
+    /**
+     * Controller constant for user responses
+     */
     protected static final String CONTROLLER_USER = "user_responses";
-
-
-
-
+    /**
+     * Controller constant for inquests
+     */
+    protected static final String CONTROLLER_INQUESTS = "inquests";
 
 
     /**
@@ -43,6 +76,12 @@ public abstract class ServiceBase {
      */
     protected String adminToken = null;
 
+    /**
+     * Constructor
+     *
+     * @param deviceId
+     * @param adminToken
+     */
     public ServiceBase(String deviceId, String adminToken) {
         this.deviceId = deviceId;
         this.adminToken = adminToken;
@@ -53,7 +92,7 @@ public abstract class ServiceBase {
      *
      * @return a HttpHeader
      */
-    public HttpHeader getHeaders(final String action, final String controller){
+    public HttpHeader getHeaders(final String action, final String controller) {
         HttpHeader headers = new HttpHeader();
 
         String xVersion = AppConfig.API_VERSION;

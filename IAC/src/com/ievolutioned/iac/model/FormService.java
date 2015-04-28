@@ -8,21 +8,13 @@ import com.ievolutioned.iac.net.HttpGetParam;
 import com.ievolutioned.iac.net.HttpHeader;
 import com.ievolutioned.iac.net.NetResponse;
 import com.ievolutioned.iac.net.NetUtil;
-import com.ievolutioned.iac.util.AppConfig;
-import com.ievolutioned.iac.util.FormatUtil;
-
-import java.util.Date;
 
 /**
  * Provides the forms loaded on the system
  * <p/>
  * Created by Daniel on 22/04/2015.
  */
-public class FormService {
-    /**
-     * URL for form or inquests on the server
-     */
-    private static final String URL_FORM = "https://iacgroup.herokuapp.com/api/inquests/";
+public class FormService extends ServiceBase {
 
     /**
      * JSON array key for all inquests
@@ -35,43 +27,13 @@ public class FormService {
     private static final String JSON_INQUEST = "inquest";
 
     /**
-     * Controller constant
-     */
-    private static final String CONTROLLER = "inquests";
-
-    /**
-     * Action for get all inquest
-     */
-    private static final String ACTION_INDEX = "index";
-    /**
-     * Action for get a single inquest
-     */
-    private static final String ACTION_SHOW = "show";
-
-    /**
-     * AsyncTask task for service
-     */
-    private AsyncTask<Void, Void, FormResponse> task;
-
-    /**
-     * Required as the unique ID of device for secret
-     */
-    private String deviceId = null;
-
-    /**
-     * Required admin token to access on system
-     */
-    private String adminToken = null;
-
-    /**
      * Instantiates a Form service object with current parameters
      *
      * @param deviceId   - the UUID of the device
      * @param adminToken - the user admin token
      */
     public FormService(String deviceId, String adminToken) {
-        this.deviceId = deviceId;
-        this.adminToken = adminToken;
+        super(deviceId, adminToken);
     }
 
     /**
@@ -80,7 +42,7 @@ public class FormService {
      * @param callback - ServiceHandler callback
      */
     public void getForms(final ServiceHandler callback) {
-        task = new AsyncTask<Void, Void, FormResponse>() {
+        task = new AsyncTask<Void, Void, ResponseBase>() {
             @Override
             protected FormResponse doInBackground(Void... p) {
                 if (isCancelled())
@@ -93,7 +55,7 @@ public class FormService {
                     HttpGetParam params = new HttpGetParam();
 
                     //Get headers
-                    HttpHeader headers = getFormHeaders(ACTION_INDEX);
+                    HttpHeader headers = getHeaders(ACTION_INDEX, CONTROLLER_INQUESTS);
 
                     // Get response
                     NetResponse response = NetUtil.get(URL_FORM, params, headers);
@@ -111,8 +73,8 @@ public class FormService {
             }
 
             @Override
-            protected void onPostExecute(FormResponse response) {
-                hanldeResult(callback, response);
+            protected void onPostExecute(ResponseBase response) {
+                hanldeResult(callback, (FormResponse) response);
             }
 
             @Override
@@ -131,7 +93,7 @@ public class FormService {
      * @param callback - ServiceHandler callback
      */
     public void getFormById(final int idForm, final ServiceHandler callback) {
-        task = new AsyncTask<Void, Void, FormResponse>() {
+        task = new AsyncTask<Void, Void, ResponseBase>() {
             @Override
             protected FormResponse doInBackground(Void... p) {
                 if (isCancelled())
@@ -143,7 +105,7 @@ public class FormService {
                     }
 
                     //Get headers
-                    HttpHeader headers = getFormHeaders(ACTION_SHOW);
+                    HttpHeader headers = getHeaders(ACTION_SHOW, CONTROLLER_INQUESTS);
 
                     // Get response
                     NetResponse response = NetUtil.get(URL_FORM + idForm, null, headers);
@@ -161,8 +123,8 @@ public class FormService {
             }
 
             @Override
-            protected void onPostExecute(FormResponse response) {
-                hanldeResult(callback, response);
+            protected void onPostExecute(ResponseBase response) {
+                hanldeResult(callback, (FormResponse) response);
             }
 
             @Override
@@ -172,39 +134,6 @@ public class FormService {
             }
         };
         task.execute();
-    }
-
-    /**
-     * Gets the form headers for request
-     *
-     * @param action - the action to perform
-     * @return a HttpHeader
-     */
-    private HttpHeader getFormHeaders(String action) {
-        HttpHeader headers = new HttpHeader();
-
-        String xVersion = AppConfig.API_VERSION;
-        String xToken = AppConfig.API_TOKEN;
-        String xAdminToken = adminToken;
-
-        String reversedID = FormatUtil.reverseString(this.deviceId);
-        String xDate = FormatUtil.dateDefaultFormat(new Date());
-        String xDevice = this.deviceId;
-
-        //#{X-token}-#{controller}-#{action}-#{X-version}-#{device_id.reverse}-#{X-admin-token}-#{X-device-date}
-        String preSecret = String.format("%s-%s-%s-%s-%s-%s-%s", xToken, CONTROLLER, action,
-                xVersion, reversedID, xAdminToken, xDate);
-        String xSecret = FormatUtil.md5(preSecret);
-
-        headers.add("X-version", xVersion);
-        headers.add("X-token", xToken);
-        headers.add("X-admin-token", xAdminToken);
-        headers.add("X-device-id", xDevice);
-        headers.add("X-device-date", xDate);
-        headers.add("X-secret", xSecret);
-
-
-        return headers;
     }
 
     /**
