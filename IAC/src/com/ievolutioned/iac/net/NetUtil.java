@@ -19,7 +19,7 @@ import java.util.Map;
 public class NetUtil {
     private static final String METHOD_GET = "GET";
     private static final String METHOD_POST = "POST";
-
+    private static final String METHOD_PUT = "PUT";
     /**
      * GET method, gets a simple response
      *
@@ -89,6 +89,48 @@ public class NetUtil {
             URL contentUrl = new URL(url);
             connection = (HttpURLConnection) contentUrl.openConnection();
             connection.setRequestMethod(METHOD_POST);
+
+            if (headers != null)
+                setHeaderToHttpURLConnection(connection, headers);
+
+            if (json != null) {
+                String postLength = String.valueOf(json.getBytes("UTF-8").length);
+                connection.setRequestProperty("Content-Length", postLength);
+                connection.setRequestProperty("Content-Type",
+                        "application/json; charset=UTF-8");
+                connection.setRequestProperty("Connection", "keep-alive");
+                connection.connect();
+                OutputStream os = connection.getOutputStream();
+                os.write(json.getBytes("UTF-8"));
+                os.flush();
+                os.close();
+            } else
+                connection.connect();
+
+            if (connection.getResponseCode() >= 400) {
+                throw new IOException(connection.getResponseCode() + ":" +
+                        readStream(connection.getErrorStream()));
+            }
+            return readStream(connection.getInputStream());
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (connection != null)
+                connection.disconnect();
+        }
+    }
+
+    public static String put(String url, HttpGetParam params,
+                              HttpHeader headers, String json) throws Exception {
+        HttpURLConnection connection = null;
+        if (params != null)
+            url += "?" + params.toString();
+
+        try {
+            URL contentUrl = new URL(url);
+            connection = (HttpURLConnection) contentUrl.openConnection();
+            connection.setRequestMethod(METHOD_PUT);
+            connection.setDoOutput(true);
 
             if (headers != null)
                 setHeaderToHttpURLConnection(connection, headers);

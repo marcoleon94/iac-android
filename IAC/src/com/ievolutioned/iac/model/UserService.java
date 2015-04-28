@@ -3,11 +3,7 @@ package com.ievolutioned.iac.model;
 import android.os.AsyncTask;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import com.ievolutioned.iac.entity.InquestEntity;
-import com.ievolutioned.iac.net.HttpGetParam;
 import com.ievolutioned.iac.net.HttpHeader;
 import com.ievolutioned.iac.net.NetUtil;
 import com.ievolutioned.iac.util.AppConfig;
@@ -62,7 +58,6 @@ public class UserService {
                         callback.onError(new UserResponse("Params are null", null));
                         this.cancel(true);
                     }
-                    HttpGetParam params = new HttpGetParam();
 
                     //Get headers
                     HttpHeader headers = getUserHeaders(ACTION_CREATE);
@@ -96,7 +91,7 @@ public class UserService {
         task.execute();
     }
 
-    public void update(final String json, final ServiceHandler callback) {
+    public void update(final int id, final String json, final ServiceHandler callback) {
         task = new AsyncTask<Void, Void, UserResponse>() {
             @Override
             protected UserResponse doInBackground(Void... p) {
@@ -107,13 +102,12 @@ public class UserService {
                         callback.onError(new UserResponse("Params are null", null));
                         this.cancel(true);
                     }
-                    HttpGetParam params = new HttpGetParam();
 
                     //Get headers
-                    HttpHeader headers = new HttpHeader();
+                    HttpHeader headers = getUserHeaders(ACTION_UPDATE);
 
                     // Get response
-                    String response = NetUtil.post(URL, params, headers, json);
+                    String response = NetUtil.put(URL + id, null, headers, json);
 
                     if (response != null) {
                         InquestEntity inquestEntity = new Gson().fromJson(response,
