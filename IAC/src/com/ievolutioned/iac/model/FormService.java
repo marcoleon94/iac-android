@@ -180,9 +180,8 @@ public class FormService extends ServiceBase {
          * @param e    - the error
          */
         public FormResponse(JsonElement json, String msg, Throwable e) {
+            super(msg, e);
             this.json = json;
-            this.msg = msg;
-            this.e = e;
         }
     }
 }

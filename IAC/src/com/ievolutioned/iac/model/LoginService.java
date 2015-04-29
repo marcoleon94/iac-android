@@ -161,8 +161,7 @@ public class LoginService extends ServiceBase {
         public UserEntity user;
 
         public LoginResponse(final boolean logged, final UserEntity user, final String msg, final Throwable e) {
-            this.msg = msg;
-            this.e = e;
+            super(msg,e);
             this.logged = logged;
             this.user = user;
         }

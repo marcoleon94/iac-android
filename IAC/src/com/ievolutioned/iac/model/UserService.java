@@ -116,10 +116,10 @@ public class UserService extends ServiceBase {
                     NetResponse response = NetUtil.put(URL_USER + id, null, headers, json);
 
                     if (response != null) {
-                        InquestEntity inquestEntity = new Gson().fromJson(response.result,
-                                InquestEntity.class);
-                        if (inquestEntity != null)
-                            return new UserResponse(inquestEntity, response.result, null);
+                        if (response.isBadStatus())
+                            return new UserResponse(false, response.toString(), null);
+                        else
+                            return new UserResponse(true, "Status:" + response.status, null);
                     }
                     return null;
                 } catch (Exception e) {
@@ -178,14 +178,19 @@ public class UserService extends ServiceBase {
         public InquestEntity inquest;
 
         /**
+         * Is updated inquest
+         */
+        public boolean updated;
+
+
+        /**
          * Instantiates a UserResponse object with the current parameters
          *
          * @param msg - The message
          * @param e   - The error
          */
         public UserResponse(String msg, Throwable e) {
-            this.msg = msg;
-            this.e = e;
+            super(msg, e);
         }
 
         /**
@@ -196,9 +201,20 @@ public class UserService extends ServiceBase {
          * @param e   - The error
          */
         public UserResponse(InquestEntity i, String msg, Throwable e) {
+            super(msg, e);
             this.inquest = i;
-            this.msg = msg;
-            this.e = e;
+        }
+
+        /**
+         * Instantiates a UserResponse object with the current parameters
+         *
+         * @param u   - The action
+         * @param msg - The message
+         * @param e   - The error
+         */
+        public UserResponse(boolean u, String msg, Throwable e) {
+            super(msg, e);
+            this.updated = u;
         }
     }
 
