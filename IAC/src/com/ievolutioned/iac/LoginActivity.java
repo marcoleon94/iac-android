@@ -46,8 +46,10 @@ public class LoginActivity extends Activity {
             Crashlytics.start(this);
         setContentView(R.layout.activity_login);
         bindUI();
-        mEmail.setText("12345678");
-        mPassword.setText("12345678");
+        if (AppConfig.DEBUG) {
+            mEmail.setText("12345678");
+            mPassword.setText("12345678");
+        }
     }
 
     /**
