@@ -5,12 +5,14 @@ import java.util.Map.Entry;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.google.zxing.integration.android.IntentIntegrator;
 
 public class PXFButton extends PXWidget {
@@ -38,7 +40,6 @@ public class PXFButton extends PXWidget {
                 getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
         h.button.setOnClickListener(onclick);
     }
-
     @Override
     protected HelperButton generateHelperClass() {
         return new HelperButton();
@@ -49,6 +50,22 @@ public class PXFButton extends PXWidget {
         return PXWidget.ADAPTER_ITEM_TYPE_BUTTON;
     }
 
+    @Override
+    public void setValue(String value) {
+        try {
+            JsonElement v = new JsonParser().parse(value);
+            getJsonEntries().get(PXFButton.FIELD_TITLE).setValue(v);
+        }catch (Exception e) {
+            Log.e(PXFButton.class.getName(), e.getMessage());
+        }
+    }
+    @Override
+    public String getValue(){
+        if(getJsonEntries().containsKey(PXFButton.FIELD_TITLE))
+            return getJsonEntries().get(PXFButton.FIELD_TITLE).getValue().getAsString();
+        else
+            return "";
+    }
     @Override
     public View createControl(Activity context) {
         contextActivity = context;

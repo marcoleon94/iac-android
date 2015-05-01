@@ -13,6 +13,7 @@
         android:targetSdkVersion="22" />
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -28,12 +29,6 @@
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme"/>
-        <activity
-            android:name=".MFormGenerator"
-            android:label="@string/app_name"/>
-        <activity
-            android:name=".JsonToView"
-            android:label="@string/app_name"/>
         <activity
             android:name=".LoginActivity"
             android:label="@string/app_name"

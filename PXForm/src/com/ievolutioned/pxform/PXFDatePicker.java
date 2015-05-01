@@ -48,6 +48,19 @@ public class PXFDatePicker extends PXWidget {
     }
 
     @Override
+    public void setValue(String value) {
+        try{
+            //last_position = Integer.parseInt(value);
+            //calendarState = Calendar.
+        }catch(Exception ex){
+        }
+    }
+    @Override
+    public String getValue() {
+        return this.calendarState == null ? "" : this.calendarState.toString();
+    }
+
+    @Override
     public void setWidgetData(View view) {
         super.setWidgetData(view);
         HelperDatePicker helper = (HelperDatePicker) view.getTag();
@@ -114,7 +127,6 @@ public class PXFDatePicker extends PXWidget {
             dial.calendarS = cal;
             return dial;
         }
-
 
         @Override
         public Dialog onCreateDialog(Bundle saved) {

@@ -7,13 +7,16 @@ import com.google.gson.JsonElement;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+/**
+ * Class base for read Json elements
+ */
 public abstract class PXWidget {
     public static final String FIELD_HEADER      = "header"     ;
     public static final String FIELD_KEY         = "key"        ;
@@ -46,11 +49,16 @@ public abstract class PXWidget {
 
     private Map<String, Map.Entry<String,JsonElement>> eEntry;
     private String fieldKey = "";
+    private long _ID = 0;
     private PXWidgetHandler eventHandler = null;
 
+    /**
+     * Hook to call when an event fire
+     */
     public interface PXWidgetHandler{
         public void notifyDataSetChanges();
         public void onClick(PXWidget parent);
+        public void selectedSubForm(String json, PXWidget widget);
     }
 
     /**
@@ -61,6 +69,10 @@ public abstract class PXWidget {
         protected TextView headTextView;
     }
 
+    /**
+     * This return the total number of available controls
+     * @return Count of controls
+     */
     public static int getAdapterItemTypeCount(){
         final Integer[] ids = new Integer[]{
                 ADAPTER_ITEM_TYPE_UNKNOWN,
@@ -75,13 +87,46 @@ public abstract class PXWidget {
         return ids.length;
     }
 
+    /**
+     *
+     * @return
+     */
     protected abstract HelperWidget generateHelperClass();
+    /**
+     *
+     * @return
+     */
     public abstract int getAdapterItemType();
+    /**
+     * Set the value of the control, normally from the data base
+     * @param value The widget will try to parse and set the value
+     */
+    public abstract void setValue(String value);
+    public abstract String getValue();
+    /**
+     * Default base constructor, set the json element property and key property
+     * @param entry A list of KEY - JSON values
+     */
+    public PXWidget(Map<String, Map.Entry<String,JsonElement>> entry){
+        eEntry = entry;
 
+        if(eEntry.containsKey(FIELD_KEY))
+            setKey(eEntry.get(FIELD_KEY).getValue().getAsString());
+        else
+            Log.w(PXWidget.class.getName(), FIELD_KEY + " not found in json");
+    }
+    /**
+     * Get the event handler associated to the class
+     * @return {@link PXWidget.PXWidgetHandler} class
+     */
     public PXWidgetHandler getEventHandler() { return eventHandler; }
+    /**
+     * Set the event handler associated to the class
+     * @param callback Hook to call when an event fire
+     */
     public void setEventHandler(PXWidgetHandler callback){ eventHandler = callback; }
     /**
-     * Get a LinearLayout view container, if the map contains a PXWidget.FIELD_HEADER
+     * Get a LinearLayout view container, if the map contains a {@link PXWidget#FIELD_HEADER}
      *
      * @param context used to create the view
      * @return return a LinearLayout container
@@ -108,8 +153,6 @@ public abstract class PXWidget {
 
         return linear;
     }
-    /**
-     */
     private TextView getTextViewHead(Context context,
                                      Map<String, Map.Entry<String,JsonElement>> map){
         TextView t = new TextView(context);
@@ -141,13 +184,15 @@ public abstract class PXWidget {
         l.setBackgroundColor(Color.parseColor("#ECEAEC"));
         return l;
     }
-    public PXWidget(Map<String, Map.Entry<String,JsonElement>> entry){ eEntry = entry; }
+    /**
+     * Get a map with a String (key) - Json (class) values
+     * @return {@link java.util.Map}
+     */
     public Map<String, Map.Entry<String,JsonElement>> getJsonEntries(){ return eEntry; }
-
     /**
      * Used by the adapter to fill the information of the widget, extended widget should call
      * this super method.
-     * @param view
+     * @param view A container with already created controls
      */
     public void setWidgetData(View view){
         HelperWidget helper = (HelperWidget) view.getTag();
@@ -157,22 +202,28 @@ public abstract class PXWidget {
                 View.VISIBLE : View.GONE);
 
         if (getJsonEntries().get(FIELD_KEY) != null)
-            setKey(getJsonEntries().get(FIELD_KEY).getValue().toString());
+            setKey(getJsonEntries().get(FIELD_KEY).getValue().getAsString());
     }
     /**
      * Set the ID of the field and should be unique at the same level of the form, no validation
      * is perform for repeated IDs. Nested forms can use the same ID.
-     * @param key
+     * @param key An id that should be unique
      */
     public void setKey(String key){ fieldKey = key; }
     /**
-     * The {@link com.ievolutioned.pxform.PXWidget#FIELD_KEY} value, the ID of the field and should
+     * Set the unique ID from the data base
+     * @param id Unique data base ID
+     */
+    public void setID(long id){ _ID = id; }
+    /**
+     * Get the unique ID from the data base
+     * @return Unique data base ID
+     */
+    public long getID() { return _ID; }
+    /**
+     * The {@link PXWidget#FIELD_KEY} value, the ID of the field and should
      * unique at the same level of the form, still <b>nested forms can have the same ID</b>.
-     *
      * @return String with the FIELD_KEY found
      */
     public String getKey(){ return fieldKey; }
-    public String getWidgetDataString() {
-        return this instanceof PXFUnknownControlType ? "" : toString();
-    }
 }

@@ -76,6 +76,15 @@ public class PXFEdit extends PXWidget{
     }
 
     @Override
+    public void setValue(String value) {
+        current_text = value;
+    }
+    @Override
+    public String getValue() {
+        return current_text == null ? "" : current_text;
+    }
+
+    @Override
     public void setWidgetData(View view) {
         super.setWidgetData(view);
         HelperEdit helper = (HelperEdit) view.getTag();

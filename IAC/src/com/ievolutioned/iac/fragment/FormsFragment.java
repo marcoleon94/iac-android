@@ -1,23 +1,22 @@
 package com.ievolutioned.iac.fragment;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
-import android.content.Context;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.view.ViewUtility;
 import com.ievolutioned.pxform.PXFButton;
@@ -30,23 +29,21 @@ import com.ievolutioned.pxform.adapters.PXFAdapter;
  */
 public class FormsFragment extends Fragment {
 
-    /**
-     * Argument key for bundle extras
-     */
-    public static final String ARG_FORM_NAME = "ARG_FORM_NAME";
+    public static final String DATABASE_FORM_ID = "DATABASE_FORM_ID";
+    public static final String DATABASE_LEVEL = "DATABASE_LEVEL";
+    public static final String DATABASE_KEY_PARENT = "DATABASE_KEY_PARENT";
+    public static final String DATABASE_JSON = "DATABASE_JSON";
 
-    public static final String ARG_LIST_FORM = "ARG_LIST_FORM";
     /**
      * PXFParser parser
      */
-
     private ListView listView;
-
     private PXFParser p;
     private Bundle savedState;
+    private PXFAdapter currentAdapter = null;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saved) {
         View root = inflater.inflate(R.layout.fragment_forms, container, false);
         bindUI(root);
         return root;
@@ -62,13 +59,38 @@ public class FormsFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onActivityCreated(Bundle saved) {
+        super.onActivityCreated(saved);
         // restore sate
         if (!restoreStateFromArgs()) {
             // first run
-            bindData(getArguments().getString(ARG_FORM_NAME));
         }
+
+        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
+        loading.show();
+
+        p = new PXFParser(new PXFParser.PXFParserEventHandler() {
+            @Override
+            public void finish(PXFAdapter adapter, String json) {
+                currentAdapter = adapter;
+                adapter.setAdapterEventHandler(adapterEventHandler);
+                listView.setAdapter(adapter);
+                loading.dismiss();
+            }
+
+            @Override
+            public void error(Exception ex, String json) {
+                Toast.makeText(getActivity(), "can't parse json", Toast.LENGTH_SHORT).show();
+                loading.dismiss();
+            }
+        });
+
+        p.parseJson(getActivity()
+                , savedState.getString(DATABASE_JSON)
+                , savedState.getLong(DATABASE_FORM_ID)
+                , savedState.getInt(DATABASE_LEVEL)
+                , savedState.getString(DATABASE_KEY_PARENT)
+        );
     }
 
     private boolean restoreStateFromArgs() {
@@ -84,9 +106,6 @@ public class FormsFragment extends Fragment {
     private void restoreState() {
         if (savedState != null) {
             // Call the restore
-            PXFAdapter adapter = savedState.getParcelable(ARG_LIST_FORM);
-            adapter.setActivity(getActivity());
-            listView.setAdapter(adapter);
         }
     }
 
@@ -113,62 +132,15 @@ public class FormsFragment extends Fragment {
     }
 
     private Bundle saveState() {
+
+        if(savedState != null)
+            return savedState;
+
         Bundle state = new Bundle();
         // save the current state
-        state.putParcelable(ARG_LIST_FORM, (PXFAdapter) listView.getAdapter());
+
         return state;
     }
-
-    /**
-     * Binds the data from the form
-     *
-     * @param form - the form identifier
-     */
-    private void bindData(String form) {
-        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
-        loading.show();
-
-        String json = getJsonFileName(getActivity(), form);
-
-        p = new PXFParser(new PXFParser.PXFParserEventHandler() {
-            @Override
-            public void finish(PXFAdapter adapter, String json) {
-                adapter.setAdapterEventHandler(adapterEventHandler);
-                listView.setAdapter(adapter);
-                loading.dismiss();
-            }
-
-            @Override
-            public void error(Exception ex, String json) {
-                Toast.makeText(getActivity(), "can't parse json", Toast.LENGTH_SHORT).show();
-                loading.dismiss();
-            }
-
-            @Override
-            public void onSaved(String json) {
-                Log.d("Forms Saved", json);
-            }
-        });
-
-        p.parseJson(getActivity(), PXFParser.parseFileToString(getActivity(), json));
-    }
-
-    /**
-     * Gets the JSON file name from resources key-value
-     *
-     * @param c    - Context
-     * @param form - name of the form
-     * @return the JSON file name
-     */
-    private String getJsonFileName(Context c, String form) {
-        String[] forms = c.getResources().getStringArray(R.array.forms_item_key);
-        String[] values = c.getResources().getStringArray(R.array.forms_item_values);
-        for (int i = 0; i < forms.length; i++)
-            if (forms[i].equalsIgnoreCase(form))
-                return values[i];
-        return null;
-    }
-
 
     PXFButton buttonBarCode;
 
@@ -185,7 +157,58 @@ public class FormsFragment extends Fragment {
                 }
             }
         }
+
+        @Override
+        public void openSubForm(final String parentKey, final String json, PXFAdapter adapter) {
+            final Bundle my_args = savedState;
+
+            final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
+            loading.show();
+
+            currentAdapter = adapter;
+
+            adapter.save(
+                    savedState.getLong(DATABASE_FORM_ID)
+                    , savedState.getInt(DATABASE_LEVEL)
+                    , savedState.getString(DATABASE_KEY_PARENT)
+                    , new PXFAdapter.AdapterSaveHandler() {
+                        @Override
+                        public void saved() {
+                            loading.dismiss();
+                            getActivity().runOnUiThread(new Runnable() { @Override public void run() {
+                                Bundle a = new Bundle();
+                                a.putLong(FormsFragment.DATABASE_FORM_ID, my_args.getLong(FormsFragment.DATABASE_FORM_ID));
+                                a.putInt(FormsFragment.DATABASE_LEVEL, my_args.getInt(FormsFragment.DATABASE_LEVEL) + 1);
+                                a.putString(FormsFragment.DATABASE_KEY_PARENT, parentKey);
+                                a.putString(FormsFragment.DATABASE_JSON, json);
+
+                                Bundle args = new Bundle();
+                                args.putBundle(FormsFragment.class.getName(), a);
+
+                                FormsFragment fragment = new FormsFragment();
+                                fragment.setArguments(args);
+
+                                FragmentManager fragmentManager = getFragmentManager();
+
+                                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                                transaction.replace(R.id.activity_main_frame_container, fragment);
+                                transaction.addToBackStack(null);
+                                transaction.commit();
+                            }});
+                        }
+
+                        @Override
+                        public void error(Exception ex) {
+                            Toast.makeText(getActivity(), "error al salvar", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+            );
+        }
     };
+
+    private void saveFormData(){
+
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -194,8 +217,7 @@ public class FormsFragment extends Fragment {
             Toast.makeText(getActivity(), result.getContents(), Toast.LENGTH_SHORT).show();
             if (buttonBarCode != null) {
                 try {
-                    JsonElement v = new JsonParser().parse(result.getContents());
-                    buttonBarCode.getJsonEntries().get(PXFButton.FIELD_TITLE).setValue(v);
+                    buttonBarCode.setValue(result.getContents());
                     buttonBarCode.getEventHandler().notifyDataSetChanges();
                 }catch(Exception ex){
                     ex.printStackTrace();

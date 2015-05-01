@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.ievolutioned.pxform.PXFParser;
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -12,7 +13,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 import com.ievolutioned.pxform.PXWidget;
+import com.ievolutioned.pxform.database.Values;
+import com.ievolutioned.pxform.database.ValuesDataSet;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,36 +45,28 @@ remove unused repo head
 
 /**
  */
-public class PXFAdapter extends BaseAdapter implements Parcelable {
+public class PXFAdapter extends BaseAdapter{
     private List<PXWidget> lWidgets = new ArrayList<PXWidget>();
     private Activity aActivity;
     private AdapterEventHandler eventHandler;
-    private String parcelJson = "";
 
     public interface AdapterEventHandler {
         void onClick(PXWidget widget);
+        void openSubForm(String parentKey, String json, PXFAdapter adapter);
+    }
+
+    public interface  AdapterSaveHandler{
+        void saved();
+        void error(Exception ex);
     }
 
     public void setAdapterEventHandler(AdapterEventHandler callback){
         eventHandler = callback;
     }
 
-    private PXFAdapter(Parcel in) {
-        Log.e("Parcel in",in.toString());
-        this.parcelJson = in.readString();
-    }
-
     public PXFAdapter(Activity activity, List<PXWidget> widgets) {
         lWidgets = widgets;
         aActivity = activity;
-    }
-
-    public String getParcelJson() {
-        return parcelJson;
-    }
-
-    public void setParcelJson(String parcelJson) {
-        this.parcelJson = parcelJson;
     }
 
     public void setActivity(Activity activity){
@@ -119,29 +115,72 @@ public class PXFAdapter extends BaseAdapter implements Parcelable {
         return view;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+    /**
+     * Save the items values to the data base
+     */
+    public void save(final long formID
+            , final int level
+            , final String parentKey
+            , final AdapterSaveHandler callback){
+        (new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                ValuesDataSet ValuesDS = new ValuesDataSet(aActivity);
+                List<Values> valuesList;
+                Runnable sleep = new Runnable() { @Override public void run() {
+                    try {
+                        Thread.sleep(1);
+                    } catch (Exception e) {
+                        e.printStackTrace();
 
-    @Override
-    public void writeToParcel(Parcel out, int flags) {
-        PXFParser p = new PXFParser(null);
-        String json = p.getSavedState(this);
-        if(json != null)
-            out.writeString(json);
-    }
+                        if(callback != null){
+                            callback.error(e);
+                        }
+                    }
+                }};
 
-    public static final Parcelable.Creator<PXFAdapter> CREATOR = new Parcelable.Creator<PXFAdapter>() {
-        @Override
-        public PXFAdapter createFromParcel(Parcel source) {
-            return new PXFAdapter(source);
-        }
-        @Override
-        public PXFAdapter[] newArray(int size) {
-            return new PXFAdapter[size];
-        }
-    };
+                //check if we have the data base ready
+                valuesList = ValuesDS.selectByFormIDLevelParentKey(formID, level, parentKey);
+                boolean exist = false;
+
+                for(PXWidget widget : lWidgets){
+                    exist = false;
+
+                    for(Values value : valuesList){
+                        if(widget.getKey().equals(value.getKey())){
+
+                            if(widget.getValue() != null) {
+                                value.setValue(widget.getValue());
+                                //ValuesDS.update(value);
+                                ValuesDS.updateValue(value);
+                            }
+
+                            exist = true;
+                            break;
+                        }
+                    }
+
+                    if(!exist){
+                        ValuesDS.insert(formID, level, widget.getKey(), parentKey);
+                    }
+
+                    // let the thread rest for a bit
+                    sleep.run();
+                }
+
+                try {
+                    ValuesDS.importDatabase();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if(callback != null){
+                    callback.saved();
+                }
+                return null;
+            }
+        }).execute();
+    }
 
     private PXWidget.PXWidgetHandler widgetHandler = new PXWidget.PXWidgetHandler() {
         @Override
@@ -153,6 +192,13 @@ public class PXFAdapter extends BaseAdapter implements Parcelable {
         public void onClick(PXWidget parent) {
             if(eventHandler != null){
                 eventHandler.onClick(parent);
+            }
+        }
+
+        @Override
+        public void selectedSubForm(String json, PXWidget widget) {
+            if(eventHandler != null){
+                eventHandler.openSubForm(widget.getKey(), json, PXFAdapter.this);
             }
         }
     };

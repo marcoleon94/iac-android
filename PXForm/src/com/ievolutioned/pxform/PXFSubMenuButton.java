@@ -1,12 +1,19 @@
 package com.ievolutioned.pxform;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.content.DialogInterface;
+import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
 import java.util.Map;
@@ -23,6 +30,9 @@ public class PXFSubMenuButton extends PXWidget {
     private String current_title = "";
     private String current_option_text = "";
     private int current_option = -1;
+    private CharSequence[] options_array;
+    private FragmentManager fragmentManager;
+    private boolean isDialogShown = false;
 
     public static class HelperSubMenuButton extends HelperWidget {
         protected Button button;
@@ -45,6 +55,18 @@ public class PXFSubMenuButton extends PXWidget {
     }
 
     @Override
+    public void setValue(String value) {
+        try{
+            current_option = Integer.parseInt(value);
+        }catch(Exception ex){
+        }
+    }
+    @Override
+    public String getValue() {
+        return String.valueOf(current_option);
+    }
+
+    @Override
     public void setWidgetData(View v) {
         super.setWidgetData(v);
         HelperSubMenuButton helper = (HelperSubMenuButton) v.getTag();
@@ -52,13 +74,24 @@ public class PXFSubMenuButton extends PXWidget {
         helper.title.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
                 getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
 
-        helper.button.setText(getJsonEntries().containsKey(FIELD_PLACEHOLDER) ?
-                getJsonEntries().get(FIELD_PLACEHOLDER).getValue().getAsString() : PLACEHOLDER_DEFAULT);
+        if(current_option > -1){
+            if(options_array != null && options_array.length > 0){
+                helper.button.setText(options_array[current_option]);
+            }
+        }else {
+            helper.button.setText(getJsonEntries().containsKey(FIELD_PLACEHOLDER) ?
+                    getJsonEntries().get(FIELD_PLACEHOLDER).getValue().getAsString() : PLACEHOLDER_DEFAULT);
+        }
+
         helper.button.setOnClickListener(onclick);
+
     }
 
     @Override
     public View createControl(Activity context) {
+        fragmentManager = context.getFragmentManager();
+        setupOptionsArray();
+
         LinearLayout v = (LinearLayout) super.createControl(context);
         HelperSubMenuButton helper = (HelperSubMenuButton) v.getTag();
 
@@ -99,12 +132,102 @@ public class PXFSubMenuButton extends PXWidget {
         return v;
     }
 
+    private void setupOptionsArray(){
+        //options_array
+        JsonElement cell = getJsonEntries().get(FIELD_OPTIONS).getValue();
+        JsonArray array;
+        array = cell.getAsJsonArray();
+        options_array = new CharSequence[array.size()];
+
+        for (int x = 0; x < array.size(); ++x){
+            cell = array.get(x);
+
+            options_array[x] = cell.getAsJsonObject().entrySet().iterator().next().getKey();
+        }
+    }
+
     private View.OnClickListener onclick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(getEventHandler() != null){
-                getEventHandler().onClick(PXFSubMenuButton.this);
-            }
+            if(isDialogShown)
+                return;
+
+            ChildFormDialogFragment dialog = ChildFormDialogFragment.getInstance(PXFSubMenuButton.this);
+            dialog.setISelectedIndex(new ChildFormDialogFragment.IIndexSelected() {
+                @Override
+                public void onIndexSelected(int sel) {
+                    current_option = sel;
+                    //options_array
+                    JsonElement cell = getJsonEntries().get(FIELD_OPTIONS).getValue();
+                    JsonArray array = cell.getAsJsonArray();
+                    cell = array.get(sel);
+
+                    String option = cell.getAsJsonObject().entrySet().iterator().next().getKey();
+                    String json = cell.getAsJsonObject().entrySet().iterator().next().getValue().toString();
+                    isDialogShown = false;
+
+                    if(getEventHandler() != null){
+                        getEventHandler().selectedSubForm(json, PXFSubMenuButton.this);
+                    }
+                }
+
+                @Override
+                public void cancel() {
+                    isDialogShown = false;
+                }
+            });
+            dialog.show(fragmentManager, "formPicker");
+            isDialogShown = true;
+
+
         }
     };
+
+    public static class ChildFormDialogFragment extends DialogFragment {
+
+        private CharSequence[] items_options;
+        private PXFSubMenuButton widgetParent;
+        private IIndexSelected eventHandler;
+
+        public void setISelectedIndex(IIndexSelected callback){
+            eventHandler = callback;
+        }
+
+        public static ChildFormDialogFragment getInstance(PXFSubMenuButton widget){
+            ChildFormDialogFragment cf = new ChildFormDialogFragment();
+            cf.widgetParent = widget;
+            cf.items_options = widget.options_array;
+            return cf;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(widgetParent.getJsonEntries().get(PXWidget.FIELD_TITLE).getValue().getAsString());
+            builder.setItems(items_options, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    if (eventHandler != null) {
+                        eventHandler.onIndexSelected(which);
+                    }
+                }
+            });
+
+            return builder.create();
+        }
+
+        @Override
+        public void onDismiss(DialogInterface dialog) {
+            super.onDismiss(dialog);
+
+            if (eventHandler != null) {
+                eventHandler.cancel();
+            }
+        }
+
+        public interface IIndexSelected{
+            void onIndexSelected(int index);
+            void cancel();
+        }
+    }
 }

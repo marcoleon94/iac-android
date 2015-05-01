@@ -1,9 +1,11 @@
 package com.ievolutioned.iac;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -14,6 +16,8 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.ievolutioned.iac.model.LoginService;
 import com.ievolutioned.iac.util.AppConfig;
+import com.ievolutioned.iac.view.ViewUtility;
+import com.ievolutioned.pxform.database.FormsDataSet;
 
 /**
  * Log in activity class. Manages the log in actions
@@ -42,8 +46,16 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         if(!AppConfig.DEBUG)
             Crashlytics.start(this);
+
         setContentView(R.layout.activity_login);
         bindUI();
+
+        com.ievolutioned.pxform.database.FormsDataSet f = new FormsDataSet(LoginActivity.this);
+
+        if(f.countAll() < 1){
+            long i = f.insert("", "Encuesta de Salida");
+            Log.d("XXX", String.valueOf(i));
+        }
     }
 
     /**

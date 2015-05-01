@@ -20,6 +20,10 @@ import com.google.zxing.integration.android.IntentResult;
 import com.ievolutioned.iac.fragment.FormsFragment;
 import com.ievolutioned.iac.fragment.SitesFragment;
 import com.ievolutioned.iac.util.AppConfig;
+import com.ievolutioned.pxform.database.FormsDataSet;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -75,20 +79,35 @@ public class MainActivity extends ActionBarActivity {
         String[] sites = getResources().getStringArray(R.array.nav_drawer_sites_items);
         Fragment mFragment = null;
         Bundle args = new Bundle();
-        for (String form : forms) {
-            if (form.equalsIgnoreCase(item)) {
-                mFragment = new FormsFragment();
-                args.putString(FormsFragment.ARG_FORM_NAME, item);
-            }
+        //for (String form : forms) {
+        //if (form.equalsIgnoreCase(item)) {
+
+        com.ievolutioned.pxform.database.FormsDataSet f = new FormsDataSet(MainActivity.this);
+        List<com.ievolutioned.pxform.database.Forms> formsList = f.selectByName(item);
+        f.close();
+
+        if(formsList.size() > 0) {
+            args.putLong(FormsFragment.DATABASE_FORM_ID, formsList.get(0).getId());
+            args.putInt(FormsFragment.DATABASE_LEVEL, 0);
+            args.putString(FormsFragment.DATABASE_KEY_PARENT, "");
+            args.putString(FormsFragment.DATABASE_JSON,
+                    com.ievolutioned.pxform.PXFParser.parseFileToString(MainActivity.this,
+                            "Form.json"));
+            mFragment = new FormsFragment();
         }
+        //}
+        //}
         for (String site : sites) {
             if (site.equalsIgnoreCase(item)) {
                 mFragment = new SitesFragment();
                 args.putString(SitesFragment.ARG_SITE_NAME, item);
             }
         }
+
         if (mFragment != null) {
-            mFragment.setArguments(args);
+            Bundle b = new Bundle();
+            b.putBundle(FormsFragment.class.getName(), args);
+            mFragment.setArguments(b);
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.activity_main_frame_container, mFragment);
@@ -96,6 +115,9 @@ public class MainActivity extends ActionBarActivity {
             transaction.commit();
             setTitle(item);
             mDrawerLayout.closeDrawers();
+        }else{
+            Toast.makeText(MainActivity.this, "No se encontro el formulario",
+                    Toast.LENGTH_SHORT).show();
         }
     }
 

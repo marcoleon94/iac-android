@@ -30,3 +30,4 @@ PXForm/build/*
 .idea/modules.xml
 .idea/misc.xml
 .idea/libraries/*
+PXForm/assets/databases/*.db-journal

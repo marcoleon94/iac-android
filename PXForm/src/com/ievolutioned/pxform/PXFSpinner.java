@@ -51,6 +51,18 @@ public class PXFSpinner extends PXWidget {
     }
 
     @Override
+    public void setValue(String value) {
+        try{
+            last_position = Integer.parseInt(value);
+        }catch(Exception ex){
+        }
+    }
+    @Override
+    public String getValue() {
+        return String.valueOf(last_position);
+    }
+
+    @Override
     public void setWidgetData(View view) {
         super.setWidgetData(view);
         HelperSpinner helper = (HelperSpinner) view.getTag();

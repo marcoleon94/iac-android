@@ -42,6 +42,18 @@ public class PXFToggleBoolean extends PXWidget {
     }
 
     @Override
+    public void setValue(String value) {
+        try{
+            radio_selected = Integer.parseInt(value);
+        }catch(Exception ex){
+        }
+    }
+    @Override
+    public String getValue() {
+        return String.valueOf(radio_selected);
+    }
+
+    @Override
     public void setWidgetData(View view) {
         super.setWidgetData(view);
         HelperToggleBoolean helper = (HelperToggleBoolean) view.getTag();

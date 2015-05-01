@@ -34,6 +34,14 @@ public class PXFUnknownControlType extends PXWidget {
     }
 
     @Override
+    public void setValue(String value) {
+    }
+    @Override
+    public String getValue() {
+        return "";
+    }
+
+    @Override
     public View createControl(Activity context) {
         LinearLayout v = (LinearLayout)super.createControl(context);
         HelperUnKnownControl helper = (HelperUnKnownControl) v.getTag();
