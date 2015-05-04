@@ -1,7 +1,6 @@
 package com.ievolutioned.iac.fragment;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -25,7 +24,7 @@ import com.ievolutioned.pxform.PXWidget;
 import com.ievolutioned.pxform.adapters.PXFAdapter;
 
 /**
- * Created by Daniel on 24/03/2015. For project IAC
+ *
  */
 public class FormsFragment extends Fragment {
 
@@ -34,7 +33,7 @@ public class FormsFragment extends Fragment {
     public static final String DATABASE_KEY_PARENT = "DATABASE_KEY_PARENT";
     public static final String DATABASE_JSON = "DATABASE_JSON";
 
-    public static final String ARG_FORM_ID = "ARG_FORM_ID";
+    //public static final String ARG_FORM_ID = "ARG_FORM_ID";
 
     /**
      * PXFParser parser
@@ -42,7 +41,7 @@ public class FormsFragment extends Fragment {
     private ListView listView;
     private PXFParser p;
     private Bundle savedState;
-    private PXFAdapter currentAdapter = null;
+    //private PXFAdapter currentAdapter = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saved) {
@@ -54,7 +53,6 @@ public class FormsFragment extends Fragment {
     /**
      * Binds the User interface
      *
-     * @param root
      */
     private void bindUI(View root) {
         listView = (ListView) root.findViewById(R.id.PXForm_linearPanel);
@@ -74,7 +72,7 @@ public class FormsFragment extends Fragment {
         p = new PXFParser(new PXFParser.PXFParserEventHandler() {
             @Override
             public void finish(PXFAdapter adapter, String json) {
-                currentAdapter = adapter;
+                //currentAdapter = adapter;
                 adapter.setAdapterEventHandler(adapterEventHandler);
                 listView.setAdapter(adapter);
                 loading.dismiss();
@@ -167,7 +165,7 @@ public class FormsFragment extends Fragment {
             final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
             loading.show();
 
-            currentAdapter = adapter;
+            //currentAdapter = adapter;
 
             adapter.save(
                     savedState.getLong(DATABASE_FORM_ID)
@@ -207,10 +205,6 @@ public class FormsFragment extends Fragment {
             );
         }
     };
-
-    private void saveFormData(){
-
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
