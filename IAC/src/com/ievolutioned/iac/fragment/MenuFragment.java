@@ -145,7 +145,7 @@ public class MenuFragment extends Fragment {
 
     protected void selectItem(MenuDrawerItem item) {
         Log.d(MenuFragment.class.getName(), "Selected: " + item);
-        ((MainActivity) getActivity()).selectItem(item.getId(), item.getTitle());
+        ((MainActivity) getActivity()).selectItem(item.getTitle());
     }
 
     protected void showLoading(boolean b) {
