@@ -24,7 +24,7 @@ public class PXFEdit extends PXWidget{
 
     private String current_text = "";
 
-    public class HelperEdit extends HelperWidget{
+    public static class HelperEdit extends HelperWidget{
         protected TextView title;
         protected EditTextCustom inputEdit;
         protected LinearLayout linearEdit;
@@ -73,6 +73,15 @@ public class PXFEdit extends PXWidget{
     @Override
     public int getAdapterItemType() {
         return PXWidget.ADAPTER_ITEM_TYPE_EDIT;
+    }
+
+    @Override
+    public void setValue(String value) {
+        current_text = value;
+    }
+    @Override
+    public String getValue() {
+        return current_text == null ? "" : current_text;
     }
 
     @Override

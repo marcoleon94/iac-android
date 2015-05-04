@@ -1,11 +1,8 @@
 package com.ievolutioned.pxform;
 
-import java.util.List;
 import java.util.Map;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 import android.app.Activity;
 import android.content.Context;
@@ -14,12 +11,12 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.json.JSONObject;
-
+/**
+ * Class base for read Json elements
+ */
 public abstract class PXWidget {
     public static final String FIELD_HEADER      = "header"     ;
     public static final String FIELD_KEY         = "key"        ;
@@ -48,29 +45,34 @@ public abstract class PXWidget {
     public static final int ADAPTER_ITEM_TYPE_EDIT = 4;
     public static final int ADAPTER_ITEM_TYPE_SPINNER = 5;
     public static final int ADAPTER_ITEM_TYPE_TOGGLEBOOLEAN = 6;
+    public static final int ADAPTER_ITEM_TYPE_SUBMENUBUTTON = 7;
 
     private Map<String, Map.Entry<String,JsonElement>> eEntry;
-    private int jsonLevel = 0;
-    private String jsonKeyParent = "";
+    private String fieldKey = "";
+    private long _ID = 0;
     private PXWidgetHandler eventHandler = null;
 
-    protected abstract HelperWidget generateHelperClass();
-    public abstract int getAdapterItemType();
-
+    /**
+     * Hook to call when an event fire
+     */
     public interface PXWidgetHandler{
-        public boolean addChildWidgets(PXWidget parent, int selected_index);
-        public boolean removeChildWidgets(PXWidget parent);
         public void notifyDataSetChanges();
-        public boolean setWidgetValue(PXWidget parent, String field, Object value);
+        public void onClick(PXWidget parent);
+        public void selectedSubForm(String json, PXWidget widget);
     }
 
-    private String key = "";
-
+    /**
+     * Base class for helper list adapter item
+     */
     public static abstract class HelperWidget{
         protected LinearLayout container;
         protected TextView headTextView;
     }
 
+    /**
+     * This return the total number of available controls
+     * @return Count of controls
+     */
     public static int getAdapterItemTypeCount(){
         final Integer[] ids = new Integer[]{
                 ADAPTER_ITEM_TYPE_UNKNOWN,
@@ -80,14 +82,54 @@ public abstract class PXWidget {
                 ADAPTER_ITEM_TYPE_EDIT,
                 ADAPTER_ITEM_TYPE_SPINNER,
                 ADAPTER_ITEM_TYPE_TOGGLEBOOLEAN,
+                ADAPTER_ITEM_TYPE_SUBMENUBUTTON,
         };
         return ids.length;
     }
+
     /**
-     * Get a LinearLayout view container, if the map contains a PXWidget.FIELD_HEADER
      *
-     * @param context
      * @return
+     */
+    protected abstract HelperWidget generateHelperClass();
+    /**
+     *
+     * @return
+     */
+    public abstract int getAdapterItemType();
+    /**
+     * Set the value of the control, normally from the data base
+     * @param value The widget will try to parse and set the value
+     */
+    public abstract void setValue(String value);
+    public abstract String getValue();
+    /**
+     * Default base constructor, set the json element property and key property
+     * @param entry A list of KEY - JSON values
+     */
+    public PXWidget(Map<String, Map.Entry<String,JsonElement>> entry){
+        eEntry = entry;
+
+        if(eEntry.containsKey(FIELD_KEY))
+            setKey(eEntry.get(FIELD_KEY).getValue().getAsString());
+        else
+            Log.w(PXWidget.class.getName(), FIELD_KEY + " not found in json");
+    }
+    /**
+     * Get the event handler associated to the class
+     * @return {@link PXWidget.PXWidgetHandler} class
+     */
+    public PXWidgetHandler getEventHandler() { return eventHandler; }
+    /**
+     * Set the event handler associated to the class
+     * @param callback Hook to call when an event fire
+     */
+    public void setEventHandler(PXWidgetHandler callback){ eventHandler = callback; }
+    /**
+     * Get a LinearLayout view container, if the map contains a {@link PXWidget#FIELD_HEADER}
+     *
+     * @param context used to create the view
+     * @return return a LinearLayout container
      */
     public View createControl(final Activity context){
         HelperWidget helper = generateHelperClass();
@@ -111,9 +153,6 @@ public abstract class PXWidget {
 
         return linear;
     }
-
-    /**
-     */
     private TextView getTextViewHead(Context context,
                                      Map<String, Map.Entry<String,JsonElement>> map){
         TextView t = new TextView(context);
@@ -130,14 +169,12 @@ public abstract class PXWidget {
                 View.VISIBLE : View.GONE);
         return t;
     }
-
     protected TextView getGenericTextView(Context context, String text){
         TextView t = new TextView(context);
         t.setText(text);
         t.setPadding(5, 2, 2, 5);
         return t;
     }
-
     protected LinearLayout getGenericLinearLayout(Context context){
         LinearLayout l = new LinearLayout(context);
         l.setOrientation(LinearLayout.HORIZONTAL);
@@ -147,28 +184,16 @@ public abstract class PXWidget {
         l.setBackgroundColor(Color.parseColor("#ECEAEC"));
         return l;
     }
-
-    public PXWidget(Map<String, Map.Entry<String,JsonElement>> entry){
-        eEntry = entry;
-    }
-
-    public Map<String, Map.Entry<String,JsonElement>> getJsonEntries(){
-        return eEntry;
-    }
-
-    public int getJsonLevel(){ return jsonLevel; }
-    public String getJsonKeyParent(){ return jsonKeyParent; }
-    public PXWidgetHandler getEventHandler() { return eventHandler; }
-
-    public void setJsonLevel(int level){ jsonLevel = level; }
-    public void setJsonKeyParent(String parent){
-        if(parent == null)
-            parent = "";
-
-        jsonKeyParent = parent;
-    }
-    public void setEventHandler(PXWidgetHandler callback){ eventHandler = callback; }
-
+    /**
+     * Get a map with a String (key) - Json (class) values
+     * @return {@link java.util.Map}
+     */
+    public Map<String, Map.Entry<String,JsonElement>> getJsonEntries(){ return eEntry; }
+    /**
+     * Used by the adapter to fill the information of the widget, extended widget should call
+     * this super method.
+     * @param view A container with already created controls
+     */
     public void setWidgetData(View view){
         HelperWidget helper = (HelperWidget) view.getTag();
         helper.headTextView.setText(getJsonEntries().containsKey(FIELD_HEADER) ?
@@ -177,51 +202,28 @@ public abstract class PXWidget {
                 View.VISIBLE : View.GONE);
 
         if (getJsonEntries().get(FIELD_KEY) != null)
-            setKey(getJsonEntries().get(FIELD_KEY).getValue().toString());
+            setKey(getJsonEntries().get(FIELD_KEY).getValue().getAsString());
     }
-
-    public void setKey(String key){
-        this.key = key;
-    }
-    public String getKey(){
-        return this.key;
-    }
-
-    public JsonElement getWidgetData() {
-        JsonObject data = new JsonObject();
-        if (this instanceof PXFEdit) {
-            data.addProperty(getKey(), ((PXFEdit) this).toString());
-        } else if (this instanceof PXFCheckBox) {
-            data.addProperty(getKey(), ((PXFCheckBox) this).toString());
-        } else if (this instanceof PXFDatePicker) {
-            data.addProperty(getKey(), ((PXFDatePicker) this).toString());
-        } else if (this instanceof PXFSpinner) {
-            data.addProperty(getKey(), ((PXFSpinner) this).toString());
-        } else if (this instanceof PXFToggleBoolean) {
-            data.addProperty(getKey(), ((PXFToggleBoolean) this).toString());
-        } else if (this instanceof PXFUnknownControlType) {
-            Log.d(PXFUnknownControlType.class.getName(), "Unknown");
-        } else {
-            data.addProperty(getKey(), "");
-        }
-        return data;
-    }
-
-    public String getWidgetDataString() {
-        if (this instanceof PXFEdit) {
-            return ((PXFEdit) this).toString();
-        } else if (this instanceof PXFCheckBox) {
-            return ((PXFCheckBox) this).toString();
-        } else if (this instanceof PXFDatePicker) {
-            return ((PXFDatePicker) this).toString();
-        } else if (this instanceof PXFSpinner) {
-            return ((PXFSpinner) this).toString();
-        } else if (this instanceof PXFToggleBoolean) {
-            return ((PXFToggleBoolean) this).toString();
-        } else if (this instanceof PXFUnknownControlType) {
-            Log.d(PXFUnknownControlType.class.getName(), "Unknown");
-        }
-        return "";
-    }
-
+    /**
+     * Set the ID of the field and should be unique at the same level of the form, no validation
+     * is perform for repeated IDs. Nested forms can use the same ID.
+     * @param key An id that should be unique
+     */
+    public void setKey(String key){ fieldKey = key; }
+    /**
+     * Set the unique ID from the data base
+     * @param id Unique data base ID
+     */
+    public void setID(long id){ _ID = id; }
+    /**
+     * Get the unique ID from the data base
+     * @return Unique data base ID
+     */
+    public long getID() { return _ID; }
+    /**
+     * The {@link PXWidget#FIELD_KEY} value, the ID of the field and should
+     * unique at the same level of the form, still <b>nested forms can have the same ID</b>.
+     * @return String with the FIELD_KEY found
+     */
+    public String getKey(){ return fieldKey; }
 }

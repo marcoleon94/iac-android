@@ -1,13 +1,10 @@
 package com.ievolutioned.pxform.adapters;
 
-
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ievolutioned.pxform.PXFParser;
-import com.ievolutioned.pxform.PXFUnknownControlType;
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -16,11 +13,12 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 import com.ievolutioned.pxform.PXWidget;
+import com.ievolutioned.pxform.database.Values;
+import com.ievolutioned.pxform.database.ValuesDataSet;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /*
 remove file form git:
@@ -47,28 +45,28 @@ remove unused repo head
 
 /**
  */
-public class PXFAdapter extends BaseAdapter implements Parcelable {
+public class PXFAdapter extends BaseAdapter{
     private List<PXWidget> lWidgets = new ArrayList<PXWidget>();
     private Activity aActivity;
+    private AdapterEventHandler eventHandler;
 
-    private String parcelJson = "";
+    public interface AdapterEventHandler {
+        void onClick(PXWidget widget);
+        void openSubForm(String parentKey, String json, PXFAdapter adapter);
+    }
 
-    private PXFAdapter(Parcel in) {
-        Log.e("Parcel in",in.toString());
-        this.parcelJson = in.readString();
+    public interface  AdapterSaveHandler{
+        void saved();
+        void error(Exception ex);
+    }
+
+    public void setAdapterEventHandler(AdapterEventHandler callback){
+        eventHandler = callback;
     }
 
     public PXFAdapter(Activity activity, List<PXWidget> widgets) {
         lWidgets = widgets;
         aActivity = activity;
-    }
-
-    public String getParcelJson() {
-        return parcelJson;
-    }
-
-    public void setParcelJson(String parcelJson) {
-        this.parcelJson = parcelJson;
     }
 
     public void setActivity(Activity activity){
@@ -117,176 +115,91 @@ public class PXFAdapter extends BaseAdapter implements Parcelable {
         return view;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    /**
+     * Save the items values to the data base
+     */
+    public void save(final long formID
+            , final int level
+            , final String parentKey
+            , final AdapterSaveHandler callback){
+        (new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                ValuesDataSet ValuesDS = new ValuesDataSet(aActivity);
+                List<Values> valuesList;
+                Runnable sleep = new Runnable() { @Override public void run() {
+                    try {
+                        Thread.sleep(1);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+
+                        if(callback != null){
+                            callback.error(e);
+                        }
+                    }
+                }};
+
+                //check if we have the data base ready
+                valuesList = ValuesDS.selectByFormIDLevelParentKey(formID, level, parentKey);
+                boolean exist = false;
+
+                for(PXWidget widget : lWidgets){
+                    exist = false;
+
+                    for(Values value : valuesList){
+                        if(widget.getKey().equals(value.getKey())){
+
+                            if(widget.getValue() != null) {
+                                value.setValue(widget.getValue());
+                                //ValuesDS.update(value);
+                                ValuesDS.updateValue(value);
+                            }
+
+                            exist = true;
+                            break;
+                        }
+                    }
+
+                    if(!exist){
+                        ValuesDS.insert(formID, level, widget.getKey(), parentKey);
+                    }
+
+                    // let the thread rest for a bit
+                    sleep.run();
+                }
+
+                try {
+                    ValuesDS.importDatabase();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if(callback != null){
+                    callback.saved();
+                }
+                return null;
+            }
+        }).execute();
     }
 
-    @Override
-    public void writeToParcel(Parcel out, int flags) {
-        PXFParser p = new PXFParser(null);
-        String json = p.getSavedState(this);
-        if(json != null)
-            out.writeString(json);
-    }
-
-    public static final Parcelable.Creator<PXFAdapter> CREATOR = new Parcelable.Creator<PXFAdapter>() {
-
+    private PXWidget.PXWidgetHandler widgetHandler = new PXWidget.PXWidgetHandler() {
         @Override
-        public PXFAdapter createFromParcel(Parcel source) {
-            return new PXFAdapter(source);
+        public void notifyDataSetChanges() {
+            PXFAdapter.this.notifyDataSetChanged();
         }
 
         @Override
-        public PXFAdapter[] newArray(int size) {
-            return new PXFAdapter[size];
+        public void onClick(PXWidget parent) {
+            if(eventHandler != null){
+                eventHandler.onClick(parent);
+            }
+        }
+
+        @Override
+        public void selectedSubForm(String json, PXWidget widget) {
+            if(eventHandler != null){
+                eventHandler.openSubForm(widget.getKey(), json, PXFAdapter.this);
+            }
         }
     };
-
-    private PXWidget.PXWidgetHandler widgetHandler;
-    {
-        widgetHandler = new PXWidget.PXWidgetHandler() {
-            @Override
-            public boolean addChildWidgets(PXWidget parent, int selected_index) {
-                List<PXWidget> wl = new ArrayList<PXWidget>();
-                PXWidget widget;
-                int index = -1;
-                final int size = PXFAdapter.this.lWidgets.size();
-                JsonArray array;
-                JsonElement sub;
-
-                if (!parent.getJsonEntries().containsKey(PXWidget.FIELD_KEY)
-                        || existControls(parent)
-                        || !parent.getJsonEntries().get(PXWidget.FIELD_OPTIONS).getValue().isJsonArray())
-                    return false;
-
-                array = parent.getJsonEntries().get(PXWidget.FIELD_OPTIONS).getValue().getAsJsonArray();
-                sub = array.get(selected_index);
-
-                if (!sub.isJsonObject()
-                        || sub.getAsJsonObject().entrySet().size() < 1
-                        || !sub.getAsJsonObject().entrySet().iterator().hasNext()
-                        || !sub.getAsJsonObject().entrySet().iterator().next().getValue().isJsonArray())
-                    return false;
-
-                array = sub.getAsJsonObject().entrySet().iterator().next().getValue().getAsJsonArray();
-
-                for (int z = 0; z < array.size(); ++z) {
-                    JsonObject entry = array.get(z).getAsJsonObject();
-
-                    if (entry.entrySet().size() < 1)
-                        continue;
-
-                    Map<String, Map.Entry<String, JsonElement>> map
-                            = new HashMap<String, Map.Entry<String, JsonElement>>();
-
-                    //map all the fields by key
-                    for (Map.Entry<String, JsonElement> mej : entry.entrySet()) {
-                        map.put(mej.getKey(), mej);
-                    }
-
-                    widget = PXFParser.getWidgetFromType(map);
-
-                    if (widget == null || widget instanceof PXFUnknownControlType)
-                        continue;
-
-                    widget.setJsonLevel(parent.getJsonLevel() + 1);
-                    widget.setJsonKeyParent(parent.getJsonEntries().get(PXWidget.FIELD_KEY)
-                            .getValue().getAsString());
-                    wl.add(widget);
-                }
-
-                for (PXWidget w : PXFAdapter.this.lWidgets) {
-                    index++;
-
-                    if (w.getJsonLevel() != parent.getJsonLevel()
-                            || !w.getJsonEntries().containsKey(PXWidget.FIELD_KEY)
-                            || !w.getJsonEntries().get(PXWidget.FIELD_KEY).equals(
-                            parent.getJsonEntries().get(PXWidget.FIELD_KEY)))
-                        continue;
-
-                    break;
-                }
-
-                if (index > -1) {
-                    for (PXWidget w : wl) {
-                        PXFAdapter.this.lWidgets.add(++index, w);
-                    }
-                } else {
-                    //what to do, what to do..
-                }
-
-                return size != PXFAdapter.this.lWidgets.size();
-            }
-
-            @Override
-            public boolean removeChildWidgets(PXWidget parent) {
-                final int level = parent.getJsonLevel() + 1;
-                final int size = PXFAdapter.this.lWidgets.size();
-
-                if (!parent.getJsonEntries().containsKey(PXWidget.FIELD_KEY))
-                    return false;
-
-                for (int i = PXFAdapter.this.lWidgets.size() - 1; i >= 0; --i) {
-                    PXWidget w = PXFAdapter.this.lWidgets.get(i);
-
-                    if (w.getJsonLevel() != level)
-                        continue;
-
-                    if (!parent.getJsonEntries().get(PXWidget.FIELD_KEY).getValue().getAsString()
-                            .equals(w.getJsonKeyParent()))
-                        continue;
-
-                    PXFAdapter.this.lWidgets.remove(i);
-                }
-
-                return size != PXFAdapter.this.lWidgets.size();
-            }
-
-            private boolean existControls(PXWidget parent) {
-                final int level = parent.getJsonLevel() + 1;
-
-                if (!parent.getJsonEntries().containsKey(PXWidget.FIELD_KEY))
-                    return true;
-
-                for (int i = PXFAdapter.this.lWidgets.size() - 1; i >= 0; --i) {
-                    PXWidget w = PXFAdapter.this.lWidgets.get(i);
-
-                    if (w.getJsonLevel() != level)
-                        continue;
-
-                    if (!parent.getJsonEntries().get(PXWidget.FIELD_KEY).getValue().getAsString()
-                            .equals(w.getJsonKeyParent()))
-                        continue;
-
-                    return true;
-                }
-
-                return false;
-            }
-
-            @Override
-            public void notifyDataSetChanges() {
-                PXFAdapter.this.notifyDataSetChanged();
-            }
-
-            @Override
-            public boolean setWidgetValue(PXWidget parent, String field,  Object value) {
-                try {
-                    JsonElement v = new JsonParser().parse(value.toString());
-                    if(parent.getJsonEntries().containsKey(field)) {
-                        parent.getJsonEntries().get(field).setValue(v);
-                        return true;
-                    }
-                    else
-                        Log.d(PXFAdapter.class.getName(), "Can not find the field: "+field);
-                }
-                catch (Exception e){
-                    Log.e(PXFAdapter.class.getName(),e.getMessage(),e);
-                    return false;
-                }
-                return false;
-            }
-        };
-    }
 }

@@ -38,6 +38,16 @@ public class PXFCheckBox extends PXWidget {
     }
 
     @Override
+    public void setValue(String value) {
+        isChecked = "true".equalsIgnoreCase(value);
+    }
+
+    @Override
+    public String getValue(){
+        return String.valueOf(isChecked);
+    }
+
+    @Override
     public void setWidgetData(View view) {
         super.setWidgetData(view);
         HelperCheckBox helper = (HelperCheckBox) view.getTag();

@@ -16,8 +16,8 @@ public class PXFormActivity extends Activity {
 	PXFParser p;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	protected void onCreate(Bundle saved) {
+		super.onCreate(saved);
 		setContentView(R.layout.pxform_activity);
 
 		//final LinearLayout container = (LinearLayout)findViewById(R.id.PXForm_linearPanel);
@@ -37,14 +37,9 @@ public class PXFormActivity extends Activity {
                 Toast.makeText(PXFormActivity.this, "can't parse json", Toast.LENGTH_SHORT).show();
                 loading.dismiss();
             }
-
-            @Override
-            public void onSaved(String json) {
-
-            }
         });
 
-		p.parseJson(PXFormActivity.this, PXFParser.parseFileToString(getApplicationContext(),
-                "FormFields_PabloUTF8.json"));
+		//p.parseJson(PXFormActivity.this, PXFParser.parseFileToString(getApplicationContext(),
+        //        "FormFields_PabloUTF8.json"));
 	}
 }

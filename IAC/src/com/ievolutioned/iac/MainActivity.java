@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -18,8 +17,10 @@ import com.crashlytics.android.Crashlytics;
 import com.ievolutioned.iac.fragment.FormsFragment;
 import com.ievolutioned.iac.fragment.SitesFragment;
 import com.ievolutioned.iac.util.AppConfig;
-import com.ievolutioned.iac.view.MenuDrawerItem;
 import com.ievolutioned.iac.view.ViewUtility;
+import com.ievolutioned.pxform.database.FormsDataSet;
+
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -49,6 +50,8 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void setDrawer() {
+        //final CharSequence mTitle, mDrawerTitle;
+        //mTitle = mDrawerTitle = getTitle();
 
         setSupportActionBar(mToolbar);
 
@@ -76,6 +79,7 @@ public class MainActivity extends ActionBarActivity {
      * @param id
      * @param item
      */
+    /*
     public void selectItem(long id, String item) {
         if (id == MenuDrawerItem.ID_DEFAULT)
             selectItem(item);
@@ -89,40 +93,65 @@ public class MainActivity extends ActionBarActivity {
         setTitle(item);
         mDrawerLayout.closeDrawers();
     }
+    */
 
     /**
      * Looks for a static item menu string and sets the menu title and its fragment
      *
-     * @param item
+     *
      */
     public void selectItem(String item) {
-        String[] forms = getResources().getStringArray(R.array.nav_drawer_form_items);
+        //String[] forms = getResources().getStringArray(R.array.nav_drawer_form_items);
         String[] sites = getResources().getStringArray(R.array.nav_drawer_sites_items);
         Fragment mFragment = null;
         Bundle args = new Bundle();
-        for (String form : forms) {
-            if (form.equalsIgnoreCase(item)) {
-                mFragment = new FormsFragment();
-                args.putString(FormsFragment.ARG_FORM_NAME, item);
+        //for (String form : forms) {
+        //if (form.equalsIgnoreCase(item)) {
+
+        com.ievolutioned.pxform.database.FormsDataSet f = new FormsDataSet(MainActivity.this);
+        List<com.ievolutioned.pxform.database.Forms> formsList = f.selectByName(item);
+        f.close();
+
+        if (formsList.size() > 0) {
+            args.putLong(FormsFragment.DATABASE_FORM_ID, formsList.get(0).getId());
+            args.putInt(FormsFragment.DATABASE_LEVEL, 0);
+            args.putString(FormsFragment.DATABASE_KEY_PARENT, "");
+            args.putString(FormsFragment.DATABASE_JSON,
+                    com.ievolutioned.pxform.PXFParser.parseFileToString(MainActivity.this,
+                            "Form.json"));
+            mFragment = new FormsFragment();
+        }
+        //}
+        //}
+        if (mFragment == null) {
+            for (String site : sites) {
+                if (site.equalsIgnoreCase(item)) {
+                    mFragment = new SitesFragment();
+                    args.putString(SitesFragment.ARG_SITE_NAME, item);
+                }
             }
         }
-        for (String site : sites) {
-            if (site.equalsIgnoreCase(item)) {
-                mFragment = new SitesFragment();
-                args.putString(SitesFragment.ARG_SITE_NAME, item);
-            }
-        }
+
         if (mFragment != null) {
-            mFragment.setArguments(args);
-            replaceFragment(mFragment);
+            Bundle b = new Bundle();
+            b.putBundle(FormsFragment.class.getName(), args);
+            mFragment.setArguments(b);
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.activity_main_frame_container, mFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+            setTitle(item);
+            mDrawerLayout.closeDrawers();
         }
     }
 
     /**
      * Replaces the current fragment on the frame container
      *
-     * @param mFragment
+     *
      */
+    /*
     public void replaceFragment(Fragment mFragment) {
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -130,6 +159,7 @@ public class MainActivity extends ActionBarActivity {
         transaction.addToBackStack(null);
         transaction.commit();
     }
+    */
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -169,10 +199,20 @@ public class MainActivity extends ActionBarActivity {
             super.onBackPressed();
     }
 
+    /*
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        IntentResult barcodeResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (barcodeResult != null) {
+            Toast.makeText(this,barcodeResult.getContents(),Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+        }
+
     }
+    */
 
     public void showLoading(boolean b) {
         if (mLoading != null)

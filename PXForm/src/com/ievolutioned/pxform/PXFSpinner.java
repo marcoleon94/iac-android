@@ -25,8 +25,9 @@ public class PXFSpinner extends PXWidget {
     private ArrayAdapter<String> adapter;
     private int last_position = -1;
 
-    //-------------------------------------
-    //class and interface declaration
+    /**
+     * class and interface declaration
+     */
     public static class HelperSpinner extends HelperWidget{
         protected TextView title;
         protected LinearLayout linearCheckBox;
@@ -47,6 +48,18 @@ public class PXFSpinner extends PXWidget {
     @Override
     public int getAdapterItemType() {
         return PXWidget.ADAPTER_ITEM_TYPE_SPINNER;
+    }
+
+    @Override
+    public void setValue(String value) {
+        try{
+            last_position = Integer.parseInt(value);
+        }catch(Exception ex){
+        }
+    }
+    @Override
+    public String getValue() {
+        return String.valueOf(last_position);
     }
 
     @Override
@@ -149,27 +162,27 @@ public class PXFSpinner extends PXWidget {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             //booleans used to optimize the adapter notifyDataSetChanges() calls
-            boolean changed_1 = false;
-            boolean changed_2 = false;
+            //boolean changed_1 = false;
+            //boolean changed_2 = false;
 
-            if(PXFSpinner.this.last_position != position){
-                if(getEventHandler() != null){
-                    changed_1 = getEventHandler().removeChildWidgets(PXFSpinner.this);
-                }
-            }
-
-            if(PXFSpinner.this.last_position != position) {
-                if (PXFSpinner.this.getEventHandler() != null) {
-                    changed_2 = PXFSpinner.this.getEventHandler().addChildWidgets(
-                            PXFSpinner.this, position);
-                }
-            }
+            //if(PXFSpinner.this.last_position != position){
+            //    if(getEventHandler() != null){
+            //        changed_1 = getEventHandler().removeChildWidgets(PXFSpinner.this);
+            //    }
+            //}
+            //
+            //if(PXFSpinner.this.last_position != position) {
+            //    if (PXFSpinner.this.getEventHandler() != null) {
+            //        changed_2 = PXFSpinner.this.getEventHandler().addChildWidgets(
+            //                PXFSpinner.this, position);
+            //    }
+            //}
 
             PXFSpinner.this.last_position = position;
 
-            if((changed_1 || changed_2) && PXFSpinner.this.getEventHandler() != null){
-                PXFSpinner.this.getEventHandler().notifyDataSetChanges();
-            }
+            //if((changed_1 || changed_2) && PXFSpinner.this.getEventHandler() != null){
+            //    PXFSpinner.this.getEventHandler().notifyDataSetChanges();
+            //}
         }
 
         @Override public void onNothingSelected(AdapterView<?> parent) { }
