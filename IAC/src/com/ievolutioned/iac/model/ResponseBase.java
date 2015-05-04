@@ -6,4 +6,9 @@ package com.ievolutioned.iac.model;
 public abstract class ResponseBase {
     public String msg;
     public Throwable e;
+
+    public ResponseBase(String msg, Throwable e) {
+        this.msg = msg;
+        this.e = e;
+    }
 }

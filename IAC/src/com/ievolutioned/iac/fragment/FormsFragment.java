@@ -32,6 +32,8 @@ public class FormsFragment extends Fragment {
      */
     public static final String ARG_FORM_NAME = "ARG_FORM_NAME";
 
+    public static final String ARG_FORM_ID = "ARG_FORM_ID";
+
     public static final String ARG_LIST_FORM = "ARG_LIST_FORM";
     /**
      * PXFParser parser
