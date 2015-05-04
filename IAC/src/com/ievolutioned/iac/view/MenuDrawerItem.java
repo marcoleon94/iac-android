@@ -7,7 +7,9 @@ package com.ievolutioned.iac.view;
 public class MenuDrawerItem {
 
     public static final int ICON_DEFAULT = -1;
+    public static final long ID_DEFAULT = -1L;
 
+    private long id = ID_DEFAULT;
     private int icon;
     private String title;
 
@@ -36,6 +38,12 @@ public class MenuDrawerItem {
         this.setIcon(ICON_DEFAULT);
     }
 
+    public MenuDrawerItem(long id, String title) {
+        this.setId(id);
+        this.setTitle(title);
+        this.setIcon(ICON_DEFAULT);
+    }
+
     public int getIcon() {
         return icon;
     }
@@ -50,5 +58,13 @@ public class MenuDrawerItem {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }

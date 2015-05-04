@@ -34,6 +34,8 @@ public class FormsFragment extends Fragment {
     public static final String DATABASE_KEY_PARENT = "DATABASE_KEY_PARENT";
     public static final String DATABASE_JSON = "DATABASE_JSON";
 
+    public static final String ARG_FORM_ID = "ARG_FORM_ID";
+
     /**
      * PXFParser parser
      */

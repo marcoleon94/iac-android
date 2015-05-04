@@ -10,12 +10,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.ievolutioned.iac.model.LoginService;
 import com.ievolutioned.iac.util.AppConfig;
+import com.ievolutioned.iac.util.AppPreferences;
+import com.ievolutioned.iac.util.LogUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 import com.ievolutioned.pxform.database.FormsDataSet;
 
@@ -37,18 +38,22 @@ public class LoginActivity extends Activity {
      */
     private Button mButtonSingIn;
     /**
-     * ProgressBar spinner control
+     * AlertDialog loading control
      */
-    private ProgressBar mSpinner;
+    private AlertDialog mLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(!AppConfig.DEBUG)
+        if (!AppConfig.DEBUG)
             Crashlytics.start(this);
 
         setContentView(R.layout.activity_login);
         bindUI();
+        if (AppConfig.DEBUG) {
+            mEmail.setText("12345678");
+            mPassword.setText("12345678");
+        }
 
         com.ievolutioned.pxform.database.FormsDataSet f = new FormsDataSet(LoginActivity.this);
 
@@ -66,9 +71,7 @@ public class LoginActivity extends Activity {
         mEmail = (EditText) findViewById(R.id.activity_login_editEmail);
         mPassword = (EditText) findViewById(R.id.activity_login_editPassword);
         mButtonSingIn = (Button) findViewById(R.id.activity_login_btnLogIn);
-        mSpinner = (ProgressBar) findViewById(R.id.activity_login_progressBar);
-
-        mSpinner.setVisibility(View.GONE);
+        mLoading = ViewUtility.getLoadingScreen(this);
 
         //On click listeners
         mButtonSingIn.setOnClickListener(button_click);
@@ -82,7 +85,7 @@ public class LoginActivity extends Activity {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.activity_login_btnLogIn:
-                    if(AppConfig.DEBUG) {
+                    if (AppConfig.DEBUG) {
                         logIn();
                         break;
                     }
@@ -102,12 +105,11 @@ public class LoginActivity extends Activity {
         EditText[] forms = {mEmail, mPassword};
         for (EditText f : forms) {
             if (TextUtils.isEmpty(f.getText())) {
-                showToast("*Required field");
+                showToast(R.string.activity_login_required_field);
                 f.requestFocus();
                 return false;
             }
         }
-
         return true;
     }
 
@@ -116,6 +118,10 @@ public class LoginActivity extends Activity {
      *
      * @param msg
      */
+    private void showToast(int msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
     private void showToast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
@@ -127,9 +133,9 @@ public class LoginActivity extends Activity {
      */
     private void loading(boolean l) {
         if (l)
-            mSpinner.setVisibility(View.VISIBLE);
+            mLoading.show();
         else
-            mSpinner.setVisibility(View.GONE);
+            mLoading.dismiss();
     }
 
     /**
@@ -137,8 +143,9 @@ public class LoginActivity extends Activity {
      */
     private void logIn() {
         loading(true);
-        LoginService loginService = new LoginService();
-        loginService.logIn(mEmail.getText().toString().trim(), mPassword.getText().toString().trim(), login_handler);
+        LoginService loginService = new LoginService(AppConfig.getUUID(this));
+        loginService.logIn(mEmail.getText().toString().trim(), mPassword.getText().toString().trim(),
+                login_handler);
     }
 
     /**
@@ -147,14 +154,14 @@ public class LoginActivity extends Activity {
     private LoginService.LoginHandler login_handler = new LoginService.LoginHandler() {
         @Override
         public void onSuccess(LoginService.LoginResponse response) {
-            showToast("Logged in");
             loading(false);
-            startActivity(new Intent(getBaseContext(), MainActivity.class));
+            saveToken(response.user.getAdminToken());
+            startMainActivity();
         }
 
         @Override
         public void onError(LoginService.LoginResponse response) {
-            showToast("Logged in");
+            showToast("Error: " + response.msg);
             loading(false);
         }
 
@@ -164,4 +171,27 @@ public class LoginActivity extends Activity {
             loading(false);
         }
     };
+
+    /**
+     * Starts the main activity
+     */
+    private void startMainActivity() {
+        startActivity(new Intent(getBaseContext(), MainActivity.class));
+    }
+
+    /**
+     * Saves the token in the shared preferences
+     *
+     * @param token - The admin token
+     */
+    private void saveToken(String token) {
+        if (token == null)
+            return;
+        LogUtil.d(LoginActivity.class.getName(), "token: " + token);
+        try {
+            AppPreferences.setAdminToken(this, token);
+        } catch (Exception e) {
+            LogUtil.e(LoginActivity.class.getName(), "Can not set ADMIN TOKEN", e);
+        }
+    }
 }

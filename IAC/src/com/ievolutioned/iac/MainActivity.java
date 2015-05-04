@@ -1,5 +1,6 @@
 package com.ievolutioned.iac;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -12,14 +13,13 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
 import com.ievolutioned.iac.fragment.FormsFragment;
 import com.ievolutioned.iac.fragment.SitesFragment;
 import com.ievolutioned.iac.util.AppConfig;
+import com.ievolutioned.iac.view.MenuDrawerItem;
+import com.ievolutioned.iac.view.ViewUtility;
 import com.ievolutioned.pxform.database.FormsDataSet;
 
 import java.util.ArrayList;
@@ -31,6 +31,8 @@ public class MainActivity extends ActionBarActivity {
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private Toolbar mToolbar;
+
+    private AlertDialog mLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +47,8 @@ public class MainActivity extends ActionBarActivity {
         // find view
         mDrawerLayout = (DrawerLayout) findViewById(R.id.activity_main_drawer);
         mToolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
-
+        mLoading = ViewUtility.getLoadingScreen(this);
+        showLoading(true);
         setDrawer();
     }
 
@@ -74,6 +77,31 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
+    /**
+     * Including the dynamic form menu, sets its fragment for the current menu item
+     *
+     * @param id
+     * @param item
+     */
+    public void selectItem(long id, String item) {
+        if (id == MenuDrawerItem.ID_DEFAULT)
+            selectItem(item);
+        else {
+            // Only for dynamic form menu
+            Fragment mFragment = new FormsFragment();
+            Bundle args = new Bundle();
+            args.putLong(FormsFragment.ARG_FORM_ID, id);
+            replaceFragment(mFragment);
+        }
+        setTitle(item);
+        mDrawerLayout.closeDrawers();
+    }
+
+    /**
+     * Looks for a static item menu string and sets the menu title and its fragment
+     *
+     * @param item
+     */
     public void selectItem(String item) {
         String[] forms = getResources().getStringArray(R.array.nav_drawer_form_items);
         String[] sites = getResources().getStringArray(R.array.nav_drawer_sites_items);
@@ -115,10 +143,19 @@ public class MainActivity extends ActionBarActivity {
             transaction.commit();
             setTitle(item);
             mDrawerLayout.closeDrawers();
-        }else{
-            Toast.makeText(MainActivity.this, "No se encontro el formulario",
-                    Toast.LENGTH_SHORT).show();
-        }
+    }
+
+    /**
+     * Replaces the current fragment on the frame container
+     *
+     * @param mFragment
+     */
+    public void replaceFragment(Fragment mFragment) {
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.activity_main_frame_container, mFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     @Override
@@ -171,5 +208,13 @@ public class MainActivity extends ActionBarActivity {
             Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
         }
         */
+    }
+
+    public void showLoading(boolean b) {
+        if (mLoading != null)
+            if (b)
+                mLoading.show();
+            else
+                mLoading.dismiss();
     }
 }

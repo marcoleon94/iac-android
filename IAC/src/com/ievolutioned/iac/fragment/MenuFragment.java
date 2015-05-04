@@ -9,12 +9,19 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.adapter.MenuDrawerListAdapter;
+import com.ievolutioned.iac.model.FormService;
+import com.ievolutioned.iac.util.AppConfig;
+import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.view.MenuDrawerItem;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Daniel on 23/03/2015.
@@ -27,8 +34,10 @@ public class MenuFragment extends Fragment {
     private ListView mDrawerListForm;
     private ListView mDrawerSiteForm;
 
-    private ArrayList<MenuDrawerItem> drawerFormItems;
-    private ArrayList<MenuDrawerItem> drawerSitesItems;
+    private ArrayList<MenuDrawerItem> drawerFormItems = new ArrayList<MenuDrawerItem>();
+    ;
+    private ArrayList<MenuDrawerItem> drawerSitesItems = new ArrayList<MenuDrawerItem>();
+    ;
 
     private MenuDrawerListAdapter adapter_forms;
     private MenuDrawerListAdapter adapter_sites;
@@ -37,50 +46,111 @@ public class MenuFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_menu, container);
         bindUI(root);
+        bindData();
         return root;
     }
 
     private void bindUI(View root) {
-
+        //Find UI
         mDrawerListForm = (ListView) root.findViewById(R.id.fragment_menu_form_list);
         mDrawerSiteForm = (ListView) root.findViewById(R.id.fragment_menu_site_list);
 
-        // menu items
-        menuFormTitles = getResources().getStringArray(R.array.nav_drawer_form_items);
-        menuSitesTitles = getResources().getStringArray(R.array.nav_drawer_sites_items);
+        //Loads the static menu items for the current adapters
+        loadStaticMenuItems();
 
-        drawerFormItems = new ArrayList<MenuDrawerItem>();
-        drawerSitesItems = new ArrayList<MenuDrawerItem>();
-
-
-        for (int i = 0; i < menuFormTitles.length; i++) {
-            drawerFormItems.add(new MenuDrawerItem(menuFormTitles[i]));
-        }
-        for (int i = 0; i < menuSitesTitles.length; i++) {
-            drawerSitesItems.add(new MenuDrawerItem(menuSitesTitles[i]));
-        }
-
+        //Initialize adapters
         adapter_forms = new MenuDrawerListAdapter(getActivity(), drawerFormItems);
         adapter_sites = new MenuDrawerListAdapter(getActivity(), drawerSitesItems);
         mDrawerListForm.setAdapter(adapter_forms);
         mDrawerSiteForm.setAdapter(adapter_sites);
 
-        mDrawerListForm.setOnItemClickListener(drawer_click_form);
-        mDrawerSiteForm.setOnItemClickListener(drawer_click_form);
-
+        //Set on click listeners
+        mDrawerListForm.setOnItemClickListener(drawer_click);
+        mDrawerSiteForm.setOnItemClickListener(drawer_click);
     }
 
-    AdapterView.OnItemClickListener drawer_click_form = new AdapterView.OnItemClickListener() {
+    /**
+     * Loads the static menu items from resources
+     */
+    private void loadStaticMenuItems() {
+        // static menu items
+        menuFormTitles = getResources().getStringArray(R.array.nav_drawer_form_items);
+        menuSitesTitles = getResources().getStringArray(R.array.nav_drawer_sites_items);
+
+        for (String m : menuFormTitles) {
+            drawerFormItems.add(new MenuDrawerItem(m));
+        }
+
+        for (String m : menuSitesTitles) {
+            drawerSitesItems.add(new MenuDrawerItem(m));
+        }
+    }
+
+    /**
+     * Binds the dynamic menu objects form service
+     */
+    private void bindData() {
+        FormService fs = new FormService(AppConfig.getUUID(getActivity()),
+                AppPreferences.getAdminToken(getActivity()));
+        fs.getForms(form_service_callback);
+    }
+
+    /**
+     * Handles the service callback
+     */
+    private FormService.ServiceHandler form_service_callback = new FormService.ServiceHandler() {
         @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            selectItem(adapterView.getId() == R.id.fragment_menu_form_list ?
-                    menuFormTitles[position] : menuSitesTitles[position]);
+        public void onSuccess(FormService.FormResponse response) {
+            drawerFormItems.addAll(getTitlesFromResponse(response.json));
+            adapter_forms.notifyDataSetChanged();
+            showLoading(false);
+        }
+
+        @Override
+        public void onError(FormService.FormResponse response) {
+            showLoading(false);
+        }
+
+        @Override
+        public void onCancel() {
+            showLoading(false);
         }
     };
 
-    protected void selectItem(String item) {
-        Log.d(MenuFragment.class.getName(), "Selected: " + item);
-        ((MainActivity)getActivity()).selectItem(item);
-
+    /**
+     * Gets the menu titles from response
+     *
+     * @param response
+     * @return a list of menu items
+     */
+    protected List<MenuDrawerItem> getTitlesFromResponse(JsonElement response) {
+        List<MenuDrawerItem> items = new ArrayList<MenuDrawerItem>();
+        JsonArray inquests = response.getAsJsonArray();
+        for (JsonElement i : inquests) {
+            JsonObject jo = i.getAsJsonObject();
+            items.add(new MenuDrawerItem(jo.get("id").getAsLong(), jo.get("name").getAsString()));
+        }
+        return items;
     }
+
+
+    AdapterView.OnItemClickListener drawer_click = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+
+            selectItem(adapterView.getId() == R.id.fragment_menu_form_list ? drawerFormItems.get(position) :
+                    drawerSitesItems.get(position));
+        }
+    };
+
+    protected void selectItem(MenuDrawerItem item) {
+        Log.d(MenuFragment.class.getName(), "Selected: " + item);
+        ((MainActivity) getActivity()).selectItem(item.getId(), item.getTitle());
+    }
+
+    protected void showLoading(boolean b) {
+        ((MainActivity) getActivity()).showLoading(b);
+    }
+
+
 }

@@ -3,8 +3,6 @@
     <string name="nav_drawer_form_title">FORMULARIOS</string>
     <string-array name="nav_drawer_form_items">
         <item >Asistencia a Cursos</item>
-        <item >Encuesta de Salida</item>
-        <item >Encuesta de satisfaccion</item>
     </string-array>
     <string name="nav_drawer_sites_title">SITIOS DE INTERES</string>
     <string-array name="nav_drawer_sites_items">
