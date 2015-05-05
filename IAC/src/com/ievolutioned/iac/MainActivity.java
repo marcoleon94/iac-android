@@ -17,9 +17,11 @@ import com.crashlytics.android.Crashlytics;
 import com.ievolutioned.iac.fragment.FormsFragment;
 import com.ievolutioned.iac.fragment.SitesFragment;
 import com.ievolutioned.iac.util.AppConfig;
+import com.ievolutioned.iac.util.FileUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 import com.ievolutioned.pxform.database.FormsDataSet;
 
+import java.io.File;
 import java.util.List;
 
 
@@ -116,9 +118,8 @@ public class MainActivity extends ActionBarActivity {
             args.putLong(FormsFragment.DATABASE_FORM_ID, formsList.get(0).getId());
             args.putInt(FormsFragment.DATABASE_LEVEL, 0);
             args.putString(FormsFragment.DATABASE_KEY_PARENT, "");
-            args.putString(FormsFragment.DATABASE_JSON,
-                    com.ievolutioned.pxform.PXFParser.parseFileToString(MainActivity.this,
-                            "Form.json"));
+            //args.putString(FormsFragment.DATABASE_JSON,com.ievolutioned.pxform.PXFParser.parseFileToString(MainActivity.this,"Form.json"));
+            args.putString(FormsFragment.DATABASE_JSON, FileUtil.readJsonFile(this,formsList.get(0).getName()));
             mFragment = new FormsFragment();
         }
         //}

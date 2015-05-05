@@ -18,7 +18,10 @@ import com.ievolutioned.iac.adapter.MenuDrawerListAdapter;
 import com.ievolutioned.iac.model.FormService;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
+import com.ievolutioned.iac.util.FileUtil;
 import com.ievolutioned.iac.view.MenuDrawerItem;
+import com.ievolutioned.pxform.database.Forms;
+import com.ievolutioned.pxform.database.FormsDataSet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,7 +106,34 @@ public class MenuFragment extends Fragment {
         public void onSuccess(FormService.FormResponse response) {
             drawerFormItems.addAll(getTitlesFromResponse(response.json));
             adapter_forms.notifyDataSetChanged();
+            save(response.json);
             showLoading(false);
+        }
+
+        public void save(JsonElement response) {
+            boolean isSaved = false;
+            com.ievolutioned.pxform.database.FormsDataSet f = new FormsDataSet(getActivity());
+            List<Forms> forms = f.selectAll();
+            JsonArray inquests = response.getAsJsonArray();
+            for (JsonElement i : inquests) {
+                isSaved = false;
+                JsonObject jo = i.getAsJsonObject();
+                for (Forms form : forms) {
+                    if (form.getName().equalsIgnoreCase(jo.get("name").getAsString())) ;
+                    {
+                        isSaved = true;
+                        continue;
+                    }
+                }
+                if (!isSaved) {
+                    f.insert("CACHE", jo.get("name").getAsString());
+                    FileUtil.saveJsonFile(getActivity(),jo.get("name").getAsString(),jo.getAsJsonObject().toString());
+                }
+                else {
+                    //TODO: f.update()
+                }
+            }
+            f.close();
         }
 
         @Override
