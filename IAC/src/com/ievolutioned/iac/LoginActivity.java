@@ -57,7 +57,7 @@ public class LoginActivity extends Activity {
 
         com.ievolutioned.pxform.database.FormsDataSet f = new FormsDataSet(LoginActivity.this);
 
-        if(f.countAll() < 1){
+        if (f.countAll() < 1) {
             long i = f.insert("", "Encuesta de Salida");
             Log.d("XXX", String.valueOf(i));
         }
