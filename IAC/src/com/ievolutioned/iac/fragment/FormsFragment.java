@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -85,8 +87,11 @@ public class FormsFragment extends Fragment {
             }
         });
 
+        JsonElement jsonElement = new JsonParser().parse(savedState.getString(DATABASE_JSON));
+        String jsonArray = jsonElement.getAsJsonObject().get("content").getAsJsonArray().toString();
+
         p.parseJson(getActivity()
-                , savedState.getString(DATABASE_JSON)
+                , jsonArray
                 , savedState.getLong(DATABASE_FORM_ID)
                 , savedState.getInt(DATABASE_LEVEL)
                 , savedState.getString(DATABASE_KEY_PARENT)
