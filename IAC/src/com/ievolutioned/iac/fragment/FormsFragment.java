@@ -2,8 +2,6 @@ package com.ievolutioned.iac.fragment;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -15,6 +13,7 @@ import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.view.ViewUtility;
 import com.ievolutioned.pxform.PXFButton;
@@ -34,13 +33,8 @@ public class FormsFragment extends Fragment {
 
     //public static final String ARG_FORM_ID = "ARG_FORM_ID";
 
-    /**
-     * PXFParser parser
-     */
     private ListView listView;
-    private PXFParser p;
     private Bundle savedState;
-    //private PXFAdapter currentAdapter = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saved) {
@@ -67,10 +61,9 @@ public class FormsFragment extends Fragment {
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
         loading.show();
 
-        p = new PXFParser(new PXFParser.PXFParserEventHandler() {
+        PXFParser p = new PXFParser(new PXFParser.PXFParserEventHandler() {
             @Override
             public void finish(PXFAdapter adapter, String json) {
-                //currentAdapter = adapter;
                 adapter.setAdapterEventHandler(adapterEventHandler);
                 listView.setAdapter(adapter);
                 loading.dismiss();
@@ -159,11 +152,10 @@ public class FormsFragment extends Fragment {
         @Override
         public void openSubForm(final String parentKey, final String json, PXFAdapter adapter) {
             final Bundle my_args = savedState;
+            final MainActivity mainActivity = (MainActivity)getActivity();
 
             final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
             loading.show();
-
-            //currentAdapter = adapter;
 
             adapter.save(
                     savedState.getLong(DATABASE_FORM_ID)
@@ -188,19 +180,14 @@ public class FormsFragment extends Fragment {
                                     FormsFragment fragment = new FormsFragment();
                                     fragment.setArguments(args);
 
-                                    FragmentManager fragmentManager = getFragmentManager();
-
-                                    FragmentTransaction transaction = fragmentManager.beginTransaction();
-                                    transaction.replace(R.id.activity_main_frame_container, fragment);
-                                    transaction.addToBackStack(null);
-                                    transaction.commit();
+                                    mainActivity.replaceFragment(fragment);
                                 }
                             });
                         }
 
                         @Override
                         public void error(Exception ex) {
-                            Toast.makeText(getActivity(), "error al salvar", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "Por el momento no se ha podido salvar", Toast.LENGTH_SHORT).show();
                         }
                     }
             );
@@ -220,7 +207,8 @@ public class FormsFragment extends Fragment {
                     ex.printStackTrace();
                 }
             }
-        } else
-            Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getActivity(), "Por el momento no se puede terminar la operacion", Toast.LENGTH_LONG).show();
+        }
     }
 }

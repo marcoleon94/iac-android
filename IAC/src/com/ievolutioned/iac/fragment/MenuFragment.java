@@ -119,10 +119,10 @@ public class MenuFragment extends Fragment {
                 isSaved = false;
                 JsonObject jo = i.getAsJsonObject();
                 for (Forms form : forms) {
-                    if (form.getName().equalsIgnoreCase(jo.get("name").getAsString())) ;
+                    if (form.getName().equalsIgnoreCase(jo.get("name").getAsString()))
                     {
                         isSaved = true;
-                        continue;
+                        break;
                     }
                 }
                 if (!isSaved) {
