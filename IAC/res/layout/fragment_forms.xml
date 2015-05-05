@@ -7,6 +7,7 @@
 
     <ListView
         android:layout_width="match_parent"
+        android:descendantFocusability="beforeDescendants"
         android:layout_height="match_parent"
         android:id="@+id/PXForm_linearPanel">
     </ListView>
