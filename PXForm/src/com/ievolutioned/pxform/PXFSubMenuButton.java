@@ -27,8 +27,8 @@ public class PXFSubMenuButton extends PXWidget {
      */
     public static final String PLACEHOLDER_DEFAULT = "Ninguno";
 
-    private String current_title = "";
-    private String current_option_text = "";
+    //private String current_title = "";
+    //private String current_option_text = "";
     private int current_option = -1;
     private CharSequence[] options_array;
     private FragmentManager fragmentManager;
@@ -58,7 +58,7 @@ public class PXFSubMenuButton extends PXWidget {
     public void setValue(String value) {
         try{
             current_option = Integer.parseInt(value);
-        }catch(Exception ex){
+        }catch(Exception ignored){
         }
     }
     @Override
@@ -161,10 +161,14 @@ public class PXFSubMenuButton extends PXWidget {
                     JsonElement cell = getJsonEntries().get(FIELD_OPTIONS).getValue();
                     JsonArray array = cell.getAsJsonArray();
                     cell = array.get(sel);
-
-                    String option = cell.getAsJsonObject().entrySet().iterator().next().getKey();
-                    String json = cell.getAsJsonObject().entrySet().iterator().next().getValue().toString();
                     isDialogShown = false;
+
+                    if(!cell.getAsJsonObject().entrySet().iterator().next().getValue().isJsonArray() ||
+                            cell.getAsJsonObject().entrySet().iterator().next().getValue().getAsJsonArray().size() < 1)
+                        return;
+
+                    //String option = cell.getAsJsonObject().entrySet().iterator().next().getKey();
+                    String json = cell.getAsJsonObject().entrySet().iterator().next().getValue().toString();
 
                     if(getEventHandler() != null){
                         getEventHandler().selectedSubForm(json, PXFSubMenuButton.this);
