@@ -161,10 +161,14 @@ public class PXFSubMenuButton extends PXWidget {
                     JsonElement cell = getJsonEntries().get(FIELD_OPTIONS).getValue();
                     JsonArray array = cell.getAsJsonArray();
                     cell = array.get(sel);
+                    isDialogShown = false;
+
+                    if(!cell.getAsJsonObject().entrySet().iterator().next().getValue().isJsonArray() ||
+                            cell.getAsJsonObject().entrySet().iterator().next().getValue().getAsJsonArray().size() < 1)
+                        return;
 
                     String option = cell.getAsJsonObject().entrySet().iterator().next().getKey();
                     String json = cell.getAsJsonObject().entrySet().iterator().next().getValue().toString();
-                    isDialogShown = false;
 
                     if(getEventHandler() != null){
                         getEventHandler().selectedSubForm(json, PXFSubMenuButton.this);
