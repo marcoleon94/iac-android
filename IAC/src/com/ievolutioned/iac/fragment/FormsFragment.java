@@ -1,11 +1,14 @@
 package com.ievolutioned.iac.fragment;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -24,30 +27,63 @@ import com.ievolutioned.pxform.adapters.PXFAdapter;
 /**
  *
  */
-public class FormsFragment extends Fragment {
+public class FormsFragment extends BaseFragmentClass {
 
     public static final String DATABASE_FORM_ID = "DATABASE_FORM_ID";
     public static final String DATABASE_LEVEL = "DATABASE_LEVEL";
     public static final String DATABASE_KEY_PARENT = "DATABASE_KEY_PARENT";
     public static final String DATABASE_JSON = "DATABASE_JSON";
 
-    //public static final String ARG_FORM_ID = "ARG_FORM_ID";
-
     private ListView listView;
     private Bundle savedState;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saved) {
-        View root = inflater.inflate(R.layout.fragment_forms, container, false);
-        bindUI(root);
+        View root = bindUI(inflater.inflate(R.layout.fragment_forms, container, false));
+        setHasOptionsMenu(true);
         return root;
     }
 
     /**
      * Binds the User interface
      */
-    private void bindUI(View root) {
+    private View bindUI(View root) {
         listView = (ListView) root.findViewById(R.id.PXForm_linearPanel);
+
+        setDisplayHomeAsUpEnabled();
+        setToolbarNavigationOnClickListener(mainActivityHomeButton);
+        return root;
+    }
+
+    private final View.OnClickListener mainActivityHomeButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            getActivity().onBackPressed();
+        }
+    };
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu items for use in the action bar
+        inflater.inflate(R.menu.fragment_forms_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch(item.getItemId()){
+            case R.id.menu_fragment_form_save:
+                Toast.makeText(getActivity(), "save", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.menu_fragment_form_upload:
+                Toast.makeText(getActivity(), "upload", Toast.LENGTH_SHORT).show();
+                break;
+            default:
+                Toast.makeText(getActivity(), "????", Toast.LENGTH_SHORT).show();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

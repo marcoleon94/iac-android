@@ -15,7 +15,7 @@ import com.google.gson.JsonObject;
 import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.adapter.MenuDrawerListAdapter;
-import com.ievolutioned.iac.model.FormService;
+import com.ievolutioned.iac.net.service.FormService;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.util.FileUtil;
@@ -38,9 +38,9 @@ public class MenuFragment extends Fragment {
     private ListView mDrawerSiteForm;
 
     private ArrayList<MenuDrawerItem> drawerFormItems = new ArrayList<MenuDrawerItem>();
-    ;
+
     private ArrayList<MenuDrawerItem> drawerSitesItems = new ArrayList<MenuDrawerItem>();
-    ;
+
 
     private MenuDrawerListAdapter adapter_forms;
     private MenuDrawerListAdapter adapter_sites;
@@ -181,6 +181,7 @@ public class MenuFragment extends Fragment {
     protected void showLoading(boolean b) {
         ((MainActivity) getActivity()).showLoading(b);
     }
+
 
 
 }

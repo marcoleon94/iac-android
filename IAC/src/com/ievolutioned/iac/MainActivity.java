@@ -10,6 +10,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -26,7 +28,12 @@ import com.ievolutioned.pxform.database.FormsDataSet;
 
 import java.util.List;
 
-
+/*
+https://github.com/excilys/androidannotations
+ */
+/**
+ *
+ */
 public class MainActivity extends ActionBarActivity {
 
     private DrawerLayout mDrawerLayout;
@@ -54,9 +61,6 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void setDrawer() {
-        //final CharSequence mTitle, mDrawerTitle;
-        //mTitle = mDrawerTitle = getTitle();
-
         setSupportActionBar(mToolbar);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar,
@@ -74,14 +78,27 @@ public class MainActivity extends ActionBarActivity {
         };
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false); //disable static back arrow
+        DrawerToggleSynchronizeState(); //refresh all menu state
     }
-
+    /**
+     * Method to take control of the <b>HOME</b> button of the navigation bar, used for
+     * custom user experience
+     * @param callback method to be linked to the event
+     */
+    public void setToolbarNavigationOnClickListener(View.OnClickListener callback){
+        mToolbar.setNavigationOnClickListener(callback);
+    }
+    /**
+     * call to synchronize the <b>HOME</b> menu icon drawer
+     * @see com.ievolutioned.iac.fragment.BaseFragmentClass
+     */
+    public void DrawerToggleSynchronizeState(){
+        mDrawerToggle.syncState(); //refresh all menu state
+    }
     /**
      * Including the dynamic form menu, sets its fragment for the current menu item
-     *
-     * @param id
-     * @param item
+     * is called by {@link com.ievolutioned.iac.fragment.MenuFragment}
      */
     public void selectItem(long id, String item) {
         if (id == MenuDrawerItem.ID_DEFAULT)
@@ -118,7 +135,6 @@ public class MainActivity extends ActionBarActivity {
         setTitle(item);
         mDrawerLayout.closeDrawers();
     }
-
     /**
      * Looks for a static item menu string and sets the menu title and its fragment
      */
@@ -144,12 +160,15 @@ public class MainActivity extends ActionBarActivity {
             }
         }
 
-        for (String site : sites) {
-            if (site.equalsIgnoreCase(item)) {
-                mFragment = new SitesFragment();
-                args.putString(SitesFragment.ARG_SITE_NAME, item);
-                mFragment.setArguments(args);
-                break;
+        //if fragment already found skip sites
+        if(mFragment == null) {
+            for (String site : sites) {
+                if (site.equalsIgnoreCase(item)) {
+                    mFragment = new SitesFragment();
+                    args.putString(SitesFragment.ARG_SITE_NAME, item);
+                    mFragment.setArguments(args);
+                    break;
+                }
             }
         }
 
@@ -173,7 +192,8 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
+        //mDrawerToggle.syncState();
+        DrawerToggleSynchronizeState();
     }
 
     @Override
@@ -183,17 +203,6 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        // Handle your other action bar items...
-
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    @Override
     public void setTitle(CharSequence title) {
         super.setTitle(title);
     }
@@ -201,11 +210,19 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public void onBackPressed() {
         FragmentManager fragmentManager = getFragmentManager();
+
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStackImmediate();
             fragmentManager.beginTransaction().commit();
-        } else
+
+            //call setDrawer always when there is not other fragment
+            //to retake control of the navigation
+            if(fragmentManager.getBackStackEntryCount() < 1) {
+                setDrawer();
+            }
+        } else {
             super.onBackPressed();
+        }
     }
 
     public void showLoading(boolean b) {
