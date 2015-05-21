@@ -176,7 +176,6 @@ public class MainActivity extends ActionBarActivity {
             replaceFragment(mFragment);
         }
     }
-
     /**
      * Replaces the current fragment on the frame container.
      * <br>This can be call from the {@link FormsFragment fragments childs }
