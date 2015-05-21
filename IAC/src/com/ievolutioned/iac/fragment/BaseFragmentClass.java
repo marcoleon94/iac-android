@@ -18,12 +18,11 @@ public abstract class BaseFragmentClass  extends Fragment{
         Activity a = getActivity();
         MainActivity ma;
 
-        if(a instanceof MainActivity){
+        if( a!= null && a instanceof MainActivity){
             ma = (MainActivity)a;
             ma.setToolbarNavigationOnClickListener(callback);
         }
     }
-
     /**
      * set the home icon to back arrow icon
      */
@@ -31,7 +30,7 @@ public abstract class BaseFragmentClass  extends Fragment{
         Activity a = getActivity();
         MainActivity ma;
 
-        if(a instanceof MainActivity){
+        if( a!= null && a instanceof MainActivity){
             ma = (MainActivity)a;
             ma.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             ma.DrawerToggleSynchronizeState();
