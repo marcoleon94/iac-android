@@ -37,6 +37,8 @@ public abstract class PXWidget {
 
     public static final String FIELD_CELL_OPTION_SEGMENT = "FXFormOptionSegmentsCell";
     public static final String FIELD_CELL_OPTION_SEGMENT_CUSTOM = "FXFormOptionSegmentsCellCustom";
+    public static final String FIELD_KEY_BARCODE = "barcodeReader";
+    public static final String FIELD_KEY_HEADER_EMPTY = "headerEmpty";
 
     public static final int ADAPTER_ITEM_TYPE_UNKNOWN = 0;
     public static final int ADAPTER_ITEM_TYPE_BUTTON = 1;
