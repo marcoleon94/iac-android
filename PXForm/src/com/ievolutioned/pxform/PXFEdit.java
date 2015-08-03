@@ -12,6 +12,7 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -87,7 +88,9 @@ public class PXFEdit extends PXWidget{
     @Override
     public void setWidgetData(View view) {
         super.setWidgetData(view);
-        HelperEdit helper = (HelperEdit) view.getTag();
+        try {
+            HelperEdit helper = (HelperEdit) view.getTag();
+
 
         helper.title.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
                 getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
@@ -96,6 +99,9 @@ public class PXFEdit extends PXWidget{
         helper.inputEdit.removeAllTextChangedListener();
         helper.inputEdit.addTextChangedListener(edit_watcher);
         helper.inputEdit.setText(current_text);
+        }catch(Exception e){
+            Log.e("WHAT?", e.getMessage(), e);
+        }
     }
 
     @Override

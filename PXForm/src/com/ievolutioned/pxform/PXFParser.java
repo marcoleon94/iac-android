@@ -1,12 +1,5 @@
 package com.ievolutioned.pxform;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -18,6 +11,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ievolutioned.pxform.database.Values;
 import com.ievolutioned.pxform.database.ValuesDataSet;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PXFParser {
     private PXFParserEventHandler eventHandler;
@@ -209,6 +209,14 @@ public class PXFParser {
             }
         }else if(map.containsKey(PXWidget.FIELD_ACTION)){
             widget = new PXFButton(map);
+        } else if (map.containsKey(PXWidget.FIELD_KEY)) {
+            if (map.get(PXWidget.FIELD_KEY).getValue().getAsString()
+                    .contains(PXWidget.FIELD_KEY_BARCODE))
+                widget = new PXFButton(map);
+            if(map.get(PXWidget.FIELD_KEY).getValue().getAsString()
+                    .contains(PXWidget.FIELD_KEY_HEADER_EMPTY))
+                widget = new PXFText(map);
+
         }
 
         return widget == null ? new PXFUnknownControlType(map) : widget;
