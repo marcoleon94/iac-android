@@ -48,6 +48,7 @@ public abstract class PXWidget {
     public static final int ADAPTER_ITEM_TYPE_SPINNER = 5;
     public static final int ADAPTER_ITEM_TYPE_TOGGLEBOOLEAN = 6;
     public static final int ADAPTER_ITEM_TYPE_SUBMENUBUTTON = 7;
+    public static final int ADAPTER_ITEM_TYPE_TEXT = 8;
 
     private Map<String, Map.Entry<String,JsonElement>> eEntry;
     private String fieldKey = "";
@@ -85,6 +86,7 @@ public abstract class PXWidget {
                 ADAPTER_ITEM_TYPE_SPINNER,
                 ADAPTER_ITEM_TYPE_TOGGLEBOOLEAN,
                 ADAPTER_ITEM_TYPE_SUBMENUBUTTON,
+                ADAPTER_ITEM_TYPE_TEXT
         };
         return ids.length;
     }

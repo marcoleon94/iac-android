@@ -213,6 +213,10 @@ public class PXFParser {
             if (map.get(PXWidget.FIELD_KEY).getValue().getAsString()
                     .contains(PXWidget.FIELD_KEY_BARCODE))
                 widget = new PXFButton(map);
+            if(map.get(PXWidget.FIELD_KEY).getValue().getAsString()
+                    .contains(PXWidget.FIELD_KEY_HEADER_EMPTY))
+                widget = new PXFText(map);
+
         }
 
         return widget == null ? new PXFUnknownControlType(map) : widget;
