@@ -57,7 +57,8 @@ public class PXFDatePicker extends PXWidget {
     }
     @Override
     public String getValue() {
-        return this.calendarState == null ? "" : this.calendarState.toString();
+        //return this.calendarState == null ? "" : this.calendarState.toString();
+        return this.calendarState == null? "":String.valueOf(this.calendarState.getTimeInMillis());
     }
 
     @Override

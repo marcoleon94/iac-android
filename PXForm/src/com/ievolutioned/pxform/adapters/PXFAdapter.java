@@ -1,17 +1,14 @@
 package com.ievolutioned.pxform.adapters;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.ievolutioned.pxform.PXFParser;
 import android.app.Activity;
 import android.os.AsyncTask;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.ievolutioned.pxform.PXWidget;
 import com.ievolutioned.pxform.database.Values;
 import com.ievolutioned.pxform.database.ValuesDataSet;
@@ -57,6 +54,11 @@ public class PXFAdapter extends BaseAdapter{
 
     public interface  AdapterSaveHandler{
         void saved();
+        void error(Exception ex);
+    }
+
+    public interface AdapterJSONHandler{
+        void success(JsonElement jsonElement);
         void error(Exception ex);
     }
 
@@ -176,6 +178,41 @@ public class PXFAdapter extends BaseAdapter{
 
                 if(callback != null){
                     callback.saved();
+                }
+                return null;
+            }
+        }).execute();
+    }
+
+    public void getJsonForm(final long formID
+            , final int level
+            , final String parentKey
+            , final AdapterJSONHandler callback) {
+        (new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                if (callback == null)
+                    throw new RuntimeException("Callback must not be null");
+
+                ValuesDataSet ValuesDS = new ValuesDataSet(aActivity);
+                List<Values> valuesList;
+                JsonObject json = null;
+
+                //get data base values
+                valuesList = ValuesDS.selectByFormIDLevelParentKey(formID, level, parentKey);
+                if (valuesList == null)
+                    callback.error(new NullPointerException("Value list is null"));
+
+                json = new JsonObject();
+                for (Values v : valuesList) {
+                    if (v.getKey() != null && !v.getKey().isEmpty() &&
+                            v.getValue() != null && !v.getValue().isEmpty()) {
+                        json.addProperty(v.getKey(),v.getValue());
+                    }
+                }
+
+                if (callback != null) {
+                    callback.success(json);
                 }
                 return null;
             }

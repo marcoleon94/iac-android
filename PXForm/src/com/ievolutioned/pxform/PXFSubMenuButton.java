@@ -26,10 +26,11 @@ public class PXFSubMenuButton extends PXWidget {
      * The default place holder
      */
     public static final String PLACEHOLDER_DEFAULT = "Ninguno";
+    public static final int VALUE_DEFAULT = -1;
 
     //private String current_title = "";
     //private String current_option_text = "";
-    private int current_option = -1;
+    private int current_option = VALUE_DEFAULT;
     private CharSequence[] options_array;
     private FragmentManager fragmentManager;
     private boolean isDialogShown = false;
@@ -61,9 +62,10 @@ public class PXFSubMenuButton extends PXWidget {
         }catch(Exception ignored){
         }
     }
+
     @Override
     public String getValue() {
-        return String.valueOf(current_option);
+        return current_option != VALUE_DEFAULT ? String.valueOf(current_option) : "";
     }
 
     @Override

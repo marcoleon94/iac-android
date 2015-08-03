@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.gson.JsonElement;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.ievolutioned.iac.R;
@@ -78,6 +79,13 @@ public class FormsFragment extends BaseFragmentClass {
                 save(saveR);
                 break;
             case R.id.menu_fragment_form_upload:
+                saveR = new Runnable() {
+                    @Override
+                    public void run() {
+                        upload();
+                    }
+                };
+                save(saveR);
                 Toast.makeText(getActivity(), "upload", Toast.LENGTH_SHORT).show();
                 break;
             default:
@@ -267,6 +275,37 @@ public class FormsFragment extends BaseFragmentClass {
                 }
         );
     }
+
+    private final void upload(){
+        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
+        loading.show();
+
+        if(listView.getAdapter() == null || !(listView.getAdapter() instanceof PXFAdapter)){
+            return;
+        }
+
+        PXFAdapter adapter = (PXFAdapter)listView.getAdapter();
+
+        adapter.getJsonForm(
+                savedState.getLong(DATABASE_FORM_ID)
+                , savedState.getInt(DATABASE_LEVEL)
+                , savedState.getString(DATABASE_KEY_PARENT)
+                , new PXFAdapter.AdapterJSONHandler() {
+                    @Override
+                    public void success(JsonElement json) {
+                        loading.dismiss();
+                        Toast.makeText(getActivity(), "Ready to upload", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void error(Exception ex) {
+                        loading.dismiss();
+                        Toast.makeText(getActivity(), "Por el momento no se ha podido salvar", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
