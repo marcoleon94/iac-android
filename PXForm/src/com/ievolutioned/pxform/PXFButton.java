@@ -1,10 +1,6 @@
 package com.ievolutioned.pxform;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
 import android.app.Activity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +11,17 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.zxing.integration.android.IntentIntegrator;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 public class PXFButton extends PXWidget {
 
     public static final String ACTION_NONE = "NONE";
     public static final String ACTION_OPEN_CAMERA ="openCamera:";
     public static final String ACTION_SUBMIT = "submitRegistrationForm:";
     public static final String ACTION_BACK_ROOT = "automaticBackRoot";
+
+    private String title;
 
     private Activity contextActivity;
 
@@ -36,8 +37,9 @@ public class PXFButton extends PXWidget {
     public void setWidgetData(View view) {
         super.setWidgetData(view);
         HelperButton h = (HelperButton) view.getTag();
-        h.button.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
-                getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
+        title = getJsonEntries().containsKey(FIELD_TITLE) ?
+                getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ";
+        h.button.setText(title);
         h.button.setOnClickListener(onclick);
     }
     @Override
@@ -59,12 +61,15 @@ public class PXFButton extends PXWidget {
             Log.e(PXFButton.class.getName(), e.getMessage());
         }
     }
+
     @Override
-    public String getValue(){
-        if(getJsonEntries().containsKey(PXFButton.FIELD_TITLE))
-            return getJsonEntries().get(PXFButton.FIELD_TITLE).getValue().getAsString();
-        else
-            return "";
+    public String getValue() {
+        if (getJsonEntries().containsKey(PXFButton.FIELD_TITLE)) {
+            String jTitle = getJsonEntries().get(PXFButton.FIELD_TITLE).getValue().getAsString();
+            if (!title.contentEquals(jTitle))
+                return getJsonEntries().get(PXFButton.FIELD_TITLE).getValue().getAsString();
+        }
+        return "";
     }
     @Override
     public View createControl(Activity context) {
