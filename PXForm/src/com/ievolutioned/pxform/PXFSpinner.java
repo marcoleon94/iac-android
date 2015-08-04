@@ -20,10 +20,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class PXFSpinner extends PXWidget {
+    public static final int VALUE_DEFAULT = -1;
     //--------------------------------------
     // variable declarations
     private ArrayAdapter<String> adapter;
-    private int last_position = -1;
+    private int last_position = VALUE_DEFAULT;
 
     /**
      * class and interface declaration
@@ -55,11 +56,12 @@ public class PXFSpinner extends PXWidget {
         try{
             last_position = Integer.parseInt(value);
         }catch(Exception ex){
+            last_position = VALUE_DEFAULT;
         }
     }
     @Override
     public String getValue() {
-        return String.valueOf(last_position);
+        return last_position == VALUE_DEFAULT?"":String.valueOf(last_position);
     }
 
     @Override
@@ -77,7 +79,7 @@ public class PXFSpinner extends PXWidget {
         helper.spinner.setOnItemSelectedListener(spinner_itemSelected);
         helper.spinner.setAdapter(adapter);
 
-        if(last_position > -1)
+        if(last_position > VALUE_DEFAULT)
             helper.spinner.setSelection(last_position);
     }
 
@@ -111,7 +113,7 @@ public class PXFSpinner extends PXWidget {
         adapter = getSpinnerAdapter(context);
         spinner.setAdapter(adapter);
 
-        if(last_position > -1)
+        if(last_position > VALUE_DEFAULT)
             spinner.setSelection(0);
 
         helper.spinner = spinner;
