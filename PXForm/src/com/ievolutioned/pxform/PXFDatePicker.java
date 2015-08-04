@@ -74,7 +74,7 @@ public class PXFDatePicker extends PXWidget {
     @Override
     public View createControl(Activity context) {
         fragmentManager = context.getFragmentManager();
-        calendarState = Calendar.getInstance();
+        //calendarState = Calendar.getInstance();
 
         LinearLayout v = (LinearLayout) super.createControl(context);
         HelperDatePicker helper = (HelperDatePicker) v.getTag();
@@ -155,6 +155,8 @@ public class PXFDatePicker extends PXWidget {
     private OnClickListener button_click = new OnClickListener() {
         @Override
         public void onClick(View v) {
+            if(PXFDatePicker.this.calendarState == null)
+                PXFDatePicker.this.calendarState = Calendar.getInstance();
             DatePickerFragment newFragment = DatePickerFragment.getInstance(
                     PXFDatePicker.this.calendarState);
             newFragment.show(fragmentManager, "timePicker");
