@@ -124,9 +124,15 @@ public class PXFAdapter extends BaseAdapter{
             , final int level
             , final String parentKey
             , final AdapterSaveHandler callback){
-        (new AsyncTask<Void, Void, Void>() {
+        (new AsyncTask<Void, Void, Boolean>() {
             @Override
-            protected Void doInBackground(Void... params) {
+            protected void onPreExecute() {
+                if(callback == null)
+                    throw new NullPointerException("Callback must not be null");
+            }
+
+            @Override
+            protected Boolean doInBackground(Void... params) {
                 ValuesDataSet ValuesDS = new ValuesDataSet(aActivity);
                 List<Values> valuesList;
                 Runnable sleep = new Runnable() { @Override public void run() {
@@ -176,10 +182,15 @@ public class PXFAdapter extends BaseAdapter{
                     e.printStackTrace();
                 }
 
-                if(callback != null){
+                return true;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean executed) {
+                if(executed)
                     callback.saved();
-                }
-                return null;
+                else
+                    callback.error(new RuntimeException("Error on doInBackgorund"));
             }
         }).execute();
     }
@@ -188,9 +199,15 @@ public class PXFAdapter extends BaseAdapter{
             , final int level
             , final String parentKey
             , final AdapterJSONHandler callback) {
-        (new AsyncTask<Void, Void, Void>() {
+        (new AsyncTask<Void, Void, JsonElement>() {
             @Override
-            protected Void doInBackground(Void... params) {
+            protected void onPreExecute() {
+                if(callback== null)
+                    throw new NullPointerException("Callback must not be null");
+            }
+
+            @Override
+            protected JsonElement doInBackground(Void... params) {
                 if (callback == null)
                     throw new RuntimeException("Callback must not be null");
 
@@ -210,11 +227,18 @@ public class PXFAdapter extends BaseAdapter{
                         json.addProperty(v.getKey(),v.getValue());
                     }
                 }
+                return json;
+            }
 
-                if (callback != null) {
-                    callback.success(json);
+            @Override
+            protected void onPostExecute(JsonElement json) {
+                if(json != null) {
+                    JsonObject userResponse = new JsonObject();
+                    userResponse.add("response",json);
+                    callback.success(userResponse);
                 }
-                return null;
+                else
+                    callback.error(new RuntimeException("Value list is not available"));
             }
         }).execute();
     }

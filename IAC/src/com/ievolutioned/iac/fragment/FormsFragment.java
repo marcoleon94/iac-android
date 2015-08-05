@@ -14,9 +14,13 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.ievolutioned.iac.R;
+import com.ievolutioned.iac.net.service.UserService;
+import com.ievolutioned.iac.util.AppConfig;
+import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.view.ViewUtility;
 import com.ievolutioned.pxform.PXFButton;
 import com.ievolutioned.pxform.PXFParser;
@@ -79,13 +83,7 @@ public class FormsFragment extends BaseFragmentClass {
                 save(saveR);
                 break;
             case R.id.menu_fragment_form_upload:
-                saveR = new Runnable() {
-                    @Override
-                    public void run() {
-                        upload();
-                    }
-                };
-                save(saveR);
+                saveAndUpload();
                 Toast.makeText(getActivity(), "upload", Toast.LENGTH_SHORT).show();
                 break;
             default:
@@ -276,7 +274,7 @@ public class FormsFragment extends BaseFragmentClass {
         );
     }
 
-    private final void upload(){
+    private final void saveAndUpload(){
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
         loading.show();
 
@@ -284,17 +282,18 @@ public class FormsFragment extends BaseFragmentClass {
             return;
         }
 
-        PXFAdapter adapter = (PXFAdapter)listView.getAdapter();
+        final PXFAdapter adapter = (PXFAdapter)listView.getAdapter();
 
-        adapter.getJsonForm(
+        adapter.save(
                 savedState.getLong(DATABASE_FORM_ID)
                 , savedState.getInt(DATABASE_LEVEL)
                 , savedState.getString(DATABASE_KEY_PARENT)
-                , new PXFAdapter.AdapterJSONHandler() {
+                , new PXFAdapter.AdapterSaveHandler() {
                     @Override
-                    public void success(JsonElement json) {
+                    public void saved() {
                         loading.dismiss();
                         Toast.makeText(getActivity(), "Ready to upload", Toast.LENGTH_SHORT).show();
+                        getSavedResponse();
                     }
 
                     @Override
@@ -304,6 +303,78 @@ public class FormsFragment extends BaseFragmentClass {
                     }
                 }
         );
+    }
+
+    private void getSavedResponse(){
+        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
+        loading.show();
+
+        if(listView.getAdapter() == null || !(listView.getAdapter() instanceof PXFAdapter)){
+            return;
+        }
+
+        final PXFAdapter adapter = (PXFAdapter)listView.getAdapter();
+
+        adapter.getJsonForm(
+                savedState.getLong(DATABASE_FORM_ID)
+                , savedState.getInt(DATABASE_LEVEL)
+                , savedState.getString(DATABASE_KEY_PARENT)
+                , new PXFAdapter.AdapterJSONHandler() {
+                    @Override
+                    public void success(JsonElement jsonElement) {
+                        loading.dismiss();
+                        Toast.makeText(getActivity(), "Formulario cargado", Toast.LENGTH_SHORT).show();
+                        createFormService(jsonElement);
+                    }
+
+                    @Override
+                    public void error(Exception ex) {
+                        loading.dismiss();
+                        Toast.makeText(getActivity(), "Error al cargar formulario", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void createFormService(JsonElement jsonElement){
+        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
+        loading.show();
+        //Ready to upload
+        String uuid = AppConfig.getUUID(getActivity());
+        String at = AppPreferences.getAdminToken(getActivity());
+        JsonObject json = new JsonObject();
+        json.addProperty("inquest_id", getFormId());
+        json.addProperty("iac_id", getIacId());
+        json.add("user_response", jsonElement);
+
+        UserService userService = new UserService(uuid,at);
+
+        userService.create(json.toString(), new UserService.ServiceHandler() {
+            @Override
+            public void onSuccess(UserService.UserResponse response) {
+                loading.dismiss();
+                Toast.makeText(getActivity(), "Formulario enviado!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(UserService.UserResponse response) {
+                loading.dismiss();
+                Toast.makeText(getActivity(), "Error: "+response.msg, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancel() {
+                loading.dismiss();
+                Toast.makeText(getActivity(), "Cancelado", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private int getFormId(){
+        return 9;
+    }
+
+    private int getIacId(){
+        return 32000011;
     }
 
 
