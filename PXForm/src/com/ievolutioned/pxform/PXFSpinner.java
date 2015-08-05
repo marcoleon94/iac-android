@@ -1,10 +1,5 @@
 package com.ievolutioned.pxform;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
@@ -17,14 +12,16 @@ import android.widget.TextView;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+
+import java.util.Map;
 
 public class PXFSpinner extends PXWidget {
-    public static final int VALUE_DEFAULT = -1;
+    //public static final int VALUE_DEFAULT = -1;
     //--------------------------------------
     // variable declarations
     private ArrayAdapter<String> adapter;
-    private int last_position = VALUE_DEFAULT;
+    //private int last_position = VALUE_DEFAULT;
+    private String value = null;
 
     /**
      * class and interface declaration
@@ -54,14 +51,17 @@ public class PXFSpinner extends PXWidget {
     @Override
     public void setValue(String value) {
         try{
-            last_position = Integer.parseInt(value);
+            //last_position = Integer.parseInt(value);
+            this.value = value;
         }catch(Exception ex){
-            last_position = VALUE_DEFAULT;
+            //last_position = VALUE_DEFAULT;
+            this.value = null;
         }
     }
     @Override
     public String getValue() {
-        return last_position == VALUE_DEFAULT?"":String.valueOf(last_position);
+        //return last_position == VALUE_DEFAULT?"":String.valueOf(last_position);
+        return value;
     }
 
     @Override
@@ -79,9 +79,12 @@ public class PXFSpinner extends PXWidget {
         helper.spinner.setOnItemSelectedListener(spinner_itemSelected);
         helper.spinner.setAdapter(adapter);
 
-        if(last_position > VALUE_DEFAULT)
-            helper.spinner.setSelection(last_position);
+        if (value != null) {
+            int position = adapter.getPosition(value);
+            helper.spinner.setSelection(position < adapter.getCount() ? position : 0);
+        }
     }
+
 
     @Override
     public View createControl(Activity context) {
@@ -113,7 +116,7 @@ public class PXFSpinner extends PXWidget {
         adapter = getSpinnerAdapter(context);
         spinner.setAdapter(adapter);
 
-        if(last_position > VALUE_DEFAULT)
+        if(value == null && adapter.getCount()>0)
             spinner.setSelection(0);
 
         helper.spinner = spinner;
@@ -180,7 +183,10 @@ public class PXFSpinner extends PXWidget {
             //    }
             //}
 
-            PXFSpinner.this.last_position = position;
+            //PXFSpinner.this.last_position = getSpinnerAdapter(view.getContext()).getItem(position);
+            if(adapter != null)
+                PXFSpinner.this.value = adapter.getItem(position);
+
 
             //if((changed_1 || changed_2) && PXFSpinner.this.getEventHandler() != null){
             //    PXFSpinner.this.getEventHandler().notifyDataSetChanges();
@@ -193,7 +199,7 @@ public class PXFSpinner extends PXWidget {
     @Override
     public String toString() {
         try {
-            return adapter == null ? "" : adapter.getItem(last_position);
+            return adapter == null ? "" : value;
         } catch (Exception e) {
             return "";
         }
