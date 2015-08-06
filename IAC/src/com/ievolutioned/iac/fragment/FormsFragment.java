@@ -15,22 +15,27 @@ import android.widget.Toast;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.net.service.UserService;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
+import com.ievolutioned.iac.util.LogUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 import com.ievolutioned.pxform.PXFButton;
 import com.ievolutioned.pxform.PXFParser;
 import com.ievolutioned.pxform.PXWidget;
 import com.ievolutioned.pxform.adapters.PXFAdapter;
+import com.ievolutioned.pxform.database.Forms;
 
 /**
  *
  */
 public class FormsFragment extends BaseFragmentClass {
+
+    public static final String TAG = FormsFragment.class.getName();
 
     public static final String DATABASE_FORM_ID = "DATABASE_FORM_ID";
     public static final String DATABASE_LEVEL = "DATABASE_LEVEL";
@@ -336,9 +341,10 @@ public class FormsFragment extends BaseFragmentClass {
     }
 
     private void createFormService(JsonElement jsonElement){
-        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
-        loading.show();
+        //final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
+        //loading.show();
         //Ready to upload
+        /*
         String uuid = AppConfig.getUUID(getActivity());
         String at = AppPreferences.getAdminToken(getActivity());
         JsonObject json = new JsonObject();
@@ -367,6 +373,38 @@ public class FormsFragment extends BaseFragmentClass {
                 Toast.makeText(getActivity(), "Cancelado", Toast.LENGTH_SHORT).show();
             }
         });
+
+        String uuid = AppConfig.getUUID(getActivity());
+        String at = AppPreferences.getAdminToken(getActivity());
+        int inquestId = 9;
+        String iacId = "32006988";
+        int idUpdate = 34;
+
+        JsonElement json = new JsonParser().parse("{\"response\":{\"gained\":\"No\",\"newJob\":\"\",\"salary\":\"Si\",\"values\":\"Nada\",\"bossWhy\":\"mala onda\",\"opinion\":\"Regular\",\"benefits\":\"Regular\",\"identity\":\"Nada\",\"training\":\"Malo\",\"gainedWhy\":\"\",\"newSalary\":\"\",\"salaryWhy\":\"\",\"teammates\":\"Bueno\",\"unionized\":\"Malo\",\"workplace\":\"Regular\",\"employeeID\":\"32006785\",\"newCompany\":\"\",\"opinionWhy\":\"\",\"trainingOk\":\"Si\",\"benefitsWhy\":\"\",\"bossOpinion\":\"Malo\",\"otherReason\":\"\",\"trainingWhy\":\"por que no me enseñaron nada\",\"unionizedWhy\":\"¿¿ funcionas,no tengo idea tu si ?????\",\"workPromises\":\"No\",\"departmentWhy\":\"\",\"reasonToLeave\":\"Matrimonio\",\"trainingOkWhy\":\"\",\"humanResources\":\"Regular\",\"workInteresting\":\"Si\",\"dateOfWithdrawal\":\"04/10/2015\",\"trainingReceived\":\"Si\",\"departmentOpinion\":\"Regular\",\"humanResourcesWhy\":\"\",\"salaryExpectations\":\"No\",\"trainingReceivedWhy\":\"\",\"humanResourcesService\":\"No\",\"workInterestingAnswer\":\"123 Por ser asi\",\"departmentWithMostRelation\":\"Ingeniería\"}}");
+
+        JsonObject j = new JsonObject();
+        j.addProperty("inquest_id", "9");
+        j.addProperty("iac_id", "32000011");
+        j.add("user_response", json);
+
+        UserService us = new UserService(uuid, at);
+        us.create(j.getAsJsonObject().toString(), new UserService.ServiceHandler() {
+            @Override
+            public void onSuccess(UserService.UserResponse response) {
+                LogUtil.d(TAG, response.msg);
+            }
+
+            @Override
+            public void onError(UserService.UserResponse response) {
+                LogUtil.e(TAG, response.msg, response.e);
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        });
+        */
     }
 
     private int getFormId(){
