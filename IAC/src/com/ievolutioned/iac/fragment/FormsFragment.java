@@ -14,21 +14,14 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.ievolutioned.iac.R;
-import com.ievolutioned.iac.net.service.UserService;
-import com.ievolutioned.iac.util.AppConfig;
-import com.ievolutioned.iac.util.AppPreferences;
-import com.ievolutioned.iac.util.LogUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 import com.ievolutioned.pxform.PXFButton;
 import com.ievolutioned.pxform.PXFParser;
 import com.ievolutioned.pxform.PXWidget;
 import com.ievolutioned.pxform.adapters.PXFAdapter;
-import com.ievolutioned.pxform.database.Forms;
 
 /**
  *
@@ -185,14 +178,12 @@ public class FormsFragment extends BaseFragmentClass {
     private final PXFAdapter.AdapterEventHandler adapterEventHandler = new PXFAdapter.AdapterEventHandler() {
         @Override
         public void onClick(PXWidget widget) {
-            if (widget.getJsonEntries().containsKey(PXFButton.FIELD_ACTION)
-                    && widget.getAdapterItemType() == PXWidget.ADAPTER_ITEM_TYPE_BUTTON) {
+            if (widget.getAdapterItemType() == PXWidget.ADAPTER_ITEM_TYPE_BUTTON &&
+                    widget.getJsonEntries().get(PXWidget.FIELD_KEY).getValue().getAsString()
+                            .contains(PXWidget.FIELD_KEY_BARCODE)) {
                 buttonBarCode = (PXFButton) widget;
+                IntentIntegrator.forFragment(FormsFragment.this).initiateScan();
 
-                if (PXFButton.ACTION_OPEN_CAMERA.equalsIgnoreCase(buttonBarCode.getJsonEntries()
-                        .get(PXFButton.FIELD_ACTION).getValue().getAsString())) {
-                    IntentIntegrator.forFragment(FormsFragment.this).initiateScan();
-                }
             }
         }
 
@@ -221,23 +212,26 @@ public class FormsFragment extends BaseFragmentClass {
             //        }
             //);
 
-            Runnable saveRunnable = new Runnable() { @Override public void run() {
-                Bundle a = new Bundle();
-                a.putLong(FormsFragment.DATABASE_FORM_ID,
-                        savedState.getLong(FormsFragment.DATABASE_FORM_ID));
-                a.putInt(FormsFragment.DATABASE_LEVEL,
-                        savedState.getInt(FormsFragment.DATABASE_LEVEL) + 1);
-                a.putString(FormsFragment.DATABASE_KEY_PARENT, parentKey);
-                a.putString(FormsFragment.DATABASE_JSON, json);
+            Runnable saveRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    Bundle a = new Bundle();
+                    a.putLong(FormsFragment.DATABASE_FORM_ID,
+                            savedState.getLong(FormsFragment.DATABASE_FORM_ID));
+                    a.putInt(FormsFragment.DATABASE_LEVEL,
+                            savedState.getInt(FormsFragment.DATABASE_LEVEL) + 1);
+                    a.putString(FormsFragment.DATABASE_KEY_PARENT, parentKey);
+                    a.putString(FormsFragment.DATABASE_JSON, json);
 
-                Bundle args = new Bundle();
-                args.putBundle(FormsFragment.class.getName(), a);
+                    Bundle args = new Bundle();
+                    args.putBundle(FormsFragment.class.getName(), a);
 
-                FormsFragment fragment = new FormsFragment();
-                fragment.setArguments(args);
+                    FormsFragment fragment = new FormsFragment();
+                    fragment.setArguments(args);
 
-                setMainActivityReplaceFragment(fragment);
-            }};
+                    setMainActivityReplaceFragment(fragment);
+                }
+            };
 
             save(saveRunnable);
         }

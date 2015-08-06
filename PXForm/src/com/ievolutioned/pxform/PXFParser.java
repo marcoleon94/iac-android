@@ -211,8 +211,10 @@ public class PXFParser {
             widget = new PXFButton(map);
         } else if (map.containsKey(PXWidget.FIELD_KEY)) {
             if (map.get(PXWidget.FIELD_KEY).getValue().getAsString()
-                    .contains(PXWidget.FIELD_KEY_BARCODE))
+                    .contains(PXWidget.FIELD_KEY_BARCODE)){
+                //This is an special case about a barcode reader
                 widget = new PXFButton(map);
+            }
             if(map.get(PXWidget.FIELD_KEY).getValue().getAsString()
                     .contains(PXWidget.FIELD_KEY_HEADER_EMPTY))
                 widget = new PXFText(map);

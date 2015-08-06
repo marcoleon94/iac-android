@@ -102,14 +102,14 @@ public class PXFButton extends PXWidget {
         return null;
     }
 
+
     private View.OnClickListener onclick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (getEventHandler() != null) {
                 getEventHandler().onClick(PXFButton.this);
             }
-            IntentIntegrator scanIntegrator = new IntentIntegrator(contextActivity);
-            scanIntegrator.initiateScan();
         }
     };
+
 }
