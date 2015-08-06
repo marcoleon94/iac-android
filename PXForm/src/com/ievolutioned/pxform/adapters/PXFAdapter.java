@@ -2,6 +2,7 @@ package com.ievolutioned.pxform.adapters;
 
 import android.app.Activity;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -107,8 +108,12 @@ public class PXFAdapter extends BaseAdapter{
     public View getView(int pos, View view, ViewGroup group) {
         final PXWidget w = getItem(pos);
 
-        if (view == null) {
-            view = w.createControl(aActivity);
+        try {
+            if (view == null) {
+                view = w.createControl(aActivity);
+            }
+        }catch (Exception e){
+            Log.e("Error", e.getMessage(), e);
         }
 
         w.setEventHandler(widgetHandler);
