@@ -14,9 +14,13 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.ievolutioned.iac.R;
+import com.ievolutioned.iac.net.service.UserService;
+import com.ievolutioned.iac.util.AppConfig;
+import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.view.ViewUtility;
 import com.ievolutioned.pxform.PXFButton;
 import com.ievolutioned.pxform.PXFParser;
@@ -73,11 +77,14 @@ public class FormsFragment extends BaseFragmentClass {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Runnable saveR;
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.menu_fragment_form_save:
-                saveR = new Runnable() { @Override public void run() {
-                    Toast.makeText(getActivity(), "salvado", Toast.LENGTH_SHORT).show();
-                }};
+                saveR = new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), "salvado", Toast.LENGTH_SHORT).show();
+                    }
+                };
                 save(saveR);
                 break;
             case R.id.menu_fragment_form_upload:
@@ -239,17 +246,18 @@ public class FormsFragment extends BaseFragmentClass {
 
     /**
      * Save current state of the Form data
+     *
      * @param pos_execute Runnable to be executed after save
      */
-    private final void save(final Runnable pos_execute){
+    private final void save(final Runnable pos_execute) {
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
         loading.show();
 
-        if(listView.getAdapter() == null || !(listView.getAdapter() instanceof PXFAdapter)){
+        if (listView.getAdapter() == null || !(listView.getAdapter() instanceof PXFAdapter)) {
             return;
         }
 
-        PXFAdapter adapter = (PXFAdapter)listView.getAdapter();
+        PXFAdapter adapter = (PXFAdapter) listView.getAdapter();
 
         adapter.save(
                 savedState.getLong(DATABASE_FORM_ID)
@@ -260,7 +268,7 @@ public class FormsFragment extends BaseFragmentClass {
                     public void saved() {
                         loading.dismiss();
 
-                        if(pos_execute != null)
+                        if (pos_execute != null)
                             getActivity().runOnUiThread(pos_execute);
                     }
 
@@ -273,15 +281,15 @@ public class FormsFragment extends BaseFragmentClass {
         );
     }
 
-    private final void saveAndUpload(){
+    private final void saveAndUpload() {
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
         loading.show();
 
-        if(listView.getAdapter() == null || !(listView.getAdapter() instanceof PXFAdapter)){
+        if (listView.getAdapter() == null || !(listView.getAdapter() instanceof PXFAdapter)) {
             return;
         }
 
-        final PXFAdapter adapter = (PXFAdapter)listView.getAdapter();
+        final PXFAdapter adapter = (PXFAdapter) listView.getAdapter();
 
         adapter.save(
                 savedState.getLong(DATABASE_FORM_ID)
@@ -304,15 +312,15 @@ public class FormsFragment extends BaseFragmentClass {
         );
     }
 
-    private void getSavedResponse(){
+    private void getSavedResponse() {
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
         loading.show();
 
-        if(listView.getAdapter() == null || !(listView.getAdapter() instanceof PXFAdapter)){
+        if (listView.getAdapter() == null || !(listView.getAdapter() instanceof PXFAdapter)) {
             return;
         }
 
-        final PXFAdapter adapter = (PXFAdapter)listView.getAdapter();
+        final PXFAdapter adapter = (PXFAdapter) listView.getAdapter();
 
         adapter.getJsonForm(
                 savedState.getLong(DATABASE_FORM_ID)
@@ -334,21 +342,30 @@ public class FormsFragment extends BaseFragmentClass {
                 });
     }
 
-    private void createFormService(JsonElement jsonElement){
-        //final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
+    private void createFormService(JsonElement jsonElement) {
+        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
         //loading.show();
         //Ready to upload
-        /*
+
+
         String uuid = AppConfig.getUUID(getActivity());
         String at = AppPreferences.getAdminToken(getActivity());
         JsonObject json = new JsonObject();
         json.addProperty("inquest_id", getFormId());
         json.addProperty("iac_id", getIacId());
+        //Intentar arreglar el json response
+        jsonElement.getAsJsonObject().get("response").getAsJsonObject().remove("barcodeReader");
+        jsonElement.getAsJsonObject().get("response").getAsJsonObject().addProperty("newCompany", "");
+        jsonElement.getAsJsonObject().get("response").getAsJsonObject().addProperty("newJob", "");
+        jsonElement.getAsJsonObject().get("response").getAsJsonObject().addProperty("newSalary", "");
+        jsonElement.getAsJsonObject().get("response").getAsJsonObject().addProperty("otherReason", "");
+        jsonElement.getAsJsonObject().get("response").getAsJsonObject().addProperty("reasonToLeave", "Matrimonio ");
+        jsonElement.getAsJsonObject().get("response").getAsJsonObject().addProperty("unionizedWhy", "¿¿ funcionas,no tengo idea tu si ?????");
         json.add("user_response", jsonElement);
 
-        UserService userService = new UserService(uuid,at);
+        UserService userService = new UserService(uuid, at);
 
-        userService.create(json.toString(), new UserService.ServiceHandler() {
+        userService.create(json.getAsJsonObject().toString(), new UserService.ServiceHandler() {
             @Override
             public void onSuccess(UserService.UserResponse response) {
                 loading.dismiss();
@@ -358,7 +375,7 @@ public class FormsFragment extends BaseFragmentClass {
             @Override
             public void onError(UserService.UserResponse response) {
                 loading.dismiss();
-                Toast.makeText(getActivity(), "Error: "+response.msg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Error: " + response.msg, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -368,6 +385,7 @@ public class FormsFragment extends BaseFragmentClass {
             }
         });
 
+/*
         String uuid = AppConfig.getUUID(getActivity());
         String at = AppPreferences.getAdminToken(getActivity());
         int inquestId = 9;
@@ -398,15 +416,15 @@ public class FormsFragment extends BaseFragmentClass {
 
             }
         });
-        */
+*/
     }
 
-    private int getFormId(){
-        return 9;
+    private String getFormId() {
+        return "9";
     }
 
-    private int getIacId(){
-        return 32000011;
+    private String getIacId() {
+        return "32000011";
     }
 
 
