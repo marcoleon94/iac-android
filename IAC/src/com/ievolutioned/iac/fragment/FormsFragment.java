@@ -344,23 +344,15 @@ public class FormsFragment extends BaseFragmentClass {
 
     private void createFormService(JsonElement jsonElement) {
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
-        //loading.show();
+        loading.show();
         //Ready to upload
-
-
         String uuid = AppConfig.getUUID(getActivity());
         String at = AppPreferences.getAdminToken(getActivity());
         JsonObject json = new JsonObject();
         json.addProperty("inquest_id", getFormId());
         json.addProperty("iac_id", getIacId());
-        //Intentar arreglar el json response
-        jsonElement.getAsJsonObject().get("response").getAsJsonObject().remove("barcodeReader");
-        jsonElement.getAsJsonObject().get("response").getAsJsonObject().addProperty("newCompany", "");
-        jsonElement.getAsJsonObject().get("response").getAsJsonObject().addProperty("newJob", "");
-        jsonElement.getAsJsonObject().get("response").getAsJsonObject().addProperty("newSalary", "");
-        jsonElement.getAsJsonObject().get("response").getAsJsonObject().addProperty("otherReason", "");
+        //TODO: SubFormulary items must contain always a value. Remove this line
         jsonElement.getAsJsonObject().get("response").getAsJsonObject().addProperty("reasonToLeave", "Matrimonio ");
-        jsonElement.getAsJsonObject().get("response").getAsJsonObject().addProperty("unionizedWhy", "¿¿ funcionas,no tengo idea tu si ?????");
         json.add("user_response", jsonElement);
 
         UserService userService = new UserService(uuid, at);
@@ -375,7 +367,7 @@ public class FormsFragment extends BaseFragmentClass {
             @Override
             public void onError(UserService.UserResponse response) {
                 loading.dismiss();
-                Toast.makeText(getActivity(), "Error: " + response.msg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Error al enviar fomulario!" + response.msg, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -387,10 +379,12 @@ public class FormsFragment extends BaseFragmentClass {
     }
 
     private String getFormId() {
+        //TODO: Get a form id
         return "9";
     }
 
     private String getIacId() {
+        //TODO: Set the iac id
         return "32000011";
     }
 
