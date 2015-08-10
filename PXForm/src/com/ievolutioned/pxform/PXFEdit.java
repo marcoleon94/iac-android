@@ -1,10 +1,5 @@
 package com.ievolutioned.pxform;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
@@ -20,6 +15,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.JsonElement;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class PXFEdit extends PXWidget{
 
@@ -181,6 +181,14 @@ public class PXFEdit extends PXWidget{
             current_text = s == null ? "" : s.toString();
         }
     };
+
+    @Override
+    public boolean validate() {
+        if (current_text != null && !current_text.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
 
     public String toString(){
         return this.current_text;

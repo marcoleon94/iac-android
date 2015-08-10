@@ -133,4 +133,10 @@ public class PXFText extends PXWidget {
         }
     }
 
+    @Override
+    public boolean validate() {
+        if(!getValue().isEmpty())
+            return true;
+        return false;
+    }
 }

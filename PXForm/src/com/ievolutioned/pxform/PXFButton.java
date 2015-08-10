@@ -8,7 +8,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.google.gson.JsonElement;
-import com.google.zxing.integration.android.IntentIntegrator;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -112,4 +111,10 @@ public class PXFButton extends PXWidget {
         }
     };
 
+    @Override
+    public boolean validate() {
+        if (this.title != null && !this.title.isEmpty())
+            return true;
+        return false;
+    }
 }

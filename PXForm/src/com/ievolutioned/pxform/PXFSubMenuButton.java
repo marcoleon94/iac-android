@@ -185,6 +185,13 @@ public class PXFSubMenuButton extends PXWidget {
         }
     };
 
+    @Override
+    public boolean validate() {
+        if (current_option >= 0)
+            return true;
+        return false;
+    }
+
     public static class ChildFormDialogFragment extends DialogFragment {
 
         private CharSequence[] items_options;

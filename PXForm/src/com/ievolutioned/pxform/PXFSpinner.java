@@ -197,6 +197,13 @@ public class PXFSpinner extends PXWidget {
     };
 
     @Override
+    public boolean validate() {
+        if(value != null)
+            return true;
+        return false;
+    }
+
+    @Override
     public String toString() {
         try {
             return adapter == null ? "" : value;

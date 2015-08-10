@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -120,6 +121,25 @@ public class PXFAdapter extends BaseAdapter{
         w.setWidgetData(view);
 
         return view;
+    }
+
+    public void validate(ListView listView){
+        //TODO: shoud be this on
+        boolean isFocused = false;
+        for(int i =0; i<lWidgets.size(); i++){
+            if(lWidgets.get(i).isValidate()) {
+                if (lWidgets.get(i).validate()) {
+                    //Focus control
+                    if (!isFocused) {
+                        listView.setSelection(i);
+                        isFocused = true;
+                    }
+
+                    //Show validation message
+                    //lWidgets.get(i).showValidation();
+                }
+            }
+        }
     }
 
     /**

@@ -79,6 +79,7 @@ public class FormsFragment extends BaseFragmentClass {
         Runnable saveR;
         switch (item.getItemId()) {
             case R.id.menu_fragment_form_save:
+                validateForm();
                 saveR = new Runnable() {
                     @Override
                     public void run() {
@@ -243,6 +244,11 @@ public class FormsFragment extends BaseFragmentClass {
             save(saveRunnable);
         }
     };
+
+    private void validateForm(){
+        PXFAdapter adapter = (PXFAdapter) listView.getAdapter();
+        adapter.validate(listView);
+    }
 
     /**
      * Save current state of the Form data

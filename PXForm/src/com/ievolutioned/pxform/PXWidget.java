@@ -1,9 +1,5 @@
 package com.ievolutioned.pxform;
 
-import java.util.Map;
-
-import com.google.gson.JsonElement;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -13,6 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.google.gson.JsonElement;
+
+import java.util.Map;
 
 /**
  * Class base for read Json elements
@@ -40,6 +40,8 @@ public abstract class PXWidget {
     public static final String FIELD_KEY_BARCODE = "barcodeReader";
     public static final String FIELD_KEY_HEADER_EMPTY = "headerEmpty";
 
+    public static final String FIELD_VALIDATE_TRUE = "yes";
+
     public static final int ADAPTER_ITEM_TYPE_UNKNOWN = 0;
     public static final int ADAPTER_ITEM_TYPE_BUTTON = 1;
     public static final int ADAPTER_ITEM_TYPE_CHECKBOX = 2;
@@ -54,6 +56,7 @@ public abstract class PXWidget {
     private String fieldKey = "";
     private long _ID = 0;
     private PXWidgetHandler eventHandler = null;
+    private boolean validate = false;
 
     /**
      * Hook to call when an event fire
@@ -157,6 +160,19 @@ public abstract class PXWidget {
 
         return linear;
     }
+
+    public boolean isValidate() {
+        if (getJsonEntries().containsKey(FIELD_VALIDATE))
+            if (getJsonEntries().get(FIELD_VALIDATE).getValue() != null &&
+                    !getJsonEntries().get(FIELD_VALIDATE).getValue().isJsonNull() &&
+                    getJsonEntries().get(FIELD_VALIDATE).getValue().getAsString()
+                            .contentEquals(FIELD_VALIDATE_TRUE))
+                return true;
+        return false;
+    }
+
+    public abstract boolean validate();
+
     private TextView getTextViewHead(Context context,
                                      Map<String, Map.Entry<String,JsonElement>> map){
         TextView t = new TextView(context);

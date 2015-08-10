@@ -165,6 +165,13 @@ public class PXFToggleBoolean extends PXWidget {
     };
 
     @Override
+    public boolean validate() {
+        if (value != null && !value.isEmpty())
+            return true;
+        return false;
+    }
+
+    @Override
     public String toString() {
         return value != null ? value : ""; //String.valueOf(radio_selected);
     }
