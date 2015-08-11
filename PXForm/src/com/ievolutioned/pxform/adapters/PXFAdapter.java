@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.ievolutioned.pxform.PXWidget;
@@ -123,23 +122,32 @@ public class PXFAdapter extends BaseAdapter{
         return view;
     }
 
-    public void validate(ListView listView){
-        //TODO: shoud be this on
-        boolean isFocused = false;
-        for(int i =0; i<lWidgets.size(); i++){
-            if(lWidgets.get(i).isValidate()) {
-                if (lWidgets.get(i).validate()) {
+    /**
+     * Validate if the current adapter has required members
+     * @param listView - Must be the same
+     * @return the title of the widget that is required, string empty otherwise
+     */
+    public String validate(ListView listView) {
+        //TODO: shoud be this on background?
+        String title = null;
+        for (int i = 0; i < lWidgets.size(); i++) {
+            //Is it required?
+            if (lWidgets.get(i).isValidate()) {
+                // Is it not valid?
+                if (!lWidgets.get(i).validate()) {
                     //Focus control
-                    if (!isFocused) {
-                        listView.setSelection(i);
-                        isFocused = true;
-                    }
-
-                    //Show validation message
-                    //lWidgets.get(i).showValidation();
+                    listView.setSelection(i);
+                    //Get title
+                    if (lWidgets.get(i).getJsonEntries().containsKey("title"))
+                        title = lWidgets.get(i).getJsonEntries().get("title").getValue().getAsString();
+                    else
+                        title = "";
+                    Log.d("Validate: ", lWidgets.get(i).getKey());
+                    break;
                 }
             }
         }
+        return title;
     }
 
     /**

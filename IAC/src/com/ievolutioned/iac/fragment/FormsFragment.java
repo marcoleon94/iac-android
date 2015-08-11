@@ -2,6 +2,7 @@ package com.ievolutioned.iac.fragment;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -79,7 +80,6 @@ public class FormsFragment extends BaseFragmentClass {
         Runnable saveR;
         switch (item.getItemId()) {
             case R.id.menu_fragment_form_save:
-                validateForm();
                 saveR = new Runnable() {
                     @Override
                     public void run() {
@@ -89,8 +89,9 @@ public class FormsFragment extends BaseFragmentClass {
                 save(saveR);
                 break;
             case R.id.menu_fragment_form_upload:
-                saveAndUpload();
-                Toast.makeText(getActivity(), "upload", Toast.LENGTH_SHORT).show();
+                if(validateForm()) {
+                    saveAndUpload();
+                }
                 break;
             default:
                 Toast.makeText(getActivity(), "????", Toast.LENGTH_SHORT).show();
@@ -245,9 +246,23 @@ public class FormsFragment extends BaseFragmentClass {
         }
     };
 
-    private void validateForm(){
+    private boolean validateForm(){
         PXFAdapter adapter = (PXFAdapter) listView.getAdapter();
-        adapter.validate(listView);
+        String msg = adapter.validate(listView);
+
+        //If msg is null then is valid
+        if(msg == null)
+            return true;
+
+        showValidationMessage(msg);
+        return false;
+    }
+
+    private void showValidationMessage(String msg) {
+        Toast toast = Toast.makeText(getActivity(), "Campo requerido: " + msg, Toast.LENGTH_SHORT);
+        View v = toast.getView();
+        v.setBackgroundColor(Color.RED);
+        toast.show();
     }
 
     /**
@@ -305,7 +320,7 @@ public class FormsFragment extends BaseFragmentClass {
                     @Override
                     public void saved() {
                         loading.dismiss();
-                        Toast.makeText(getActivity(), "Ready to upload", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Guardado", Toast.LENGTH_SHORT).show();
                         getSavedResponse();
                     }
 
