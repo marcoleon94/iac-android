@@ -133,10 +133,12 @@ public class PXFAdapter extends BaseAdapter{
         for (int i = 0; i < lWidgets.size(); i++) {
             //Is it required?
             if (lWidgets.get(i).isValidate()) {
+                lWidgets.get(i).setValidation(false);
                 // Is it not valid?
                 if (!lWidgets.get(i).validate()) {
                     //Focus control
                     listView.setSelection(i);
+                    lWidgets.get(i).setValidation(true);
                     //Get title
                     if (lWidgets.get(i).getJsonEntries().containsKey("title"))
                         title = lWidgets.get(i).getJsonEntries().get("title").getValue().getAsString();
@@ -147,6 +149,7 @@ public class PXFAdapter extends BaseAdapter{
                 }
             }
         }
+        notifyDataSetChanged();
         return title;
     }
 

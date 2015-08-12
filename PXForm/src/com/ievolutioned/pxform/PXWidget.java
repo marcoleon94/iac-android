@@ -73,6 +73,7 @@ public abstract class PXWidget {
     public static abstract class HelperWidget{
         protected LinearLayout container;
         protected TextView headTextView;
+        protected View validationView;
     }
 
     /**
@@ -204,6 +205,16 @@ public abstract class PXWidget {
         l.setBackgroundColor(Color.parseColor("#ECEAEC"));
         return l;
     }
+    protected View getGenericValidationView(Context context){
+        LinearLayout l = new LinearLayout(context);
+        l.setOrientation(LinearLayout.VERTICAL);
+        ViewGroup.LayoutParams par = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        l.setLayoutParams(par);
+        l.setBackgroundColor(Color.RED);
+        l.setMinimumHeight(3);
+        return l;
+    }
     /**
      * Get a map with a String (key) - Json (class) values
      * @return {@link java.util.Map}
@@ -220,6 +231,8 @@ public abstract class PXWidget {
                 getJsonEntries().get(FIELD_HEADER).getValue().getAsString() : "");
         helper.headTextView.setVisibility(getJsonEntries().containsKey(FIELD_HEADER) ?
                 View.VISIBLE : View.GONE);
+        if (helper.validationView != null)
+            helper.validationView.setVisibility(validate ? View.VISIBLE : View.GONE);
 
         if (getJsonEntries().get(FIELD_KEY) != null)
             setKey(getJsonEntries().get(FIELD_KEY).getValue().getAsString());
@@ -246,4 +259,8 @@ public abstract class PXWidget {
      * @return String with the FIELD_KEY found
      */
     public String getKey(){ return fieldKey; }
+
+    public void setValidation(boolean v) {
+        this.validate = v;
+    }
 }

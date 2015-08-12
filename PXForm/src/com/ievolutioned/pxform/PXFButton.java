@@ -94,6 +94,11 @@ public class PXFButton extends PXWidget {
             //add controls to main container
             v.addView(button);
 
+            //add validation view
+            View vv = getGenericValidationView(context);
+            helper.validationView = vv;
+            v.addView(vv);
+
             return v;
         } catch (Exception e) {
             Log.e("Error", e.getMessage(), e);

@@ -125,6 +125,11 @@ public class PXFDatePicker extends PXWidget {
         //add controls to main container
         v.addView(linear);
 
+        //add validation view
+        View vv = getGenericValidationView(context);
+        helper.validationView = vv;
+        v.addView(vv);
+
         return v;
     }
 
