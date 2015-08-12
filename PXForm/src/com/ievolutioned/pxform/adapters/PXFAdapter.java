@@ -130,14 +130,14 @@ public class PXFAdapter extends BaseAdapter{
     public String validate(ListView listView) {
         //TODO: shoud be this on background?
         String title = null;
-        for (int i = 0; i < lWidgets.size(); i++) {
+        int i =0;
+        for (i = 0; i < lWidgets.size(); i++) {
             //Is it required?
             if (lWidgets.get(i).isValidate()) {
                 lWidgets.get(i).setValidation(false);
                 // Is it not valid?
                 if (!lWidgets.get(i).validate()) {
                     //Focus control
-                    listView.setSelection(i);
                     lWidgets.get(i).setValidation(true);
                     //Get title
                     if (lWidgets.get(i).getJsonEntries().containsKey("title"))
@@ -150,6 +150,8 @@ public class PXFAdapter extends BaseAdapter{
             }
         }
         notifyDataSetChanged();
+        if (i > 0 && i < listView.getCount())
+            listView.setSelection(i);
         return title;
     }
 
