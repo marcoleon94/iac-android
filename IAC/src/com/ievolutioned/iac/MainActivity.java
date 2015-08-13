@@ -118,6 +118,7 @@ public class MainActivity extends ActionBarActivity {
                         formsList.get(0).getName()));
                 String jsonArray = jsonElement.getAsJsonObject().get("content").getAsJsonArray().toString();
 
+                args.putLong(FormsFragment.ARGS_FORM_ID, id);
                 args.putLong(FormsFragment.DATABASE_FORM_ID, formsList.get(0).getId());
                 args.putInt(FormsFragment.DATABASE_LEVEL, 0);
                 args.putString(FormsFragment.DATABASE_KEY_PARENT, "");

@@ -35,6 +35,7 @@ public class FormsFragment extends BaseFragmentClass {
 
     public static final String TAG = FormsFragment.class.getName();
 
+    public static final String ARGS_FORM_ID = "ARGS_FORM_ID";
     public static final String DATABASE_FORM_ID = "DATABASE_FORM_ID";
     public static final String DATABASE_LEVEL = "DATABASE_LEVEL";
     public static final String DATABASE_KEY_PARENT = "DATABASE_KEY_PARENT";
@@ -246,20 +247,39 @@ public class FormsFragment extends BaseFragmentClass {
         }
     };
 
-    private boolean validateForm(){
+    private boolean validateForm() {
         PXFAdapter adapter = (PXFAdapter) listView.getAdapter();
-        String msg = adapter.validate(listView);
+        String msg = null;
 
-        //If msg is null then is valid
-        if(msg == null)
-            return true;
+        //Verify ID FORM
+        if (getFormId() == null)
+            msg = "Error de formulario";
+        if (msg != null) {
+            showValidationMessage(msg);
+            return false;
+        }
 
-        showValidationMessage(msg);
-        return false;
+        //Verify IAC ID
+        String iacID= getIacId();
+        if (iacID == null || iacID.isEmpty())
+            msg = "IAC ID no es válido";
+        if (msg != null) {
+            showValidationMessage(msg);
+            return false;
+        }
+
+        //Verify the form
+        msg = adapter.validate(listView);
+        if (msg != null) {
+            showValidationMessage("Campo requerido: " + msg);
+            return false;
+        }
+
+        return true;
     }
 
     private void showValidationMessage(String msg) {
-        Toast toast = Toast.makeText(getActivity(), "Campo requerido: " + msg, Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT);
         View v = toast.getView();
         v.setBackgroundColor(Color.RED);
         toast.show();
@@ -372,8 +392,6 @@ public class FormsFragment extends BaseFragmentClass {
         JsonObject json = new JsonObject();
         json.addProperty("inquest_id", getFormId());
         json.addProperty("iac_id", getIacId());
-        //TODO: SubFormulary items must contain always a value. Remove this line
-        jsonElement.getAsJsonObject().get("response").getAsJsonObject().addProperty("reasonToLeave", "Matrimonio ");
         json.add("user_response", jsonElement);
 
         UserService userService = new UserService(uuid, at);
@@ -399,14 +417,18 @@ public class FormsFragment extends BaseFragmentClass {
         });
     }
 
-    private String getFormId() {
-        //TODO: Get a form id
-        return "9";
+    public String getFormId() {
+        long idForm = -1;
+        if (savedState == null)
+            return null;
+        if (savedState.containsKey(ARGS_FORM_ID))
+            idForm = savedState.getLong(ARGS_FORM_ID, -1);
+        return idForm > -1 ? String.valueOf(idForm) : null;
     }
 
     private String getIacId() {
-        //TODO: Set the iac id
-        return "32000011";
+        PXFAdapter adapter = (PXFAdapter)listView.getAdapter();
+        return adapter.getItemValueForKey("employeeID");
     }
 
 

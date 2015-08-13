@@ -155,6 +155,15 @@ public class PXFAdapter extends BaseAdapter{
         return title;
     }
 
+    public String getItemValueForKey(String key) {
+        for(PXWidget w: lWidgets){
+            if(w.getJsonEntries().containsKey("key") &&
+                    w.getJsonEntries().get("key").getValue().getAsString().contentEquals(key))
+                return w.getValue();
+        }
+        return null;
+    }
+
     /**
      * Save the items values to the data base
      */
