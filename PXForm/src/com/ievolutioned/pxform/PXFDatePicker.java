@@ -1,17 +1,12 @@
 package com.ievolutioned.pxform;
 
-import java.util.Calendar;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
-import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -22,12 +17,20 @@ import android.widget.TextView;
 
 import com.google.gson.JsonElement;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+
 public class PXFDatePicker extends PXWidget {
+
+    private static final String SERVER_DATE_FORMAT = "MM/dd/yy";
 
     private Calendar calendarState;
     private FragmentManager fragmentManager;
 
-    public static class HelperDatePicker extends HelperWidget{
+    public static class HelperDatePicker extends HelperWidget {
         protected TextView title;
         protected LinearLayout linearDatePicker;
         protected Button buttonDatePicker;
@@ -49,15 +52,25 @@ public class PXFDatePicker extends PXWidget {
 
     @Override
     public void setValue(String value) {
-        try{
-            //last_position = Integer.parseInt(value);
-            //calendarState = Calendar.
-        }catch(Exception ex){
+        try {
+            if (value == null || value.isEmpty())
+                return;
+            if (this.calendarState == null)
+                this.calendarState = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat(SERVER_DATE_FORMAT, Locale.US);
+            this.calendarState.setTime(sdf.parse(value));
+        } catch (Exception ex) {
+            Log.e(PXFDatePicker.class.getName(), "Cant set value", ex);
         }
     }
+
     @Override
     public String getValue() {
-        return this.calendarState == null ? "" : this.calendarState.toString();
+        if (this.calendarState != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat(SERVER_DATE_FORMAT, Locale.US);
+            return sdf.format(this.calendarState.getTime());
+        }
+        return "";
     }
 
     @Override
@@ -66,6 +79,8 @@ public class PXFDatePicker extends PXWidget {
         HelperDatePicker helper = (HelperDatePicker) view.getTag();
         helper.title.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
                 getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
+        if(this.calendarState != null)
+            helper.buttonDatePicker.setText(getValue());
 
         helper.buttonDatePicker.setOnClickListener(button_click);
     }
@@ -73,7 +88,7 @@ public class PXFDatePicker extends PXWidget {
     @Override
     public View createControl(Activity context) {
         fragmentManager = context.getFragmentManager();
-        calendarState = Calendar.getInstance();
+        //calendarState = Calendar.getInstance();
 
         LinearLayout v = (LinearLayout) super.createControl(context);
         HelperDatePicker helper = (HelperDatePicker) v.getTag();
@@ -110,6 +125,11 @@ public class PXFDatePicker extends PXWidget {
         //add controls to main container
         v.addView(linear);
 
+        //add validation view
+        View vv = getGenericValidationView(context);
+        helper.validationView = vv;
+        v.addView(vv);
+
         return v;
     }
 
@@ -118,11 +138,11 @@ public class PXFDatePicker extends PXWidget {
         private IDatePicked eventHandler;
         private Calendar calendarS;
 
-        public void setIDatePicked(IDatePicked callback){
+        public void setIDatePicked(IDatePicked callback) {
             eventHandler = callback;
         }
 
-        static DatePickerFragment getInstance(Calendar cal){
+        static DatePickerFragment getInstance(Calendar cal) {
             DatePickerFragment dial = new DatePickerFragment();
             dial.calendarS = cal;
             return dial;
@@ -142,11 +162,11 @@ public class PXFDatePicker extends PXWidget {
 
         public void onDateSet(DatePicker view, int year, int month, int day) {
             dismiss();
-            if(eventHandler != null)
+            if (eventHandler != null)
                 eventHandler.onDateSet(view, year, month, day);
         }
 
-        public interface IDatePicked{
+        public interface IDatePicked {
             void onDateSet(DatePicker view, int year, int month, int day);
         }
     }
@@ -154,10 +174,12 @@ public class PXFDatePicker extends PXWidget {
     private OnClickListener button_click = new OnClickListener() {
         @Override
         public void onClick(View v) {
+            if (PXFDatePicker.this.calendarState == null)
+                PXFDatePicker.this.calendarState = Calendar.getInstance();
             DatePickerFragment newFragment = DatePickerFragment.getInstance(
                     PXFDatePicker.this.calendarState);
             newFragment.show(fragmentManager, "timePicker");
-            final Button my_button = (Button)v;
+            final Button my_button = (Button) v;
             newFragment.setIDatePicked(new DatePickerFragment.IDatePicked() {
                 @Override
                 public void onDateSet(DatePicker view, int year, int month, int day) {
@@ -170,7 +192,14 @@ public class PXFDatePicker extends PXWidget {
     };
 
     @Override
+    public boolean validate() {
+        if(!getValue().isEmpty())
+            return true;
+        return false;
+    }
+
+    @Override
     public String toString() {
-        return this.calendarState == null? "":this.calendarState.toString();
+        return this.calendarState == null ? "" : this.calendarState.toString();
     }
 }

@@ -59,4 +59,9 @@ public class PXFUnknownControlType extends PXWidget {
 
         return v;
     }
+
+    @Override
+    public boolean validate() {
+        return true;
+    }
 }
