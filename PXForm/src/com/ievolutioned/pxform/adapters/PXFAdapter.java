@@ -155,9 +155,15 @@ public class PXFAdapter extends BaseAdapter{
         return title;
     }
 
+    /**
+     * Gets a item value for key
+     *
+     * @param key - the key
+     * @return the value of the key field, or null
+     */
     public String getItemValueForKey(String key) {
-        for(PXWidget w: lWidgets){
-            if(w.getJsonEntries().containsKey("key") &&
+        for (PXWidget w : lWidgets) {
+            if (w.getJsonEntries().containsKey("key") &&
                     w.getJsonEntries().get("key").getValue().getAsString().contentEquals(key))
                 return w.getValue();
         }

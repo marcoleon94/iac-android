@@ -247,6 +247,11 @@ public class FormsFragment extends BaseFragmentClass {
         }
     };
 
+    /**
+     * Validates the form
+     *
+     * @return true if its valid, false otherwise
+     */
     private boolean validateForm() {
         PXFAdapter adapter = (PXFAdapter) listView.getAdapter();
         String msg = null;
@@ -278,6 +283,11 @@ public class FormsFragment extends BaseFragmentClass {
         return true;
     }
 
+    /**
+     * Displays a validation message
+     *
+     * @param msg - the message
+     */
     private void showValidationMessage(String msg) {
         Toast toast = Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT);
         View v = toast.getView();
@@ -383,6 +393,11 @@ public class FormsFragment extends BaseFragmentClass {
                 });
     }
 
+    /**
+     * Creates a form form the service
+     *
+     * @param jsonElement - the form
+     */
     private void createFormService(JsonElement jsonElement) {
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
         loading.show();
@@ -417,6 +432,10 @@ public class FormsFragment extends BaseFragmentClass {
         });
     }
 
+    /**
+     * Gets a form id
+     * @return - the id or null
+     */
     public String getFormId() {
         long idForm = -1;
         if (savedState == null)
@@ -426,8 +445,14 @@ public class FormsFragment extends BaseFragmentClass {
         return idForm > -1 ? String.valueOf(idForm) : null;
     }
 
+    /**
+     * Gets the IAC id
+     *
+     * @return the IAC id
+     */
     private String getIacId() {
-        PXFAdapter adapter = (PXFAdapter)listView.getAdapter();
+        //TODO: This key is only temporal
+        PXFAdapter adapter = (PXFAdapter) listView.getAdapter();
         return adapter.getItemValueForKey("employeeID");
     }
 
