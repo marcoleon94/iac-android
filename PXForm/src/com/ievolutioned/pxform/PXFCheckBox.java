@@ -107,6 +107,12 @@ public class PXFCheckBox extends PXWidget {
     };
 
     @Override
+    public boolean validate() {
+        // It has always a value
+        return true;
+    }
+
+    @Override
     public String toString() {
         return String.valueOf(isChecked);
     }

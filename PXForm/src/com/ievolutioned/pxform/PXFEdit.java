@@ -1,10 +1,5 @@
 package com.ievolutioned.pxform;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
@@ -12,6 +7,7 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -19,6 +15,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.JsonElement;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class PXFEdit extends PXWidget{
 
@@ -87,7 +88,9 @@ public class PXFEdit extends PXWidget{
     @Override
     public void setWidgetData(View view) {
         super.setWidgetData(view);
-        HelperEdit helper = (HelperEdit) view.getTag();
+        try {
+            HelperEdit helper = (HelperEdit) view.getTag();
+
 
         helper.title.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
                 getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
@@ -96,6 +99,9 @@ public class PXFEdit extends PXWidget{
         helper.inputEdit.removeAllTextChangedListener();
         helper.inputEdit.addTextChangedListener(edit_watcher);
         helper.inputEdit.setText(current_text);
+        }catch(Exception e){
+            Log.e("WHAT?", e.getMessage(), e);
+        }
     }
 
     @Override
@@ -136,6 +142,11 @@ public class PXFEdit extends PXWidget{
         //add controls to main container
         v.addView(linear);
 
+        //add validation view
+        View vv = getGenericValidationView(context);
+        helper.validationView = vv;
+        v.addView(vv);
+
         return v;
     }
 
@@ -175,6 +186,14 @@ public class PXFEdit extends PXWidget{
             current_text = s == null ? "" : s.toString();
         }
     };
+
+    @Override
+    public boolean validate() {
+        if (current_text != null && !current_text.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
 
     public String toString(){
         return this.current_text;

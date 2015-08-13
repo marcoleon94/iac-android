@@ -17,7 +17,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
 import java.util.Map;
-
 /**
  *
  */
@@ -25,7 +24,7 @@ public class PXFSubMenuButton extends PXWidget {
     /**
      * The default place holder
      */
-    public static final String PLACEHOLDER_DEFAULT = "Ninguno";
+    public static final String PLACEHOLDER_DEFAULT = "Seleccione";
 
     //private String current_title = "";
     //private String current_option_text = "";
@@ -84,7 +83,6 @@ public class PXFSubMenuButton extends PXWidget {
         }
 
         helper.button.setOnClickListener(onclick);
-
     }
 
     @Override
@@ -128,6 +126,11 @@ public class PXFSubMenuButton extends PXWidget {
 
         //add controls to main container
         v.addView(linear);
+
+        //add validation view
+        View vv = getGenericValidationView(context);
+        helper.validationView = vv;
+        v.addView(vv);
 
         return v;
     }
@@ -186,6 +189,13 @@ public class PXFSubMenuButton extends PXWidget {
 
         }
     };
+
+    @Override
+    public boolean validate() {
+        if (current_option >= 0)
+            return true;
+        return false;
+    }
 
     public static class ChildFormDialogFragment extends DialogFragment {
 

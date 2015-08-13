@@ -1,8 +1,5 @@
 package com.ievolutioned.pxform;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +12,13 @@ import android.widget.TextView;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 public class PXFToggleBoolean extends PXWidget {
 
     private int radio_selected = 0;
+    private String value = null;
 
     public static class HelperToggleBoolean extends HelperWidget{
         protected TextView title;
@@ -44,13 +45,23 @@ public class PXFToggleBoolean extends PXWidget {
     @Override
     public void setValue(String value) {
         try{
-            radio_selected = Integer.parseInt(value);
+            radio_selected = getIndexOfValue(value);
         }catch(Exception ex){
         }
     }
+
+    private int getIndexOfValue(String value){
+        JsonArray array = getJsonEntries().get(FIELD_OPTIONS).getValue().getAsJsonArray();
+        for (int i = 0; i < array.size(); i++) {
+            if (array.get(i).getAsString().contentEquals(value))
+                return i;
+        }
+        return 0;
+    }
+
     @Override
     public String getValue() {
-        return String.valueOf(radio_selected);
+        return value != null ? value : "";//String.valueOf(radio_selected);
     }
 
     @Override
@@ -139,6 +150,11 @@ public class PXFToggleBoolean extends PXWidget {
         //add controls to main container
         v.addView(linear);
 
+        //add validation view
+        View vv = getGenericValidationView(context);
+        helper.validationView = vv;
+        v.addView(vv);
+
         return v;
     }
 
@@ -146,13 +162,22 @@ public class PXFToggleBoolean extends PXWidget {
             = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton view, boolean isChecked) {
-            if(isChecked)
+            if(isChecked) {
                 radio_selected = Integer.parseInt(view.getTag().toString());
+                value = view.getText().toString();
+            }
         }
     };
 
     @Override
+    public boolean validate() {
+        if (value != null && !value.isEmpty())
+            return true;
+        return false;
+    }
+
+    @Override
     public String toString() {
-        return String.valueOf(radio_selected);
+        return value != null ? value : ""; //String.valueOf(radio_selected);
     }
 }

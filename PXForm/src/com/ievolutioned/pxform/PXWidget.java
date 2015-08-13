@@ -1,9 +1,5 @@
 package com.ievolutioned.pxform;
 
-import java.util.Map;
-
-import com.google.gson.JsonElement;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -13,6 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.google.gson.JsonElement;
+
+import java.util.Map;
 
 /**
  * Class base for read Json elements
@@ -37,6 +37,10 @@ public abstract class PXWidget {
 
     public static final String FIELD_CELL_OPTION_SEGMENT = "FXFormOptionSegmentsCell";
     public static final String FIELD_CELL_OPTION_SEGMENT_CUSTOM = "FXFormOptionSegmentsCellCustom";
+    public static final String FIELD_KEY_BARCODE = "barcodeReader";
+    public static final String FIELD_KEY_HEADER_EMPTY = "headerEmpty";
+
+    public static final String FIELD_VALIDATE_TRUE = "yes";
 
     public static final int ADAPTER_ITEM_TYPE_UNKNOWN = 0;
     public static final int ADAPTER_ITEM_TYPE_BUTTON = 1;
@@ -46,11 +50,13 @@ public abstract class PXWidget {
     public static final int ADAPTER_ITEM_TYPE_SPINNER = 5;
     public static final int ADAPTER_ITEM_TYPE_TOGGLEBOOLEAN = 6;
     public static final int ADAPTER_ITEM_TYPE_SUBMENUBUTTON = 7;
+    public static final int ADAPTER_ITEM_TYPE_TEXT = 8;
 
     private Map<String, Map.Entry<String,JsonElement>> eEntry;
     private String fieldKey = "";
     private long _ID = 0;
     private PXWidgetHandler eventHandler = null;
+    private boolean validate = false;
 
     /**
      * Hook to call when an event fire
@@ -67,6 +73,7 @@ public abstract class PXWidget {
     public static abstract class HelperWidget{
         protected LinearLayout container;
         protected TextView headTextView;
+        protected View validationView;
     }
 
     /**
@@ -83,6 +90,7 @@ public abstract class PXWidget {
                 ADAPTER_ITEM_TYPE_SPINNER,
                 ADAPTER_ITEM_TYPE_TOGGLEBOOLEAN,
                 ADAPTER_ITEM_TYPE_SUBMENUBUTTON,
+                ADAPTER_ITEM_TYPE_TEXT
         };
         return ids.length;
     }
@@ -153,6 +161,19 @@ public abstract class PXWidget {
 
         return linear;
     }
+
+    public boolean isValidate() {
+        if (getJsonEntries().containsKey(FIELD_VALIDATE))
+            if (getJsonEntries().get(FIELD_VALIDATE).getValue() != null &&
+                    !getJsonEntries().get(FIELD_VALIDATE).getValue().isJsonNull() &&
+                    getJsonEntries().get(FIELD_VALIDATE).getValue().getAsString()
+                            .contentEquals(FIELD_VALIDATE_TRUE))
+                return true;
+        return false;
+    }
+
+    public abstract boolean validate();
+
     private TextView getTextViewHead(Context context,
                                      Map<String, Map.Entry<String,JsonElement>> map){
         TextView t = new TextView(context);
@@ -184,6 +205,16 @@ public abstract class PXWidget {
         l.setBackgroundColor(Color.parseColor("#ECEAEC"));
         return l;
     }
+    protected View getGenericValidationView(Context context){
+        LinearLayout l = new LinearLayout(context);
+        l.setOrientation(LinearLayout.VERTICAL);
+        ViewGroup.LayoutParams par = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        l.setLayoutParams(par);
+        l.setBackgroundColor(Color.RED);
+        l.setMinimumHeight(3);
+        return l;
+    }
     /**
      * Get a map with a String (key) - Json (class) values
      * @return {@link java.util.Map}
@@ -200,6 +231,8 @@ public abstract class PXWidget {
                 getJsonEntries().get(FIELD_HEADER).getValue().getAsString() : "");
         helper.headTextView.setVisibility(getJsonEntries().containsKey(FIELD_HEADER) ?
                 View.VISIBLE : View.GONE);
+        if (helper.validationView != null)
+            helper.validationView.setVisibility(validate ? View.VISIBLE : View.GONE);
 
         if (getJsonEntries().get(FIELD_KEY) != null)
             setKey(getJsonEntries().get(FIELD_KEY).getValue().getAsString());
@@ -226,4 +259,8 @@ public abstract class PXWidget {
      * @return String with the FIELD_KEY found
      */
     public String getKey(){ return fieldKey; }
+
+    public void setValidation(boolean v) {
+        this.validate = v;
+    }
 }
