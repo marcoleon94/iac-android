@@ -166,6 +166,10 @@ public class PXFSubMenuButton extends PXWidget {
                     cell = array.get(sel);
                     isDialogShown = false;
 
+                    if(getEventHandler() != null){
+                        getEventHandler().notifyDataSetChanges();
+                    }
+
                     if(!cell.getAsJsonObject().entrySet().iterator().next().getValue().isJsonArray() ||
                             cell.getAsJsonObject().entrySet().iterator().next().getValue().getAsJsonArray().size() < 1)
                         return;
@@ -192,9 +196,7 @@ public class PXFSubMenuButton extends PXWidget {
 
     @Override
     public boolean validate() {
-        if (current_option >= 0)
-            return true;
-        return false;
+        return current_option >= 0;
     }
 
     public static class ChildFormDialogFragment extends DialogFragment {
