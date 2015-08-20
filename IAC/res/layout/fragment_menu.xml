@@ -17,14 +17,14 @@
 
     <ListView
         android:id="@+id/fragment_menu_form_list"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:choiceMode="singleChoice"
         android:divider="@android:color/darker_gray"
         android:dividerHeight="1dp"       >
     </ListView>
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/nav_drawer_sites_title"
         android:textAllCaps="true"
