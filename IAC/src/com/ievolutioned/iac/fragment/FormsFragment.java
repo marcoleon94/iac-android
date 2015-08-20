@@ -58,8 +58,9 @@ public class FormsFragment extends BaseFragmentClass {
     private View bindUI(View root) {
         listView = (ListView) root.findViewById(R.id.PXForm_linearPanel);
 
-        setToolbarNavigationOnClickListener(mainActivityHomeButton);
-        setToolbarNavigationDisplayHomeAsUpEnabled();
+        //TODO: uncomment to enable activity back pressed
+        //setToolbarNavigationOnClickListener(mainActivityHomeButton);
+        //setToolbarNavigationDisplayHomeAsUpEnabled();
         return root;
     }
 

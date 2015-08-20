@@ -24,6 +24,7 @@ import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.FileUtil;
 import com.ievolutioned.iac.view.MenuDrawerItem;
 import com.ievolutioned.iac.view.ViewUtility;
+import com.ievolutioned.pxform.database.Forms;
 import com.ievolutioned.pxform.database.FormsDataSet;
 
 import java.util.List;
@@ -204,11 +205,13 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public void setTitle(CharSequence title) {
-        super.setTitle(title);
+        //super.setTitle(title);
+        getSupportActionBar().setTitle(title);
     }
 
     @Override
     public void onBackPressed() {
+        setDrawer();
         FragmentManager fragmentManager = getFragmentManager();
 
         if (fragmentManager.getBackStackEntryCount() > 0) {
@@ -219,6 +222,7 @@ public class MainActivity extends ActionBarActivity {
             //to retake control of the navigation
             if(fragmentManager.getBackStackEntryCount() < 1) {
                 setDrawer();
+                setTitle(R.string.nav_drawer_open);
             }
         } else {
             super.onBackPressed();
