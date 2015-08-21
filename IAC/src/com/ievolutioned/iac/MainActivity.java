@@ -211,7 +211,6 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public void onBackPressed() {
-        setDrawer();
         FragmentManager fragmentManager = getFragmentManager();
 
         if (fragmentManager.getBackStackEntryCount() > 0) {
