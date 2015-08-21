@@ -10,9 +10,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import com.crashlytics.android.Crashlytics;
@@ -24,14 +21,16 @@ import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.FileUtil;
 import com.ievolutioned.iac.view.MenuDrawerItem;
 import com.ievolutioned.iac.view.ViewUtility;
-import com.ievolutioned.pxform.database.Forms;
 import com.ievolutioned.pxform.database.FormsDataSet;
 
 import java.util.List;
 
+import io.fabric.sdk.android.Fabric;
+
 /*
 https://github.com/excilys/androidannotations
  */
+
 /**
  *
  */
@@ -47,7 +46,8 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (!AppConfig.DEBUG)
-            Crashlytics.start(this);
+            Fabric.with(this, new Crashlytics());
+
         setContentView(R.layout.activity_main);
         bindUI();
     }
@@ -82,21 +82,26 @@ public class MainActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(false); //disable static back arrow
         DrawerToggleSynchronizeState(); //refresh all menu state
     }
+
     /**
      * Method to take control of the <b>HOME</b> button of the navigation bar, used for
      * custom user experience
+     *
      * @param callback method to be linked to the event
      */
-    public void setToolbarNavigationOnClickListener(View.OnClickListener callback){
+    public void setToolbarNavigationOnClickListener(View.OnClickListener callback) {
         mToolbar.setNavigationOnClickListener(callback);
     }
+
     /**
      * call to synchronize the <b>HOME</b> menu icon drawer
+     *
      * @see com.ievolutioned.iac.fragment.BaseFragmentClass
      */
-    public void DrawerToggleSynchronizeState(){
+    public void DrawerToggleSynchronizeState() {
         mDrawerToggle.syncState(); //refresh all menu state
     }
+
     /**
      * Including the dynamic form menu, sets its fragment for the current menu item
      * is called by {@link com.ievolutioned.iac.fragment.MenuFragment}
@@ -137,6 +142,7 @@ public class MainActivity extends ActionBarActivity {
         setTitle(item);
         mDrawerLayout.closeDrawers();
     }
+
     /**
      * Looks for a static item menu string and sets the menu title and its fragment
      */
@@ -163,7 +169,7 @@ public class MainActivity extends ActionBarActivity {
         }
 
         //if fragment already found skip sites
-        if(mFragment == null) {
+        if (mFragment == null) {
             for (String site : sites) {
                 if (site.equalsIgnoreCase(item)) {
                     mFragment = new SitesFragment();
@@ -178,6 +184,7 @@ public class MainActivity extends ActionBarActivity {
             replaceFragment(mFragment);
         }
     }
+
     /**
      * Replaces the current fragment on the frame container.
      * <br>This can be call from the {@link FormsFragment fragments childs }
@@ -219,7 +226,7 @@ public class MainActivity extends ActionBarActivity {
 
             //call setDrawer always when there is not other fragment
             //to retake control of the navigation
-            if(fragmentManager.getBackStackEntryCount() < 1) {
+            if (fragmentManager.getBackStackEntryCount() < 1) {
                 setDrawer();
                 setTitle(R.string.nav_drawer_open);
             }
