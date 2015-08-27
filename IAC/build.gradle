@@ -1,27 +1,25 @@
 apply plugin: 'android'
+apply plugin: 'io.fabric'
 
 buildscript {
     repositories {
-        maven { url 'http://download.crashlytics.com/maven' }
+        maven { url 'https://maven.fabric.io/public' }
     }
 
     dependencies {
-        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
+        classpath 'io.fabric.tools:gradle:1.+'
     }
 }
 
-apply plugin: 'crashlytics'
-
 repositories {
     mavenCentral()
-    maven { url 'http://download.crashlytics.com/maven' }
     maven { url 'http://dl.bintray.com/journeyapps/maven' }
+    maven { url 'https://maven.fabric.io/public' }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
     compile project(':PXForm')
-    compile 'com.crashlytics.android:crashlytics:1.+'
     compile 'com.android.support:appcompat-v7:22.0.0'
     compile 'com.android.support:support-v4:20.0.0'
 
@@ -33,6 +31,9 @@ dependencies {
     compile 'com.google.zxing:core:3.2.0'
     compile 'com.journeyapps:zxing-android-integration:2.3.0@aar'
     compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.1@aar') {
+        transitive = true;
+    }
 }
 
 android {

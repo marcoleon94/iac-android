@@ -18,6 +18,7 @@ import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.util.LogUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 import com.ievolutioned.pxform.database.FormsDataSet;
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Log in activity class. Manages the log in actions
@@ -45,7 +46,7 @@ public class LoginActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (!AppConfig.DEBUG)
-            Crashlytics.start(this);
+            Fabric.with(this, new Crashlytics());
 
         setContentView(R.layout.activity_login);
         bindUI();
