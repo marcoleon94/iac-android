@@ -92,6 +92,45 @@ public class ValuesDataSet extends DBDataBase<Values> {
         return list;
     }
 
+    public List<Values> selectByFormID(final long formID) {
+        SQLiteDatabase db = null;
+        List<Values> list = new ArrayList<Values>();
+        Values pop;
+
+        try {
+            db = getReadableDatabase();
+            Cursor c = //db.rawQuery("SELECT * FROM " + getTableName() + " WHERE name='?'", new String[]{name});
+                    db.query(
+                            getTableName()
+                            , null
+                            , COLUMN_FORM_ID + "=?"
+                            , new String[]{
+                                    String.valueOf(formID)}
+                            , null
+                            , null
+                            , null
+                    );
+
+            if (c.moveToFirst()) {
+                do {
+                    pop = createCursorT(c);
+                    list.add(pop);
+                } while (c.moveToNext());
+            }
+
+            c.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (db != null)
+                db.close();
+
+            db = null;
+        }
+
+        return list;
+    }
+
     public long insert(long formId, int level, String key, String keyParent){
         ContentValues values = new ContentValues();
         values.put(COLUMN_FORM_ID, formId);

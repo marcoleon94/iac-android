@@ -29,12 +29,10 @@ import com.ievolutioned.pxform.PXWidget;
 import com.ievolutioned.pxform.adapters.PXFAdapter;
 
 /**
- *
+ * Form fragment class, provides a simple control to insert a form into a
+ * local database and upload data to web services
  */
 public class FormsFragment extends BaseFragmentClass {
-
-    public static final String TAG = FormsFragment.class.getName();
-
     public static final String ARGS_FORM_ID = "ARGS_FORM_ID";
     public static final String DATABASE_FORM_ID = "DATABASE_FORM_ID";
     public static final String DATABASE_LEVEL = "DATABASE_LEVEL";
@@ -89,7 +87,7 @@ public class FormsFragment extends BaseFragmentClass {
                 save(saveR);
                 break;
             case R.id.menu_fragment_form_upload:
-                if(validateForm()) {
+                if (validateForm()) {
                     saveAndUpload();
                 }
                 break;
@@ -198,29 +196,6 @@ public class FormsFragment extends BaseFragmentClass {
 
         @Override
         public void openSubForm(final String parentKey, final String json, PXFAdapter adapter) {
-            //final Bundle my_args = savedState;
-            //final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
-            //loading.show();
-
-            //adapter.save(
-            //        savedState.getLong(DATABASE_FORM_ID)
-            //        , savedState.getInt(DATABASE_LEVEL)
-            //        , savedState.getString(DATABASE_KEY_PARENT)
-            //        , new PXFAdapter.AdapterSaveHandler() {
-            //            @Override
-            //            public void saved() {
-            //                loading.dismiss();
-            //                getActivity().runOnUiThread();
-            //            }
-            //
-            //            @Override
-            //            public void error(Exception ex) {
-            //                loading.dismiss();
-            //                Toast.makeText(getActivity(), "Por el momento no se ha podido salvar", Toast.LENGTH_SHORT).show();
-            //            }
-            //        }
-            //);
-
             Runnable saveRunnable = new Runnable() {
                 @Override
                 public void run() {
@@ -264,7 +239,7 @@ public class FormsFragment extends BaseFragmentClass {
         }
 
         //Verify IAC ID
-        String iacID= getIacId();
+        String iacID = getIacId();
         if (iacID == null || iacID.isEmpty())
             msg = "IAC ID no es válido";
         if (msg != null) {
@@ -331,6 +306,9 @@ public class FormsFragment extends BaseFragmentClass {
         );
     }
 
+    /**
+     * Saves the form before upload
+     */
     private final void saveAndUpload() {
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
         loading.show();
@@ -362,6 +340,9 @@ public class FormsFragment extends BaseFragmentClass {
         );
     }
 
+    /**
+     * Calls an gets the response of submit form
+     */
     private void getSavedResponse() {
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
         loading.show();
@@ -374,8 +355,6 @@ public class FormsFragment extends BaseFragmentClass {
 
         adapter.getJsonForm(
                 savedState.getLong(DATABASE_FORM_ID)
-                , savedState.getInt(DATABASE_LEVEL)
-                , savedState.getString(DATABASE_KEY_PARENT)
                 , new PXFAdapter.AdapterJSONHandler() {
                     @Override
                     public void success(JsonElement jsonElement) {
@@ -433,6 +412,7 @@ public class FormsFragment extends BaseFragmentClass {
 
     /**
      * Gets a form id
+     *
      * @return - the id or null
      */
     public String getFormId() {
