@@ -82,6 +82,10 @@ public class FormsFragment extends BaseFragmentClass {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu items for use in the action bar
         inflater.inflate(R.menu.fragment_forms_menu, menu);
+        if (savedState.containsKey(DATABASE_KEY_PARENT) &&
+                !savedState.getString(DATABASE_KEY_PARENT, "").isEmpty()) {
+            menu.clear();
+        }
     }
 
     @Override
