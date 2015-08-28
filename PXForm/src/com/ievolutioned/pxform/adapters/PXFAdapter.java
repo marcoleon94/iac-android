@@ -18,63 +18,114 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
-remove file form git:
-
-remove crashlytics files from repo, but don't
-remove "crashlytics.properties" in root:
-
- git rm -r --cached directory/filename
-
-force git update local repo.
-all not commited changes will be lost
-
- git fetch --all
- git reset --hard origin/master
-
-*/
-
-/*
-remove unused repo head
-
- git branch -d -r origin/HEAD
-
- */
-
 /**
+ * PXFAdapter adapter class, manages a set of PXWidget widgets and their event handlers
  */
-public class PXFAdapter extends BaseAdapter{
+public class PXFAdapter extends BaseAdapter {
+    /**
+     * A List of PXWidget widgets that are used as data source
+     */
     private List<PXWidget> lWidgets = new ArrayList<PXWidget>();
+    /**
+     * The main context of the activity
+     */
     private Activity aActivity;
+    /**
+     * The main AdapterEventHandler handler of this adapter
+     */
     private AdapterEventHandler eventHandler;
 
+    /**
+     * Handles the events on the adapter
+     */
     public interface AdapterEventHandler {
+        /**
+         * Manages all on click events of each PXWidget widget
+         *
+         * @param widget
+         */
         void onClick(PXWidget widget);
+
+        /**
+         * Instantiates a new subform with the current parameters
+         *
+         * @param parentKey - The parent key id
+         * @param json      - the JSON of this form
+         * @param adapter   - the current PXFAdapter adapter
+         */
         void openSubForm(String parentKey, String json, PXFAdapter adapter);
     }
 
-    public interface  AdapterSaveHandler{
+    /**
+     * Handles the database events on the adapter
+     */
+    public interface AdapterSaveHandler {
+        /**
+         * Data set saved callback
+         */
         void saved();
+
+        /**
+         * Error callback
+         *
+         * @param ex
+         */
         void error(Exception ex);
     }
 
-    public interface AdapterJSONHandler{
+    /**
+     * Handles the JSON events on the adapter
+     */
+    public interface AdapterJSONHandler {
+        /**
+         * Returns a JsonElement object that should contain
+         *
+         * @param jsonElement
+         */
         void success(JsonElement jsonElement);
+
+        /**
+         * Error callback
+         *
+         * @param ex
+         */
         void error(Exception ex);
     }
 
-    public void setAdapterEventHandler(AdapterEventHandler callback){
+    /**
+     * Sets the AdapterEventHandler event handler
+     *
+     * @param callback - AdapterEventHandler callback
+     */
+    public void setAdapterEventHandler(AdapterEventHandler callback) {
         eventHandler = callback;
     }
 
+    /**
+     * Instantiates a PXFAdapter with the current parameters
+     *
+     * @param activity - the current context
+     * @param widgets  - the set of widgets as data source
+     */
     public PXFAdapter(Activity activity, List<PXWidget> widgets) {
         lWidgets = widgets;
         aActivity = activity;
     }
 
-    public void setActivity(Activity activity){
+    /**
+     * Sets the main context
+     *
+     * @param activity - Activity activity context
+     */
+    public void setActivity(Activity activity) {
         aActivity = activity;
     }
+
+    /**
+     * Gets the list og PXWidget widgets
+     *
+     * @return
+     */
     public List<PXWidget> getItems() {
         return lWidgets;
     }
@@ -112,7 +163,7 @@ public class PXFAdapter extends BaseAdapter{
             if (view == null) {
                 view = w.createControl(aActivity);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.e("Error", e.getMessage(), e);
         }
 
@@ -124,13 +175,14 @@ public class PXFAdapter extends BaseAdapter{
 
     /**
      * Validate if the current adapter has required members
+     *
      * @param listView - Must be the same
      * @return the title of the widget that is required, string empty otherwise
      */
     public String validate(ListView listView) {
         //TODO: shoud be this on background?
         String title = null;
-        int i =0;
+        int i = 0;
         for (i = 0; i < lWidgets.size(); i++) {
             //Is it required?
             if (lWidgets.get(i).isValidate()) {
@@ -176,11 +228,11 @@ public class PXFAdapter extends BaseAdapter{
     public void save(final long formID
             , final int level
             , final String parentKey
-            , final AdapterSaveHandler callback){
+            , final AdapterSaveHandler callback) {
         (new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected void onPreExecute() {
-                if(callback == null)
+                if (callback == null)
                     throw new NullPointerException("Callback must not be null");
             }
 
@@ -188,32 +240,32 @@ public class PXFAdapter extends BaseAdapter{
             protected Boolean doInBackground(Void... params) {
                 ValuesDataSet ValuesDS = new ValuesDataSet(aActivity);
                 List<Values> valuesList;
-                Runnable sleep = new Runnable() { @Override public void run() {
-                    try {
-                        Thread.sleep(1);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                Runnable sleep = new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(1);
+                        } catch (Exception e) {
+                            e.printStackTrace();
 
-                        if(callback != null){
-                            callback.error(e);
+                            if (callback != null) {
+                                callback.error(e);
+                            }
                         }
                     }
-                }};
-
-                if(parentKey != null && !parentKey.isEmpty())
-                    Log.d("SUBNIVEL", parentKey);
+                };
 
                 //check if we have the data base ready
                 valuesList = ValuesDS.selectByFormIDLevelParentKey(formID, level, parentKey);
                 boolean exist = false;
 
-                for(PXWidget widget : lWidgets){
+                for (PXWidget widget : lWidgets) {
                     exist = false;
 
-                    for(Values value : valuesList){
-                        if(widget.getKey().equals(value.getKey())){
+                    for (Values value : valuesList) {
+                        if (widget.getKey().equals(value.getKey())) {
 
-                            if(widget.getValue() != null) {
+                            if (widget.getValue() != null) {
                                 value.setValue(widget.getValue());
                                 //ValuesDS.update(value);
                                 ValuesDS.updateValue(value);
@@ -224,7 +276,7 @@ public class PXFAdapter extends BaseAdapter{
                         }
                     }
 
-                    if(!exist){
+                    if (!exist) {
                         ValuesDS.insert(formID, level, widget.getKey(), parentKey);
                     }
 
@@ -243,7 +295,7 @@ public class PXFAdapter extends BaseAdapter{
 
             @Override
             protected void onPostExecute(Boolean executed) {
-                if(executed)
+                if (executed)
                     callback.saved();
                 else
                     callback.error(new RuntimeException("Error on doInBackgorund"));
@@ -251,14 +303,18 @@ public class PXFAdapter extends BaseAdapter{
         }).execute();
     }
 
+    /**
+     * Gets the json form as user response
+     *
+     * @param formID
+     * @param callback
+     */
     public void getJsonForm(final long formID
-            , final int level
-            , final String parentKey
             , final AdapterJSONHandler callback) {
         (new AsyncTask<Void, Void, JsonElement>() {
             @Override
             protected void onPreExecute() {
-                if(callback== null)
+                if (callback == null)
                     throw new NullPointerException("Callback must not be null");
             }
 
@@ -280,7 +336,7 @@ public class PXFAdapter extends BaseAdapter{
                 for (Values v : valuesList) {
                     if (v.getKey() != null && !v.getKey().isEmpty() &&
                             v.getValue() != null && !v.getValue().isEmpty()) {
-                        json.addProperty(v.getKey(),v.getValue());
+                        json.addProperty(v.getKey(), v.getValue());
                     }
                 }
                 return json;
@@ -288,17 +344,19 @@ public class PXFAdapter extends BaseAdapter{
 
             @Override
             protected void onPostExecute(JsonElement json) {
-                if(json != null) {
+                if (json != null) {
                     JsonObject userResponse = new JsonObject();
-                    userResponse.add("response",json);
+                    userResponse.add("response", json);
                     callback.success(userResponse);
-                }
-                else
+                } else
                     callback.error(new RuntimeException("Value list is not available"));
             }
         }).execute();
     }
 
+    /**
+     * Widget handler that notifies any data set changed, click or subform event.
+     */
     private PXWidget.PXWidgetHandler widgetHandler = new PXWidget.PXWidgetHandler() {
         @Override
         public void notifyDataSetChanges() {
@@ -307,14 +365,14 @@ public class PXFAdapter extends BaseAdapter{
 
         @Override
         public void onClick(PXWidget parent) {
-            if(eventHandler != null){
+            if (eventHandler != null) {
                 eventHandler.onClick(parent);
             }
         }
 
         @Override
         public void selectedSubForm(String json, PXWidget widget) {
-            if(eventHandler != null){
+            if (eventHandler != null) {
                 eventHandler.openSubForm(widget.getKey(), json, PXFAdapter.this);
             }
         }
