@@ -17,17 +17,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
 import java.util.Map;
+
 /**
  *
  */
 public class PXFSubMenuButton extends PXWidget {
-    /**
-     * The default place holder
-     */
-    public static final String PLACEHOLDER_DEFAULT = "Seleccione";
-
-    //private String current_title = "";
-    //private String current_option_text = "";
+    private String current_title = "";
     private int current_option = -1;
     private CharSequence[] options_array;
     private FragmentManager fragmentManager;
@@ -55,14 +50,21 @@ public class PXFSubMenuButton extends PXWidget {
 
     @Override
     public void setValue(String value) {
-        try{
-            current_option = Integer.parseInt(value);
-        }catch(Exception ignored){
+        try {
+            current_title = value;
+            if (options_array != null)
+                for (int i = 0; i < options_array.length; i++)
+                    if (options_array[i].toString().contentEquals(value)) {
+                        current_option = i;
+                    }
+        } catch (Exception ignored) {
+            current_option = -1;
         }
     }
+
     @Override
     public String getValue() {
-        return String.valueOf(current_option);
+        return current_title;
     }
 
     @Override
@@ -73,6 +75,16 @@ public class PXFSubMenuButton extends PXWidget {
         helper.title.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
                 getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
 
+        if (current_title != null && !current_title.isEmpty()) {
+            helper.button.setText(current_title);
+        } else {
+            current_title = getJsonEntries().containsKey(FIELD_PLACEHOLDER) ?
+                    getJsonEntries().get(FIELD_PLACEHOLDER).getValue().getAsString() : "";
+            helper.button.setText(current_title);
+        }
+
+
+        /*
         if(current_option > -1){
             if(options_array != null && options_array.length > 0){
                 helper.button.setText(options_array[current_option]);
@@ -81,6 +93,8 @@ public class PXFSubMenuButton extends PXWidget {
             helper.button.setText(getJsonEntries().containsKey(FIELD_PLACEHOLDER) ?
                     getJsonEntries().get(FIELD_PLACEHOLDER).getValue().getAsString() : PLACEHOLDER_DEFAULT);
         }
+        */
+
 
         helper.button.setOnClickListener(onclick);
     }
@@ -116,7 +130,7 @@ public class PXFSubMenuButton extends PXWidget {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
         button.setLayoutParams(params);
         button.setText(getJsonEntries().containsKey(FIELD_PLACEHOLDER) ?
-                getJsonEntries().get(FIELD_PLACEHOLDER).getValue().getAsString() : PLACEHOLDER_DEFAULT);
+                getJsonEntries().get(FIELD_PLACEHOLDER).getValue().getAsString() : "");
         button.setOnClickListener(onclick);
         helper.button = button;
 
@@ -135,14 +149,14 @@ public class PXFSubMenuButton extends PXWidget {
         return v;
     }
 
-    private void setupOptionsArray(){
+    private void setupOptionsArray() {
         //options_array
         JsonElement cell = getJsonEntries().get(FIELD_OPTIONS).getValue();
         JsonArray array;
         array = cell.getAsJsonArray();
         options_array = new CharSequence[array.size()];
 
-        for (int x = 0; x < array.size(); ++x){
+        for (int x = 0; x < array.size(); ++x) {
             cell = array.get(x);
 
             options_array[x] = cell.getAsJsonObject().entrySet().iterator().next().getKey();
@@ -152,7 +166,7 @@ public class PXFSubMenuButton extends PXWidget {
     private View.OnClickListener onclick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(isDialogShown)
+            if (isDialogShown)
                 return;
 
             ChildFormDialogFragment dialog = ChildFormDialogFragment.getInstance(PXFSubMenuButton.this);
@@ -160,24 +174,25 @@ public class PXFSubMenuButton extends PXWidget {
                 @Override
                 public void onIndexSelected(int sel) {
                     current_option = sel;
+                    current_title = options_array[sel].toString();
                     //options_array
                     JsonElement cell = getJsonEntries().get(FIELD_OPTIONS).getValue();
                     JsonArray array = cell.getAsJsonArray();
                     cell = array.get(sel);
                     isDialogShown = false;
 
-                    if(getEventHandler() != null){
+                    if (getEventHandler() != null) {
                         getEventHandler().notifyDataSetChanges();
                     }
 
-                    if(!cell.getAsJsonObject().entrySet().iterator().next().getValue().isJsonArray() ||
+                    if (!cell.getAsJsonObject().entrySet().iterator().next().getValue().isJsonArray() ||
                             cell.getAsJsonObject().entrySet().iterator().next().getValue().getAsJsonArray().size() < 1)
                         return;
 
                     //String option = cell.getAsJsonObject().entrySet().iterator().next().getKey();
                     String json = cell.getAsJsonObject().entrySet().iterator().next().getValue().toString();
 
-                    if(getEventHandler() != null){
+                    if (getEventHandler() != null) {
                         getEventHandler().selectedSubForm(json, PXFSubMenuButton.this);
                     }
                 }
@@ -196,7 +211,7 @@ public class PXFSubMenuButton extends PXWidget {
 
     @Override
     public boolean validate() {
-        return current_option >= 0;
+        return !current_title.isEmpty();
     }
 
     public static class ChildFormDialogFragment extends DialogFragment {
@@ -205,11 +220,11 @@ public class PXFSubMenuButton extends PXWidget {
         private PXFSubMenuButton widgetParent;
         private IIndexSelected eventHandler;
 
-        public void setISelectedIndex(IIndexSelected callback){
+        public void setISelectedIndex(IIndexSelected callback) {
             eventHandler = callback;
         }
 
-        public static ChildFormDialogFragment getInstance(PXFSubMenuButton widget){
+        public static ChildFormDialogFragment getInstance(PXFSubMenuButton widget) {
             ChildFormDialogFragment cf = new ChildFormDialogFragment();
             cf.widgetParent = widget;
             cf.items_options = widget.options_array;
@@ -241,8 +256,9 @@ public class PXFSubMenuButton extends PXWidget {
             }
         }
 
-        public interface IIndexSelected{
+        public interface IIndexSelected {
             void onIndexSelected(int index);
+
             void cancel();
         }
     }
