@@ -200,6 +200,9 @@ public class PXFAdapter extends BaseAdapter{
                     }
                 }};
 
+                if(parentKey != null && !parentKey.isEmpty())
+                    Log.d("SUBNIVEL", parentKey);
+
                 //check if we have the data base ready
                 valuesList = ValuesDS.selectByFormIDLevelParentKey(formID, level, parentKey);
                 boolean exist = false;
@@ -269,7 +272,7 @@ public class PXFAdapter extends BaseAdapter{
                 JsonObject json = null;
 
                 //get data base values
-                valuesList = ValuesDS.selectByFormIDLevelParentKey(formID, level, parentKey);
+                valuesList = ValuesDS.selectByFormID(formID);
                 if (valuesList == null)
                     callback.error(new NullPointerException("Value list is null"));
 
