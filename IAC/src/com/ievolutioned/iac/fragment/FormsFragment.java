@@ -63,7 +63,18 @@ public class FormsFragment extends BaseFragmentClass {
     private final View.OnClickListener mainActivityHomeButton = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            getActivity().onBackPressed();
+            if (savedState.containsKey(DATABASE_KEY_PARENT) &&
+                    !savedState.getString(DATABASE_KEY_PARENT, "").isEmpty()) {
+                Runnable saveR = new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), "salvado", Toast.LENGTH_SHORT).show();
+                        getActivity().onBackPressed();
+                    }
+                };
+                save(saveR);
+            } else
+                getActivity().onBackPressed();
         }
     };
 
