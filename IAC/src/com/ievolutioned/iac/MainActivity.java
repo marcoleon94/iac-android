@@ -59,6 +59,18 @@ public class MainActivity extends ActionBarActivity {
         mLoading = ViewUtility.getLoadingScreen(this);
         showLoading(true);
         setDrawer();
+
+        //TODO: Show home in a proper way
+        showHome();
+    }
+
+    private void showHome(){
+        Bundle args = new Bundle();
+        Fragment mFragment = new SitesFragment();
+        String item = "https://iacgroup.herokuapp.com/admin?ref=android";
+        args.putString(SitesFragment.ARG_SITE_NAME, item);
+        mFragment.setArguments(args);
+        replaceFragment(mFragment);
     }
 
     private void setDrawer() {

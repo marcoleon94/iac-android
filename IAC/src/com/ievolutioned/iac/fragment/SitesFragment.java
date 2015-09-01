@@ -1,18 +1,25 @@
 package com.ievolutioned.iac.fragment;
 
 import android.app.Fragment;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.net.http.SslError;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.webkit.WebViewFragment;
 import android.widget.ProgressBar;
 
 import com.ievolutioned.iac.R;
+import com.ievolutioned.iac.util.AppConfig;
 
 /**
  * Created by Daniel on 24/03/2015.
@@ -32,19 +39,22 @@ public class SitesFragment extends Fragment {
     }
 
     private void bindUI(View root) {
-        mProgress =(ProgressBar) root.findViewById(R.id.fragment_sites_progressBar);
+        mProgress = (ProgressBar) root.findViewById(R.id.fragment_sites_progressBar);
         mProgress.setVisibility(View.GONE);
         Bundle args = getArguments();
         if (args == null)
             return;
 
-        mWebView =(WebView) root.findViewById(R.id.fragment_sites_web_view);
+        mWebView = (WebView) root.findViewById(R.id.fragment_sites_web_view);
         bindData(root, args.getString(ARG_SITE_NAME));
     }
 
     private void bindData(View root, String name) {
         if (TextUtils.isEmpty(name))
             return;
+
+        if (name.startsWith("http"))
+            showPage(name);
 
         String keys[] = getActivity().getResources().getStringArray(R.array.sites_item_key);
         String values[] = getActivity().getResources().getStringArray(R.array.sites_item_values);
@@ -59,12 +69,41 @@ public class SitesFragment extends Fragment {
 
     private void showPage(String page) {
         mWebView.setWebViewClient(new SiteWebClient());
-        mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.loadUrl(page);
 
+        WebSettings settings = mWebView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setDomStorageEnabled(true);
+
+        if (AppConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            mWebView.setWebContentsDebuggingEnabled(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+
+        mWebView.loadUrl(page);
     }
 
     private class SiteWebClient extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            if (urlIsPdf(url)) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(Uri.parse(url), "application/pdf");
+                try {
+                    view.getContext().startActivity(intent);
+                } catch (ActivityNotFoundException e) {
+                    //user does not have a pdf viewer installed
+                }
+            } else {
+                mWebView.loadUrl(url);
+            }
+            return true;
+        }
+
+        private boolean urlIsPdf(String url) {
+            return url.contains("pdf");
+        }
+
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
@@ -75,6 +114,19 @@ public class SitesFragment extends Fragment {
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
             mProgress.setVisibility(View.GONE);
+        }
+
+        @Override
+        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+            super.onReceivedSslError(view, handler, error);
+
+            // this will ignore the Ssl error and will go forward to your site
+            handler.proceed();
+        }
+
+        @Override
+        public void onLoadResource(WebView view, String url) {
+            super.onLoadResource(view, url);
         }
     }
 
