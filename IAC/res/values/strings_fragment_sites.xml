@@ -2,13 +2,17 @@
 <resources>
 
     <string-array name="sites_item_key">
-        <item >Recibos de nomina</item>
-        <item >Programa de reconocimiento</item>
+        <item>Inicio</item>
+        <item>Recibos de nomina</item>
+        <item>Programa de reconocimiento</item>
     </string-array>
     <string-array name="sites_item_values">
-        <item >http://www.iacgroup.com/</item>
-        <item >http://www.iacgroup.com/who-we-are</item>
+        <item>@string/string_site_home</item>
+        <item>http://www.iacgroup.com/</item>
+        <item>http://www.iacgroup.com/who-we-are</item>
     </string-array>
+
+    <string name="string_site_home">https://iacgroup.herokuapp.com/admin</string>
 
 
 </resources>

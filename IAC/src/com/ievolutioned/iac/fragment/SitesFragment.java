@@ -5,14 +5,12 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.SslErrorHandler;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -55,16 +53,12 @@ public class SitesFragment extends Fragment {
         if (TextUtils.isEmpty(name))
             return;
 
-        if (name.startsWith("http"))
-            showPage(name);
-
         String keys[] = getActivity().getResources().getStringArray(R.array.sites_item_key);
         String values[] = getActivity().getResources().getStringArray(R.array.sites_item_values);
 
         for (int i = 0; i < keys.length; i++) {
             if (keys[i].equalsIgnoreCase(name))
                 showPage(values[i]);
-
         }
 
     }
@@ -82,12 +76,17 @@ public class SitesFragment extends Fragment {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
 
-        HttpGetParam params = new HttpGetParam();
-        params.add("ref","xedni/draobhsad");
-        params.add("token_access", AppPreferences.getAdminToken(getActivity()));
-        mWebView.loadUrl(page + "?"+ params.toString());
+        mWebView.loadUrl(setHttpParams(page));
+    }
 
-        mWebView.loadUrl(page);
+    private String setHttpParams(String page) {
+        if (page.equalsIgnoreCase(getActivity().getString(R.string.string_site_home))) {
+            HttpGetParam params = new HttpGetParam();
+            params.add("ref", "xedni/draobhsad");
+            params.add("token_access", AppPreferences.getAdminToken(getActivity()));
+            page += "?" + params.toString();
+        }
+        return page;
     }
 
     private class SiteWebClient extends WebViewClient {
@@ -121,14 +120,6 @@ public class SitesFragment extends Fragment {
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
             mProgress.setVisibility(View.GONE);
-        }
-
-        @Override
-        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-            super.onReceivedSslError(view, handler, error);
-
-            // this will ignore the Ssl error and will go forward to your site
-            handler.proceed();
         }
 
         @Override
