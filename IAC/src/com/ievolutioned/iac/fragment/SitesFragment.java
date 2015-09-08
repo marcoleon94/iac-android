@@ -19,7 +19,9 @@ import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
 import com.ievolutioned.iac.R;
+import com.ievolutioned.iac.net.HttpGetParam;
 import com.ievolutioned.iac.util.AppConfig;
+import com.ievolutioned.iac.util.AppPreferences;
 
 /**
  * Created by Daniel on 24/03/2015.
@@ -79,6 +81,11 @@ public class SitesFragment extends Fragment {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+
+        HttpGetParam params = new HttpGetParam();
+        params.add("ref","xedni/draobhsad");
+        params.add("token_access", AppPreferences.getAdminToken(getActivity()));
+        mWebView.loadUrl(page + "?"+ params.toString());
 
         mWebView.loadUrl(page);
     }
