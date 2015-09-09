@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.JsonElement;
@@ -39,7 +40,6 @@ public class MainActivity extends ActionBarActivity {
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private Toolbar mToolbar;
-
     private AlertDialog mLoading;
 
     @Override
@@ -59,15 +59,21 @@ public class MainActivity extends ActionBarActivity {
         mLoading = ViewUtility.getLoadingScreen(this);
         showLoading(true);
         setDrawer();
+        showHome();
     }
 
     private void showHome(){
-        Bundle args = new Bundle();
+        FragmentManager fragmentManager = getFragmentManager();
         Fragment mFragment = new SitesFragment();
-        String item = "";
-        args.putString(SitesFragment.ARG_SITE_NAME, item);
+        Bundle args = new Bundle();
+        mFragment = new SitesFragment();
+        args.putString(SitesFragment.ARG_SITE_NAME, getString(R.string.string_site_home));
         mFragment.setArguments(args);
-        replaceFragment(mFragment);
+
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.activity_main_frame_container, mFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     private void setDrawer() {

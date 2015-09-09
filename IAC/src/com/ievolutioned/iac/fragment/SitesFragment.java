@@ -58,12 +58,12 @@ public class SitesFragment extends Fragment {
 
         for (int i = 0; i < keys.length; i++) {
             if (keys[i].equalsIgnoreCase(name))
-                showPage(values[i]);
+                showPage(values[i], keys[i]);
         }
 
     }
 
-    private void showPage(String page) {
+    private void showPage(String page, String key) {
         mWebView.setWebViewClient(new SiteWebClient());
 
         WebSettings settings = mWebView.getSettings();
@@ -76,11 +76,11 @@ public class SitesFragment extends Fragment {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
 
-        mWebView.loadUrl(setHttpParams(page));
+        mWebView.loadUrl(setHttpParams(page, key));
     }
 
-    private String setHttpParams(String page) {
-        if (page.equalsIgnoreCase(getActivity().getString(R.string.string_site_home))) {
+    private String setHttpParams(String page, String key) {
+        if (key.equalsIgnoreCase(getActivity().getString(R.string.string_site_home))) {
             HttpGetParam params = new HttpGetParam();
             params.add("ref", "xedni/draobhsad");
             params.add("token_access", AppPreferences.getAdminToken(getActivity()));

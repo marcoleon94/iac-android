@@ -6,8 +6,8 @@
     </string-array>
     <string name="nav_drawer_sites_title">SITIOS DE INTERES</string>
     <string-array name="nav_drawer_sites_items">
-        <item>Inicio</item>
-        <item>Recibos de nomina</item>
-        <item>Programa de reconocimiento</item>
+        <item>@string/string_site_home</item>
+        <item>@string/string_site_recibos</item>
+        <item>@string/string_site_reconocimiento</item>
     </string-array>
 </resources>
