@@ -10,8 +10,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.JsonElement;
@@ -62,18 +62,13 @@ public class MainActivity extends ActionBarActivity {
         showHome();
     }
 
-    private void showHome(){
+    private void showHome() {
         FragmentManager fragmentManager = getFragmentManager();
         Fragment mFragment = new SitesFragment();
         Bundle args = new Bundle();
-        mFragment = new SitesFragment();
         args.putString(SitesFragment.ARG_SITE_NAME, getString(R.string.string_site_home));
         mFragment.setArguments(args);
-
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.activity_main_frame_container, mFragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+        replaceFragment(mFragment);
     }
 
     private void setDrawer() {
@@ -229,6 +224,18 @@ public class MainActivity extends ActionBarActivity {
     public void setTitle(CharSequence title) {
         //super.setTitle(title);
         getSupportActionBar().setTitle(title);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Fragment fragment = getFragmentManager().findFragmentById(R.id.activity_main_frame_container);
+            if (fragment != null)
+                if (fragment instanceof SitesFragment)
+                    ((SitesFragment) fragment).onBackPressed();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override

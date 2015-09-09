@@ -89,6 +89,11 @@ public class SitesFragment extends Fragment {
         return page;
     }
 
+    public void onBackPressed() {
+        if(mWebView != null)
+            mWebView.goBack();
+    }
+
     private class SiteWebClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
