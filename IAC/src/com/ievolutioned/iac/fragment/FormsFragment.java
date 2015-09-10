@@ -34,6 +34,7 @@ import com.ievolutioned.pxform.adapters.PXFAdapter;
  */
 public class FormsFragment extends BaseFragmentClass {
     public static final String ARGS_FORM_ID = "ARGS_FORM_ID";
+    public static final String ARG_FORM_NAME = "ARG_FORM_NAME";
     public static final String DATABASE_FORM_ID = "DATABASE_FORM_ID";
     public static final String DATABASE_LEVEL = "DATABASE_LEVEL";
     public static final String DATABASE_KEY_PARENT = "DATABASE_KEY_PARENT";
@@ -57,7 +58,14 @@ public class FormsFragment extends BaseFragmentClass {
         listView = (ListView) root.findViewById(R.id.PXForm_linearPanel);
         setToolbarNavigationOnClickListener(mainActivityHomeButton);
         setToolbarNavigationDisplayHomeAsUpEnabled();
+        setTitle(getArguments());
         return root;
+    }
+
+    private void setTitle(Bundle args){
+        Bundle b = args.getBundle(FormsFragment.class.getName());
+        if(b != null && b.containsKey(ARG_FORM_NAME))
+            getActivity().setTitle(b.getString(ARG_FORM_NAME));
     }
 
     private final View.OnClickListener mainActivityHomeButton = new View.OnClickListener() {

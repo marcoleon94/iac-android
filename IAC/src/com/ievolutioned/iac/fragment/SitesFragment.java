@@ -47,6 +47,7 @@ public class SitesFragment extends Fragment {
 
         mWebView = (WebView) root.findViewById(R.id.fragment_sites_web_view);
         bindData(root, args.getString(ARG_SITE_NAME));
+        setTitle(args);
     }
 
     private void bindData(View root, String name) {
@@ -61,6 +62,11 @@ public class SitesFragment extends Fragment {
                 showPage(values[i], keys[i]);
         }
 
+    }
+
+    private void setTitle(Bundle args){
+        if(args != null && args.containsKey(ARG_SITE_NAME))
+            getActivity().setTitle(args.getString(ARG_SITE_NAME));
     }
 
     private void showPage(String page, String key) {

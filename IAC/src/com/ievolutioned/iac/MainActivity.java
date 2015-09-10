@@ -134,6 +134,7 @@ public class MainActivity extends ActionBarActivity {
                         formsList.get(0).getName()));
                 String jsonArray = jsonElement.getAsJsonObject().get("content").getAsJsonArray().toString();
 
+                args.putString(FormsFragment.ARG_FORM_NAME, item);
                 args.putLong(FormsFragment.ARGS_FORM_ID, id);
                 args.putLong(FormsFragment.DATABASE_FORM_ID, formsList.get(0).getId());
                 args.putInt(FormsFragment.DATABASE_LEVEL, 0);
@@ -149,7 +150,6 @@ public class MainActivity extends ActionBarActivity {
 
             replaceFragment(mFragment);
         }
-        setTitle(item);
         mDrawerLayout.closeDrawers();
     }
 
@@ -164,6 +164,7 @@ public class MainActivity extends ActionBarActivity {
 
         for (String form : forms) {
             if (form.equalsIgnoreCase(item)) {
+                args.putString(FormsFragment.ARG_FORM_NAME, item);
                 args.putLong(FormsFragment.DATABASE_FORM_ID, 0);
                 args.putInt(FormsFragment.DATABASE_LEVEL, 0);
                 args.putString(FormsFragment.DATABASE_KEY_PARENT, "");
@@ -250,7 +251,6 @@ public class MainActivity extends ActionBarActivity {
             //to retake control of the navigation
             if (fragmentManager.getBackStackEntryCount() < 1) {
                 setDrawer();
-                setTitle(R.string.nav_drawer_open);
             }
         } else {
             super.onBackPressed();
