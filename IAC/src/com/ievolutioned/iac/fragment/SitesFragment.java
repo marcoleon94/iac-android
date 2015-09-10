@@ -16,6 +16,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
+import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.net.HttpGetParam;
 import com.ievolutioned.iac.util.AppConfig;
@@ -24,7 +25,7 @@ import com.ievolutioned.iac.util.AppPreferences;
 /**
  * Created by Daniel on 24/03/2015.
  */
-public class SitesFragment extends Fragment {
+public class SitesFragment extends BaseFragmentClass {
 
     public static final String ARG_SITE_NAME = "ARG_SITE_NAME";
 
@@ -35,6 +36,7 @@ public class SitesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_sites, container, false);
         bindUI(root);
+        drawerToggleSynchronizeState();
         return root;
     }
 
@@ -67,6 +69,11 @@ public class SitesFragment extends Fragment {
     private void setTitle(Bundle args){
         if(args != null && args.containsKey(ARG_SITE_NAME))
             getActivity().setTitle(args.getString(ARG_SITE_NAME));
+    }
+
+    private void drawerToggleSynchronizeState() {
+        if (getActivity() instanceof MainActivity)
+            ((MainActivity)getActivity()).DrawerToggleSynchronizeState();
     }
 
     private void showPage(String page, String key) {
