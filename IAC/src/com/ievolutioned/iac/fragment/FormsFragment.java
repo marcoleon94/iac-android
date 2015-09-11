@@ -1,6 +1,7 @@
 package com.ievolutioned.iac.fragment;
 
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ import com.ievolutioned.pxform.adapters.PXFAdapter;
  * local database and upload data to web services
  */
 public class FormsFragment extends BaseFragmentClass {
+    public static final String TAG_SUBFORM = "SUBFORM";
     public static final String ARGS_FORM_ID = "ARGS_FORM_ID";
     public static final String ARG_FORM_NAME = "ARG_FORM_NAME";
     public static final String DATABASE_FORM_ID = "DATABASE_FORM_ID";
@@ -56,14 +58,15 @@ public class FormsFragment extends BaseFragmentClass {
      */
     private View bindUI(View root) {
         listView = (ListView) root.findViewById(R.id.PXForm_linearPanel);
-        setToolbarNavigationDisplayHomeAsUpEnabled();
+        setToolbarNavigationDisplayHomeAsUpEnabled(getTag() != null &&
+                getTag().contentEquals(TAG_SUBFORM));
         setTitle(getArguments());
         return root;
     }
 
-    private void setTitle(Bundle args){
+    private void setTitle(Bundle args) {
         Bundle b = args.getBundle(FormsFragment.class.getName());
-        if(b != null && b.containsKey(ARG_FORM_NAME))
+        if (b != null && b.containsKey(ARG_FORM_NAME))
             getActivity().setTitle(b.getString(ARG_FORM_NAME));
     }
 
@@ -214,10 +217,9 @@ public class FormsFragment extends BaseFragmentClass {
                     Bundle args = new Bundle();
                     args.putBundle(FormsFragment.class.getName(), a);
 
-                    FormsFragment fragment = new FormsFragment();
+                    Fragment fragment = new FormsFragment();
                     fragment.setArguments(args);
-
-                    setMainActivityReplaceFragment(fragment);
+                    setMainActivityReplaceFragment(fragment, TAG_SUBFORM);
                 }
             };
 

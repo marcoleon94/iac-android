@@ -26,14 +26,15 @@ public abstract class BaseFragmentClass  extends Fragment{
     /**
      * Set the activity home icon menu to back arrow icon
      */
-    protected void setToolbarNavigationDisplayHomeAsUpEnabled(){
+    protected void setToolbarNavigationDisplayHomeAsUpEnabled(boolean set){
         Activity a = getActivity();
         MainActivity ma;
 
         if( a!= null && a instanceof MainActivity){
             ma = (MainActivity)a;
-            ma.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            //ma.DrawerToggleSynchronizeState(); //not needed
+            ma.getSupportActionBar().setDisplayHomeAsUpEnabled(set);
+            if(!set)
+                ma.DrawerToggleSynchronizeState(); //not needed
         }
     }
 
@@ -41,13 +42,13 @@ public abstract class BaseFragmentClass  extends Fragment{
      * Call activity to show fragment as main screen
      * @param fragment this will replace the current fragment in the main activity
      */
-    protected void setMainActivityReplaceFragment(Fragment fragment){
+    protected void setMainActivityReplaceFragment(Fragment fragment, String tag){
         Activity a = getActivity();
         MainActivity ma;
 
         if(fragment != null && a!= null && a instanceof MainActivity) {
             ma = (MainActivity)a;
-            ma.replaceFragment(fragment);
+            ma.replaceFragment(fragment, tag);
         }
     }
 }

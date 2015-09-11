@@ -233,6 +233,14 @@ public class MainActivity extends ActionBarActivity {
         transaction.commit();
     }
 
+    public void replaceFragment(Fragment mFragment, String tag) {
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.activity_main_frame_container, mFragment, tag);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -257,9 +265,10 @@ public class MainActivity extends ActionBarActivity {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             Fragment fragment = getFragmentManager().findFragmentById(R.id.activity_main_frame_container);
             if (fragment != null)
-                if (fragment instanceof SitesFragment)
+                if (fragment instanceof SitesFragment) {
                     ((SitesFragment) fragment).onBackPressed();
-            return true;
+                    return true;
+                }
         }
         return super.onKeyDown(keyCode, event);
     }
