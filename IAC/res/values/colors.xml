@@ -3,4 +3,5 @@
     <color name="background_gray_light">#F3F2F7</color>
     <color name="primary_blue">#013372</color>
     <color name="primary_gray">#AEAFB4</color>
+    <color name="white_transparent_login">#66FFFFFF</color>
 </resources>
