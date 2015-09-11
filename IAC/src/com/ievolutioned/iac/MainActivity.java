@@ -10,7 +10,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -21,6 +20,7 @@ import com.ievolutioned.iac.fragment.FormsFragment;
 import com.ievolutioned.iac.fragment.SitesFragment;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.FileUtil;
+import com.ievolutioned.iac.util.LogUtil;
 import com.ievolutioned.iac.view.MenuDrawerItem;
 import com.ievolutioned.iac.view.ViewUtility;
 import com.ievolutioned.pxform.database.FormsDataSet;
@@ -29,18 +29,31 @@ import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
 
-/*
-https://github.com/excilys/androidannotations
- */
 
 /**
- *
+ * Main activity class. Allows a main container of Site and Form fragments.
  */
 public class MainActivity extends ActionBarActivity {
 
+    /**
+     * TAG string
+     */
+    public static final String TAG = MainActivity.class.getName();
+    /**
+     * DrawerLayout the main drawer layout for menu options
+     */
     private DrawerLayout mDrawerLayout;
+    /**
+     * ActionBarDrawerToggle drawer toggle for main menu
+     */
     private ActionBarDrawerToggle mDrawerToggle;
+    /**
+     * Toolbar main toolbar that performs the main actions
+     */
     private Toolbar mToolbar;
+    /**
+     * AlertDialog loading view
+     */
     private AlertDialog mLoading;
 
     @Override
@@ -54,6 +67,9 @@ public class MainActivity extends ActionBarActivity {
         setToolbarNavigationOnClickListener(mainActivityHomeButton);
     }
 
+    /**
+     * Binds the user interface on activity created
+     */
     private void bindUI() {
         // find view
         mDrawerLayout = (DrawerLayout) findViewById(R.id.activity_main_drawer);
@@ -64,38 +80,57 @@ public class MainActivity extends ActionBarActivity {
         showHome();
     }
 
+    /**
+     * Performs a set of functions about toolbar navigation
+     */
     private final View.OnClickListener mainActivityHomeButton = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(mDrawerLayout.isDrawerOpen(R.layout.fragment_menu)) {
+            //Close drawer if it is open
+            if (mDrawerLayout.isDrawerOpen(R.layout.fragment_menu)) {
                 mDrawerLayout.closeDrawers();
                 return;
             }
-
             FragmentManager fm = getFragmentManager();
             Fragment fragment = fm.findFragmentById(R.id.activity_main_frame_container);
             if (fragment instanceof SitesFragment) {
+                //Open drawer
                 mDrawerLayout.openDrawer(R.layout.fragment_menu);
                 return;
             } else if (fragment instanceof FormsFragment) {
+                //Verify if it is a subform or simple selection
                 if (fragment.getTag() == null) {
+                    //Open drawer
                     mDrawerLayout.openDrawer(R.layout.fragment_menu);
                     return;
-                } else
+                } else {
+                    //Save subform before exit
+                    try {
+                        ((FormsFragment) fragment).save(null);
+                    } catch (Exception e) {
+                        LogUtil.e(TAG, e.getMessage(), e);
+                    }
                     onBackPressed();
+                }
             }
         }
     };
 
+    /**
+     * Displays the home view as the main view
+     */
     private void showHome() {
         FragmentManager fragmentManager = getFragmentManager();
         Fragment mFragment = new SitesFragment();
         Bundle args = new Bundle();
         args.putString(SitesFragment.ARG_SITE_NAME, getString(R.string.string_site_home));
         mFragment.setArguments(args);
-        replaceFragment(mFragment);
+        replaceFragment(mFragment, null);
     }
 
+    /**
+     * Sets the main drawer
+     */
     private void setDrawer() {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -173,7 +208,7 @@ public class MainActivity extends ActionBarActivity {
                 mFragment.setArguments(b);
             }
 
-            replaceFragment(mFragment);
+            replaceFragment(mFragment, null);
         }
         mDrawerLayout.closeDrawers();
     }
@@ -217,7 +252,7 @@ public class MainActivity extends ActionBarActivity {
         }
 
         if (mFragment != null) {
-            replaceFragment(mFragment);
+            replaceFragment(mFragment, null);
         }
     }
 
@@ -225,14 +260,6 @@ public class MainActivity extends ActionBarActivity {
      * Replaces the current fragment on the frame container.
      * <br>This can be call from the {@link FormsFragment fragments childs }
      */
-    public void replaceFragment(Fragment mFragment) {
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.activity_main_frame_container, mFragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
-
     public void replaceFragment(Fragment mFragment, String tag) {
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -262,6 +289,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //Catches the keycode back
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             Fragment fragment = getFragmentManager().findFragmentById(R.id.activity_main_frame_container);
             if (fragment != null)
@@ -276,7 +304,6 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public void onBackPressed() {
         FragmentManager fragmentManager = getFragmentManager();
-
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStackImmediate();
             fragmentManager.beginTransaction().commit();
@@ -291,6 +318,11 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    /**
+     * Show the AlertDialog mLoading
+     *
+     * @param b alert dialog shown if true.
+     */
     public void showLoading(boolean b) {
         if (mLoading != null)
             if (b)

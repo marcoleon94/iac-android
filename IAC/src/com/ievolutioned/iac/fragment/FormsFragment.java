@@ -280,7 +280,7 @@ public class FormsFragment extends BaseFragmentClass {
      *
      * @param pos_execute Runnable to be executed after save
      */
-    private final void save(final Runnable pos_execute) {
+    public final void save(final Runnable pos_execute) {
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
         loading.show();
 
