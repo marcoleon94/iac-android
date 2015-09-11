@@ -1,6 +1,7 @@
 package com.ievolutioned.iac.fragment;
 
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -33,7 +34,9 @@ import com.ievolutioned.pxform.adapters.PXFAdapter;
  * local database and upload data to web services
  */
 public class FormsFragment extends BaseFragmentClass {
+    public static final String TAG_SUBFORM = "SUBFORM";
     public static final String ARGS_FORM_ID = "ARGS_FORM_ID";
+    public static final String ARG_FORM_NAME = "ARG_FORM_NAME";
     public static final String DATABASE_FORM_ID = "DATABASE_FORM_ID";
     public static final String DATABASE_LEVEL = "DATABASE_LEVEL";
     public static final String DATABASE_KEY_PARENT = "DATABASE_KEY_PARENT";
@@ -55,28 +58,17 @@ public class FormsFragment extends BaseFragmentClass {
      */
     private View bindUI(View root) {
         listView = (ListView) root.findViewById(R.id.PXForm_linearPanel);
-        setToolbarNavigationOnClickListener(mainActivityHomeButton);
-        setToolbarNavigationDisplayHomeAsUpEnabled();
+        setToolbarNavigationDisplayHomeAsUpEnabled(getTag() != null &&
+                getTag().contentEquals(TAG_SUBFORM));
+        setTitle(getArguments());
         return root;
     }
 
-    private final View.OnClickListener mainActivityHomeButton = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (savedState.containsKey(DATABASE_KEY_PARENT) &&
-                    !savedState.getString(DATABASE_KEY_PARENT, "").isEmpty()) {
-                Runnable saveR = new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getActivity(), "salvado", Toast.LENGTH_SHORT).show();
-                        getActivity().onBackPressed();
-                    }
-                };
-                save(saveR);
-            } else
-                getActivity().onBackPressed();
-        }
-    };
+    private void setTitle(Bundle args) {
+        Bundle b = args.getBundle(FormsFragment.class.getName());
+        if (b != null && b.containsKey(ARG_FORM_NAME))
+            getActivity().setTitle(b.getString(ARG_FORM_NAME));
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -225,10 +217,9 @@ public class FormsFragment extends BaseFragmentClass {
                     Bundle args = new Bundle();
                     args.putBundle(FormsFragment.class.getName(), a);
 
-                    FormsFragment fragment = new FormsFragment();
+                    Fragment fragment = new FormsFragment();
                     fragment.setArguments(args);
-
-                    setMainActivityReplaceFragment(fragment);
+                    setMainActivityReplaceFragment(fragment, TAG_SUBFORM);
                 }
             };
 
@@ -289,7 +280,7 @@ public class FormsFragment extends BaseFragmentClass {
      *
      * @param pos_execute Runnable to be executed after save
      */
-    private final void save(final Runnable pos_execute) {
+    public final void save(final Runnable pos_execute) {
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
         loading.show();
 
