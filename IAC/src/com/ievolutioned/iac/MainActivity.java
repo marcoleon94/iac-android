@@ -10,6 +10,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -50,6 +51,7 @@ public class MainActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_main);
         bindUI();
+        setToolbarNavigationOnClickListener(mainActivityHomeButton);
     }
 
     private void bindUI() {
@@ -62,6 +64,29 @@ public class MainActivity extends ActionBarActivity {
         showHome();
     }
 
+    private final View.OnClickListener mainActivityHomeButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(mDrawerLayout.isDrawerOpen(R.layout.fragment_menu)) {
+                mDrawerLayout.closeDrawers();
+                return;
+            }
+
+            FragmentManager fm = getFragmentManager();
+            Fragment fragment = fm.findFragmentById(R.id.activity_main_frame_container);
+            if (fragment instanceof SitesFragment) {
+                mDrawerLayout.openDrawer(R.layout.fragment_menu);
+                return;
+            } else if (fragment instanceof FormsFragment) {
+                if (fragment.getTag() == null) {
+                    mDrawerLayout.openDrawer(R.layout.fragment_menu);
+                    return;
+                } else
+                    onBackPressed();
+            }
+        }
+    };
+
     private void showHome() {
         FragmentManager fragmentManager = getFragmentManager();
         Fragment mFragment = new SitesFragment();
@@ -73,7 +98,7 @@ public class MainActivity extends ActionBarActivity {
 
     private void setDrawer() {
         setSupportActionBar(mToolbar);
-
+        getSupportActionBar().setHomeButtonEnabled(true);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar,
                 R.string.nav_drawer_open, R.string.nav_drawer_close) {
 
