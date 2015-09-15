@@ -17,6 +17,7 @@ import com.crashlytics.android.Crashlytics;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.ievolutioned.iac.fragment.FormsFragment;
+import com.ievolutioned.iac.fragment.MyProfileFragment;
 import com.ievolutioned.iac.fragment.SitesFragment;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.FileUtil;
@@ -77,7 +78,8 @@ public class MainActivity extends ActionBarActivity {
         mLoading = ViewUtility.getLoadingScreen(this);
         showLoading(true);
         setDrawer();
-        showHome();
+        //showHome();
+        showMyProfile();
     }
 
     /**
@@ -126,6 +128,18 @@ public class MainActivity extends ActionBarActivity {
         args.putString(SitesFragment.ARG_SITE_NAME, getString(R.string.string_site_home));
         mFragment.setArguments(args);
         replaceFragment(mFragment, null);
+    }
+
+    private void showMyProfile() {
+        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+        android.support.v4.app.Fragment mFragment = new MyProfileFragment();
+        Bundle args = new Bundle();
+        args.putString(SitesFragment.ARG_SITE_NAME, getString(R.string.string_site_home));
+        mFragment.setArguments(args);
+        android.support.v4.app.FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.activity_main_frame_container, mFragment, null);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     /**
