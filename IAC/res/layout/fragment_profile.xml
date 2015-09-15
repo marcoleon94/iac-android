@@ -1,13 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:background="@color/background_gray_light"
-    android:orientation="vertical">
+    android:fillViewport="false">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="PERFIL"/>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/background_gray_light"
+        android:orientation="vertical">
 
-</LinearLayout>
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="300dp"
+            android:padding="50dp">
+
+            <ImageView
+                android:id="@+id/fragment_profile_picture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/iac" />
+
+            <ImageButton
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_alignBottom="@+id/fragment_profile_picture"
+                android:layout_toEndOf="@+id/fragment_profile_picture"
+                android:layout_toRightOf="@+id/fragment_profile_picture"
+                android:src="@drawable/abc_ic_search_api_mtrl_alpha" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</ScrollView>
