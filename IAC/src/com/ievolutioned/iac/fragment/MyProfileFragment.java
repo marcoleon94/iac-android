@@ -40,17 +40,28 @@ public class MyProfileFragment extends Fragment {
     private void bindUI(View root) {
         mViewPager = (ViewPager) root.findViewById(R.id.fragment_profile_pager);
         mPagerTabStrip = (PagerTabStrip) root.findViewById(R.id.fragment_profile_pager_tab_strip);
+
+        if (mViewPager == null) {
+
+        }
     }
 
     private void bindData(Bundle arguments) {
-        ProfileFragment profileFragment = new ProfileFragment();
-        PasswordFragment passwordFragment = new PasswordFragment();
+        ProfileFragment profileFragment;
+        PasswordFragment passwordFragment;
 
-        mFragments.add(profileFragment);
-        mFragments.add(passwordFragment);
+        if (mViewPager != null) {
+            profileFragment = new ProfileFragment();
+            passwordFragment = new PasswordFragment();
+            mFragments.add(profileFragment);
+            mFragments.add(passwordFragment);
+            ProfilePageAdapter adapter = new ProfilePageAdapter(getChildFragmentManager());
+            mViewPager.setAdapter(adapter);
+        } else {
+            profileFragment = (ProfileFragment) getChildFragmentManager().findFragmentByTag("Profile");
+            passwordFragment = (PasswordFragment) getChildFragmentManager().findFragmentByTag("Password");
 
-        ProfilePageAdapter adapter = new ProfilePageAdapter(getChildFragmentManager());
-        mViewPager.setAdapter(adapter);
+        }
     }
 
     public class ProfilePageAdapter extends FragmentPagerAdapter {
