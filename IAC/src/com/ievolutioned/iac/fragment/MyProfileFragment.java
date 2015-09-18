@@ -12,6 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ievolutioned.iac.R;
+import com.ievolutioned.iac.net.service.ProfileService;
+import com.ievolutioned.iac.util.AppConfig;
+import com.ievolutioned.iac.util.AppPreferences;
+import com.ievolutioned.iac.util.LogUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +53,25 @@ public class MyProfileFragment extends Fragment {
     private void bindData(Bundle arguments) {
         ProfileFragment profileFragment;
         PasswordFragment passwordFragment;
+
+        new ProfileService(AppConfig.getUUID(getActivity()), AppPreferences.getAdminToken(getActivity())).getProfileInfo(
+                new ProfileService.ProfileServiceHandler() {
+                    @Override
+                    public void onSuccess(ProfileService.ProfileResponse response) {
+                        LogUtil.d("MYPROFILE", response.msg);
+                    }
+
+                    @Override
+                    public void onError(ProfileService.ProfileResponse response) {
+                        LogUtil.e("MYPROFILE", response.msg, response.e);
+                    }
+
+                    @Override
+                    public void onCancel() {
+
+                    }
+                }
+        );
 
         if (mViewPager != null) {
             profileFragment = new ProfileFragment();
