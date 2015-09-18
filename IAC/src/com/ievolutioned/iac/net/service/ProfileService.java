@@ -3,6 +3,7 @@ package com.ievolutioned.iac.net.service;
 import android.os.AsyncTask;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.ievolutioned.iac.entity.ProfileEntity;
 import com.ievolutioned.iac.net.HttpGetParam;
 import com.ievolutioned.iac.net.HttpHeader;
@@ -40,7 +41,12 @@ public class ProfileService extends ServiceBase {
                     NetResponse response = NetUtil.get(URL_PROFILE + ACTION_GET_INFO, getParam, headers);
 
                     if (response != null) {
-                        ProfileEntity profileEntity = new Gson().fromJson(response.result,
+                        Gson gson = new Gson();
+                        JsonElement adminInfo = gson.fromJson(response.result, JsonElement.class).
+                                getAsJsonObject().get("amidn_info");
+                        if (adminInfo.isJsonNull())
+                            return null;
+                        ProfileEntity profileEntity = gson.fromJson(adminInfo.getAsJsonObject(),
                                 ProfileEntity.class);
                         if (profileEntity != null)
                             return new ProfileResponse(profileEntity, response.result, null);
