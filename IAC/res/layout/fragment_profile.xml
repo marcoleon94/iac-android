@@ -10,11 +10,13 @@
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
         android:background="@color/background_gray_light"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingEnd="15dp"
+        android:paddingStart="15dp">
 
         <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="300dp"
+            android:layout_height="wrap_content"
             android:padding="50dp">
 
             <ImageView
@@ -22,6 +24,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
                 android:src="@drawable/iac" />
 
             <ImageButton
@@ -31,6 +34,233 @@
                 android:layout_toEndOf="@+id/fragment_profile_picture"
                 android:layout_toRightOf="@+id/fragment_profile_picture"
                 android:src="@drawable/abc_ic_search_api_mtrl_alpha" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp">
+
+            <TextView
+                android:id="@+id/fragment_profile_title_employee_id"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_alignParentLeft="true"
+                android:background="@color/gray_disabled_control"
+                android:gravity="center_vertical"
+                android:text="Numero de empleado" />
+
+            <TextView
+                android:id="@+id/fragment_profile_employee_id"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_toEndOf="@+id/fragment_profile_title_employee_id"
+                android:layout_toRightOf="@+id/fragment_profile_title_employee_id"
+                android:background="@color/gray_disabled_control"
+                android:gravity="center_vertical|end" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp">
+
+            <TextView
+                android:id="@+id/fragment_profile_title_name"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_alignParentLeft="true"
+                android:background="@color/gray_disabled_control"
+                android:gravity="center_vertical"
+                android:text="Nombre" />
+
+            <TextView
+                android:id="@+id/fragment_profile_name"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_toEndOf="@+id/fragment_profile_title_name"
+                android:layout_toRightOf="@+id/fragment_profile_title_name"
+                android:background="@color/gray_disabled_control"
+                android:gravity="center_vertical|end" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:background="@color/white_transparent_login">
+
+            <TextView
+                android:id="@+id/fragment_profile_title_email"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_alignParentLeft="true"
+                android:gravity="center_vertical"
+                android:text="Correo" />
+
+            <EditText
+                android:id="@+id/fragment_profile_email"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_toEndOf="@+id/fragment_profile_title_email"
+                android:layout_toRightOf="@+id/fragment_profile_title_email"
+                android:gravity="center_vertical|end" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:background="@color/gray_disabled_control">
+
+            <TextView
+                android:id="@+id/fragment_profile_title_department"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_alignParentLeft="true"
+                android:gravity="center_vertical"
+                android:text="Departamento" />
+
+            <TextView
+                android:id="@+id/fragment_profile_department"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_toEndOf="@+id/fragment_profile_title_department"
+                android:layout_toRightOf="@+id/fragment_profile_title_department"
+                android:gravity="center_vertical|end" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:background="@color/gray_disabled_control">
+
+            <TextView
+                android:id="@+id/fragment_profile_title_divp"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_alignParentLeft="true"
+                android:gravity="center_vertical"
+                android:text="Divp" />
+
+            <TextView
+                android:id="@+id/fragment_profile_divp"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_toEndOf="@+id/fragment_profile_title_divp"
+                android:layout_toRightOf="@+id/fragment_profile_title_divp"
+                android:gravity="center_vertical|end" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:background="@color/gray_disabled_control">
+
+            <TextView
+                android:id="@+id/fragment_profile_title_site"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_alignParentLeft="true"
+                android:gravity="center_vertical"
+                android:text="Planta" />
+
+            <TextView
+                android:id="@+id/fragment_profile_site"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_toEndOf="@+id/fragment_profile_title_site"
+                android:layout_toRightOf="@+id/fragment_profile_title_site"
+                android:gravity="center_vertical|end" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:background="@color/gray_disabled_control">
+
+            <TextView
+                android:id="@+id/fragment_profile_title_employee_type"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_alignParentLeft="true"
+                android:gravity="center_vertical"
+                android:text="Tipo de empleado" />
+
+            <TextView
+                android:id="@+id/fragment_profile_employee_type"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_toEndOf="@+id/fragment_profile_title_employee_type"
+                android:layout_toRightOf="@+id/fragment_profile_title_employee_type"
+                android:gravity="center_vertical|end" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:background="@color/gray_disabled_control">
+
+            <TextView
+                android:id="@+id/fragment_profile_title_employee_date_admission"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_alignParentLeft="true"
+                android:gravity="center_vertical"
+                android:text="Fecha de ingreso" />
+
+            <TextView
+                android:id="@+id/fragment_profile_employee_date_admission"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_toEndOf="@+id/fragment_profile_title_employee_date_admission"
+                android:layout_toRightOf="@+id/fragment_profile_title_employee_date_admission"
+                android:gravity="center_vertical|end" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:background="@color/gray_disabled_control">
+
+            <TextView
+                android:id="@+id/fragment_profile_title_employee_holidays"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_alignParentLeft="true"
+                android:gravity="center_vertical"
+                android:text="Fecha de ingreso" />
+
+            <TextView
+                android:id="@+id/fragment_profile_employee_date_holidays"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_toEndOf="@+id/fragment_profile_title_employee_holidays"
+                android:layout_toRightOf="@+id/fragment_profile_title_employee_holidays"
+                android:gravity="center_vertical|end" />
 
         </RelativeLayout>
 

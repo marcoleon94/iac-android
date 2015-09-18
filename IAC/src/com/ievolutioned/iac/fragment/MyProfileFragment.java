@@ -1,6 +1,7 @@
 package com.ievolutioned.iac.fragment;
 
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,12 +11,15 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.ievolutioned.iac.R;
+import com.ievolutioned.iac.entity.ProfileEntity;
 import com.ievolutioned.iac.net.service.ProfileService;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.util.LogUtil;
+import com.ievolutioned.iac.view.ViewUtility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,10 +28,13 @@ import java.util.List;
  */
 public class MyProfileFragment extends Fragment {
 
-
+    public final static String TAG = MyProfileFragment.class.getName();
     private ViewPager mViewPager;
     private PagerTabStrip mPagerTabStrip;
     private List<Fragment> mFragments = new ArrayList<>(2);
+
+    protected ProfileFragment profileFragment;
+    protected PasswordFragment passwordFragment;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saved) {
@@ -51,40 +58,52 @@ public class MyProfileFragment extends Fragment {
     }
 
     private void bindData(Bundle arguments) {
-        ProfileFragment profileFragment;
-        PasswordFragment passwordFragment;
-
-        new ProfileService(AppConfig.getUUID(getActivity()), AppPreferences.getAdminToken(getActivity())).getProfileInfo(
-                new ProfileService.ProfileServiceHandler() {
-                    @Override
-                    public void onSuccess(ProfileService.ProfileResponse response) {
-                        LogUtil.d("MYPROFILE", response.msg);
-                    }
-
-                    @Override
-                    public void onError(ProfileService.ProfileResponse response) {
-                        LogUtil.e("MYPROFILE", response.msg, response.e);
-                    }
-
-                    @Override
-                    public void onCancel() {
-
-                    }
-                }
-        );
 
         if (mViewPager != null) {
             profileFragment = new ProfileFragment();
             passwordFragment = new PasswordFragment();
-            mFragments.add(profileFragment);
-            mFragments.add(passwordFragment);
+            mFragments.add(0, profileFragment);
+            mFragments.add(1, passwordFragment);
             ProfilePageAdapter adapter = new ProfilePageAdapter(getChildFragmentManager());
             mViewPager.setAdapter(adapter);
         } else {
             profileFragment = (ProfileFragment) getChildFragmentManager().findFragmentByTag("Profile");
             passwordFragment = (PasswordFragment) getChildFragmentManager().findFragmentByTag("Password");
-
         }
+        loadMyProfileInfo();
+    }
+
+    private void loadMyProfileInfo() {
+        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
+        loading.show();
+        new ProfileService(AppConfig.getUUID(getActivity()), AppPreferences.getAdminToken(getActivity())).getProfileInfo(
+                new ProfileService.ProfileServiceHandler() {
+                    @Override
+                    public void onSuccess(ProfileService.ProfileResponse response) {
+                        LogUtil.d(TAG, response.msg);
+                        loading.dismiss();
+                        setMyProfileInfo(response.profile);
+                    }
+
+                    @Override
+                    public void onError(ProfileService.ProfileResponse response) {
+                        LogUtil.e(TAG, response.msg, response.e);
+                        loading.dismiss();
+                        Toast.makeText(getActivity(), "Error al cargar", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        loading.dismiss();
+                    }
+                }
+        );
+    }
+
+    private void setMyProfileInfo(ProfileEntity profile) {
+        if(profileFragment == null)
+            return;
+        //profileFragment.setArguments();
     }
 
     public class ProfilePageAdapter extends FragmentPagerAdapter {
