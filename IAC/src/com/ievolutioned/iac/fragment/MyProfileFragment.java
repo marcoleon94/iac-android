@@ -58,7 +58,6 @@ public class MyProfileFragment extends Fragment {
     }
 
     private void bindData(Bundle arguments) {
-
         if (mViewPager != null) {
             profileFragment = new ProfileFragment();
             passwordFragment = new PasswordFragment();
@@ -103,7 +102,7 @@ public class MyProfileFragment extends Fragment {
     private void setMyProfileInfo(ProfileEntity profile) {
         if(profileFragment == null)
             return;
-        //profileFragment.setArguments();
+        profileFragment.setProfileInfo(profile);
     }
 
     public class ProfilePageAdapter extends FragmentPagerAdapter {

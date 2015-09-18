@@ -251,7 +251,7 @@
                 android:layout_height="40dp"
                 android:layout_alignParentLeft="true"
                 android:gravity="center_vertical"
-                android:text="Fecha de ingreso" />
+                android:text="Fechas de vacaciones" />
 
             <TextView
                 android:id="@+id/fragment_profile_employee_date_holidays"
