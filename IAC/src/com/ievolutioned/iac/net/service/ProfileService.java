@@ -2,6 +2,8 @@ package com.ievolutioned.iac.net.service;
 
 import android.os.AsyncTask;
 
+import com.google.gson.Gson;
+import com.ievolutioned.iac.entity.ProfileEntity;
 import com.ievolutioned.iac.net.HttpGetParam;
 import com.ievolutioned.iac.net.HttpHeader;
 import com.ievolutioned.iac.net.NetResponse;
@@ -35,16 +37,13 @@ public class ProfileService extends ServiceBase {
                     getParam.add("admin-token", adminToken);
 
                     // Get response
-                    //NetResponse response = NetUtil.post(URL_PROFILE + ACTION_GET_INFO, null, headers, null);
                     NetResponse response = NetUtil.get(URL_PROFILE + ACTION_GET_INFO, getParam, headers);
 
                     if (response != null) {
-                        /*
-                        InquestEntity inquestEntity = new Gson().fromJson(response.result,
-                                InquestEntity.class);
-                        if (inquestEntity != null)
-                            return new UserResponse(inquestEntity, response.result, null);
-                            */
+                        ProfileEntity profileEntity = new Gson().fromJson(response.result,
+                                ProfileEntity.class);
+                        if (profileEntity != null)
+                            return new ProfileResponse(profileEntity, response.result, null);
                         return new ProfileResponse(response.result, null);
                     }
                     return null;
@@ -55,7 +54,7 @@ public class ProfileService extends ServiceBase {
 
             @Override
             protected void onPostExecute(ResponseBase response) {
-                hanldeResult(callback, (ProfileResponse) response);
+                handleResult(callback, (ProfileResponse) response);
             }
 
             @Override
@@ -73,8 +72,8 @@ public class ProfileService extends ServiceBase {
      * @param callback - the callback of service
      * @param response - the response of service
      */
-    protected void hanldeResult(final ProfileServiceHandler callback, ProfileResponse response) {
-        if (response == null)
+    protected void handleResult(final ProfileServiceHandler callback, ProfileResponse response) {
+        if (response == null || response.profile == null)
             callback.onError(new ProfileResponse("Service error", new RuntimeException()));
         else if (response.e != null)
             callback.onError(response);
@@ -92,8 +91,15 @@ public class ProfileService extends ServiceBase {
 
     public class ProfileResponse extends ResponseBase {
 
+        public ProfileEntity profile;
+
         public ProfileResponse(String msg, Throwable e) {
             super(msg, e);
+        }
+
+        public ProfileResponse(ProfileEntity profile, String msg, Throwable e) {
+            super(msg, e);
+            this.profile = profile;
         }
     }
 
