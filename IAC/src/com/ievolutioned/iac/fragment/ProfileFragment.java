@@ -7,15 +7,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.entity.ProfileEntity;
+import com.ievolutioned.iac.net.DownloadImageTask;
 
 /**
  */
 public class ProfileFragment extends Fragment {
 
+    private ImageView mImageProfile;
     private TextView mTextEmployeeId;
     private TextView mTextName;
     private EditText mEditEmail;
@@ -40,6 +44,7 @@ public class ProfileFragment extends Fragment {
      */
     private void bindUI(View root) {
         //Find views
+        mImageProfile = (ImageView) root.findViewById(R.id.fragment_profile_picture);
         mTextEmployeeId = (TextView) root.findViewById(R.id.fragment_profile_employee_id);
         mTextName = (TextView) root.findViewById(R.id.fragment_profile_name);
         mEditEmail = (EditText) root.findViewById(R.id.fragment_profile_email);
@@ -52,6 +57,10 @@ public class ProfileFragment extends Fragment {
     }
 
     public void setProfileInfo(ProfileEntity profile) {
+        //Load image
+        if (profile.getAvatar() != null && profile.getAvatar().getUrl() != null)
+            loadImageFromURL(profile.getAvatar().getUrl());
+        //Looad info
         if (mTextEmployeeId != null && profile.getIacId() != null)
             mTextEmployeeId.setText(profile.getIacId());
         if (mTextName != null && profile.getName() != null)
@@ -70,5 +79,26 @@ public class ProfileFragment extends Fragment {
             mTextDateAdmission.setText(profile.getDateAdmission());
         if (mTextHolidays != null && profile.getHolidays() != null)
             mTextHolidays.setText(profile.getHolidays());
+    }
+
+    private void loadImageFromURL(String url) {
+        DownloadImageTask task = new DownloadImageTask();
+        task.downloadImageFromURL(url, new DownloadImageTask.DownloadHandler() {
+            @Override
+            public void onDownloaded(DownloadImageTask.DownloadImageResponse response) {
+                if (mImageProfile != null)
+                    mImageProfile.setImageBitmap(response.image);
+            }
+
+            @Override
+            public void onError(DownloadImageTask.DownloadImageResponse response) {
+                Toast.makeText(getActivity(), "No se puede descargar la imagen", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(getActivity(), "Cancelado", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
