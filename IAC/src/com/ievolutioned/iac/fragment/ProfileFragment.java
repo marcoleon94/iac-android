@@ -1,6 +1,7 @@
 package com.ievolutioned.iac.fragment;
 
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -14,20 +15,53 @@ import android.widget.Toast;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.entity.ProfileEntity;
 import com.ievolutioned.iac.net.DownloadImageTask;
+import com.ievolutioned.iac.view.ViewUtility;
 
 /**
+ * Profile fragment class. Shows the main attributes of my profile
+ * and allows the user to change some of them
  */
 public class ProfileFragment extends Fragment {
 
+    /**
+     * ImageView image of profile
+     */
     private ImageView mImageProfile;
+    /**
+     * TextView text control for employee ID
+     */
     private TextView mTextEmployeeId;
+    /**
+     * TextView text control for name
+     */
     private TextView mTextName;
+    /**
+     * TextView text control for email
+     */
     private EditText mEditEmail;
+    /**
+     * TextView text control for department
+     */
     private TextView mTextDepartment;
+    /**
+     * TextView text control for divp
+     */
     private TextView mTextDivp;
+    /**
+     * TextView text control for site
+     */
     private TextView mTextSite;
+    /**
+     * TextView text control for type
+     */
     private TextView mTextEmployeeType;
+    /**
+     * TextView text control for admission date
+     */
     private TextView mTextDateAdmission;
+    /**
+     * TextView text control for holidays
+     */
     private TextView mTextHolidays;
 
 
@@ -35,7 +69,6 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saved) {
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
         bindUI(root);
-        //setHasOptionsMenu(true);
         return root;
     }
 
@@ -56,6 +89,11 @@ public class ProfileFragment extends Fragment {
         mTextHolidays = (TextView) root.findViewById(R.id.fragment_profile_employee_date_holidays);
     }
 
+    /**
+     * Sets the profile information to the controls
+     *
+     * @param profile
+     */
     public void setProfileInfo(ProfileEntity profile) {
         //Load image
         if (profile.getAvatar() != null && profile.getAvatar().getUrl() != null)
@@ -81,22 +119,32 @@ public class ProfileFragment extends Fragment {
             mTextHolidays.setText(profile.getHolidays());
     }
 
+    /**
+     * Load an image from the current URL
+     *
+     * @param url - URL of the web image to be downloaded
+     */
     private void loadImageFromURL(String url) {
+        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
+        loading.show();
         DownloadImageTask task = new DownloadImageTask();
         task.downloadImageFromURL(url, new DownloadImageTask.DownloadHandler() {
             @Override
             public void onDownloaded(DownloadImageTask.DownloadImageResponse response) {
                 if (mImageProfile != null)
                     mImageProfile.setImageBitmap(response.image);
+                loading.dismiss();
             }
 
             @Override
             public void onError(DownloadImageTask.DownloadImageResponse response) {
+                loading.dismiss();
                 Toast.makeText(getActivity(), "No se puede descargar la imagen", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCancel() {
+                loading.dismiss();
                 Toast.makeText(getActivity(), "Cancelado", Toast.LENGTH_SHORT).show();
             }
         });

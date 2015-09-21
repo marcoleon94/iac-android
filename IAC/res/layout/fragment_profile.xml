@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
-                android:src="@drawable/iac" />
+                android:src="@drawable/ic_profile" />
 
             <ImageButton
                 android:layout_width="70dp"

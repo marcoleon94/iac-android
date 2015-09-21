@@ -9,6 +9,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -25,24 +28,56 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * MyProfileFragment class, represents the portion of UI for my profile and password controls
  */
 public class MyProfileFragment extends Fragment {
-
+    /**
+     * TAG
+     */
     public final static String TAG = MyProfileFragment.class.getName();
+    /**
+     * Main ViewPager pager
+     */
     private ViewPager mViewPager;
+    /**
+     * PagerTabStrip tab strip
+     */
     private PagerTabStrip mPagerTabStrip;
+    /**
+     * A set of Fragments
+     */
     private List<Fragment> mFragments = new ArrayList<>(2);
 
+    /**
+     * ProfileFragment profile fragment
+     */
     protected ProfileFragment profileFragment;
+    /**
+     * PasswordFragment password fragment
+     */
     protected PasswordFragment passwordFragment;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saved) {
         View root = inflater.inflate(R.layout.fragment_myprofile, container, false);
-        //setHasOptionsMenu(true);
+        setHasOptionsMenu(true);
         bindUI(root);
         bindData(getArguments());
         return root;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.fragment_profile_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_fragment_profile_upload)
+            uploadProfile();
+        return true;
     }
 
     /**
@@ -57,6 +92,11 @@ public class MyProfileFragment extends Fragment {
         }
     }
 
+    /**
+     * Binds the data to the current fragments
+     *
+     * @param arguments - Bundle of arguments
+     */
     private void bindData(Bundle arguments) {
         if (mViewPager != null) {
             profileFragment = new ProfileFragment();
@@ -72,6 +112,9 @@ public class MyProfileFragment extends Fragment {
         loadMyProfileInfo();
     }
 
+    /**
+     * Loads the profile information
+     */
     private void loadMyProfileInfo() {
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
         loading.show();
@@ -99,12 +142,28 @@ public class MyProfileFragment extends Fragment {
         );
     }
 
+    /**
+     * Set the info for profile fragment
+     *
+     * @param profile - ProfileEntity profile
+     */
     private void setMyProfileInfo(ProfileEntity profile) {
-        if(profileFragment == null)
+        if (profileFragment == null)
             return;
         profileFragment.setProfileInfo(profile);
     }
 
+    /**
+     * Get prepared for upload profile info
+     */
+    private void uploadProfile() {
+
+    }
+
+    /**
+     * ProfilePageAdapter class that allows the control of the FragmentPagerAdapter adapter of
+     * page viewer
+     */
     public class ProfilePageAdapter extends FragmentPagerAdapter {
 
         public ProfilePageAdapter(FragmentManager fm) {
