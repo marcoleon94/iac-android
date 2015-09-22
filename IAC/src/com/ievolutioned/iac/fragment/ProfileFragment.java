@@ -19,7 +19,8 @@ import android.widget.Toast;
 import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.entity.ProfileEntity;
-import com.ievolutioned.iac.net.DownloadImageTask;
+import com.ievolutioned.iac.net.CloudImageTask;
+import com.ievolutioned.iac.net.service.ResponseBase;
 import com.ievolutioned.iac.view.ViewUtility;
 
 /**
@@ -174,23 +175,24 @@ public class ProfileFragment extends Fragment {
     private void loadImageFromURL(String url) {
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
         loading.show();
-        DownloadImageTask task = new DownloadImageTask();
-        task.downloadImageFromURL(url, new DownloadImageTask.DownloadHandler() {
+        CloudImageTask task = new CloudImageTask();
+        task.downloadImageFromURL(url, new CloudImageTask.CloudImageHandler() {
             @Override
-            public void onDownloaded(DownloadImageTask.DownloadImageResponse response) {
+            public void onSuccess(ResponseBase response) {
                 if (mImageProfile != null)
-                    mImageProfile.setImageBitmap(response.image);
+                    mImageProfile.setImageBitmap(((CloudImageTask.DownloadImageResponse) response).image);
                 loading.dismiss();
             }
 
             @Override
-            public void onError(DownloadImageTask.DownloadImageResponse response) {
+            public void onError(ResponseBase response) {
                 loading.dismiss();
                 Toast.makeText(getActivity(), "No se puede descargar la imagen", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCancel() {
+
                 loading.dismiss();
                 Toast.makeText(getActivity(), "Cancelado", Toast.LENGTH_SHORT).show();
             }
