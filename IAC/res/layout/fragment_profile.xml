@@ -15,16 +15,20 @@
         android:paddingStart="15dp">
 
         <RelativeLayout
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="20dp">
 
             <ImageView
                 android:id="@+id/fragment_profile_picture"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="200dp"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
+                android:maxHeight="200dp"
+                android:minHeight="100dp"
+                android:minWidth="100dp"
+                android:scaleType="centerCrop"
                 android:src="@drawable/ic_profile" />
 
             <ImageButton

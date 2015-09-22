@@ -166,10 +166,18 @@ public class MyProfileFragment extends Fragment {
 
     public void setImageByIntent(Intent data) {
         try {
-            InputStream inputStream = getActivity().getContentResolver().openInputStream(data.getData());
-            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-            inputStream.close();
-            profileFragment.setProfilePicture(bitmap);
+            Bitmap bitmap = null;
+            if (data.getData() == null) {
+                //Must try for thumbnails
+                bitmap = (Bitmap) data.getExtras().get("data");
+            } else {
+                //Must get input stream for image
+                InputStream inputStream = getActivity().getContentResolver().openInputStream(data.getData());
+                bitmap = BitmapFactory.decodeStream(inputStream);
+                inputStream.close();
+            }
+            if (bitmap != null)
+                profileFragment.setProfilePicture(bitmap);
         } catch (Exception ee) {
             LogUtil.e(TAG, ee.getMessage(), ee);
         }
