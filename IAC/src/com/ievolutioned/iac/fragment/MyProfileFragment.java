@@ -5,7 +5,9 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -19,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.cloudinary.Cloudinary;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.entity.ProfileEntity;
 import com.ievolutioned.iac.net.service.ProfileService;
@@ -27,9 +30,12 @@ import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.util.LogUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * MyProfileFragment class, represents the portion of UI for my profile and password controls
@@ -161,7 +167,29 @@ public class MyProfileFragment extends Fragment {
      * Get prepared for upload profile info
      */
     private void uploadProfile() {
-
+        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                Map config = new HashMap();
+                config.put("cloud_name", "iacgroup");
+                config.put("api_key", "855275749257973");
+                config.put("api_secret", "xcWDVYFPZ9eeigoVMgrr2AjE3go");
+                Cloudinary cloudinary = new Cloudinary(config);
+                String picturePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+                picturePath += "/Pictures/splash.jpg";
+                File f = new File(picturePath);
+                if (f.exists())
+                    try {
+                        Map result = cloudinary.uploader().upload(f, null);
+                        if (result != null)
+                            LogUtil.d(TAG, result.toString());
+                    } catch (Exception e) {
+                        LogUtil.e(TAG, e.getMessage(), e);
+                    }
+                return null;
+            }
+        };
+        task.execute();
     }
 
     public void setImageByIntent(Intent data) {
