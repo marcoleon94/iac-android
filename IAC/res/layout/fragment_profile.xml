@@ -17,7 +17,7 @@
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:padding="50dp">
+            android:padding="20dp">
 
             <ImageView
                 android:id="@+id/fragment_profile_picture"
@@ -28,12 +28,24 @@
                 android:src="@drawable/ic_profile" />
 
             <ImageButton
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_alignBottom="@+id/fragment_profile_picture"
-                android:layout_toEndOf="@+id/fragment_profile_picture"
-                android:layout_toRightOf="@+id/fragment_profile_picture"
-                android:src="@drawable/abc_ic_search_api_mtrl_alpha" />
+                android:id="@+id/fragment_profile_picture_take"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:contentDescription="@string/hello_world"
+                android:src="@android:drawable/ic_menu_camera" />
+
+            <ImageButton
+                android:id="@+id/fragment_profile_picture_select"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:layout_toLeftOf="@+id/fragment_profile_picture_take"
+                android:layout_toStartOf="@+id/fragment_profile_picture_take"
+                android:contentDescription="@string/hello_world"
+                android:src="@android:drawable/ic_menu_edit" />
 
         </RelativeLayout>
 

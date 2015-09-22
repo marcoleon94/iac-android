@@ -2,16 +2,20 @@ package com.ievolutioned.iac.fragment;
 
 
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.entity.ProfileEntity;
 import com.ievolutioned.iac.net.DownloadImageTask;
@@ -27,6 +31,14 @@ public class ProfileFragment extends Fragment {
      * ImageView image of profile
      */
     private ImageView mImageProfile;
+    /**
+     * ImageButton take picture
+     */
+    private ImageButton mImageButtonTake;
+    /**
+     * ImageButton select picture
+     */
+    private ImageButton mImageButtonSelect;
     /**
      * TextView text control for employee ID
      */
@@ -78,6 +90,8 @@ public class ProfileFragment extends Fragment {
     private void bindUI(View root) {
         //Find views
         mImageProfile = (ImageView) root.findViewById(R.id.fragment_profile_picture);
+        mImageButtonTake = (ImageButton) root.findViewById(R.id.fragment_profile_picture_take);
+        mImageButtonSelect = (ImageButton) root.findViewById(R.id.fragment_profile_picture_select);
         mTextEmployeeId = (TextView) root.findViewById(R.id.fragment_profile_employee_id);
         mTextName = (TextView) root.findViewById(R.id.fragment_profile_name);
         mEditEmail = (EditText) root.findViewById(R.id.fragment_profile_email);
@@ -87,6 +101,31 @@ public class ProfileFragment extends Fragment {
         mTextEmployeeType = (TextView) root.findViewById(R.id.fragment_profile_employee_type);
         mTextDateAdmission = (TextView) root.findViewById(R.id.fragment_profile_employee_date_admission);
         mTextHolidays = (TextView) root.findViewById(R.id.fragment_profile_employee_date_holidays);
+
+        //Set on click listeners
+        mImageButtonTake.setOnClickListener(button_click);
+        mImageButtonSelect.setOnClickListener(button_click);
+    }
+
+    private View.OnClickListener button_click = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.fragment_profile_picture_take:
+                    break;
+                case R.id.fragment_profile_picture_select:
+                    selectPicture();
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    private void selectPicture() {
+        Intent i = new Intent(Intent.ACTION_PICK);
+        i.setType("image/*");
+        getActivity().startActivityForResult(i, MainActivity.ACTION_PICK_PHOTO);
     }
 
     /**
@@ -148,5 +187,9 @@ public class ProfileFragment extends Fragment {
                 Toast.makeText(getActivity(), "Cancelado", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public void setProfilePicture(Bitmap bitmap) {
+        mImageProfile.setImageBitmap(bitmap);
     }
 }

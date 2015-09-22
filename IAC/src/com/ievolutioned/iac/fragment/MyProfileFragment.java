@@ -2,6 +2,9 @@ package com.ievolutioned.iac.fragment;
 
 
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -24,6 +27,7 @@ import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.util.LogUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -158,6 +162,17 @@ public class MyProfileFragment extends Fragment {
      */
     private void uploadProfile() {
 
+    }
+
+    public void setImageByIntent(Intent data) {
+        try {
+            InputStream inputStream = getActivity().getContentResolver().openInputStream(data.getData());
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            inputStream.close();
+            profileFragment.setProfilePicture(bitmap);
+        } catch (Exception ee) {
+            LogUtil.e(TAG, ee.getMessage(), ee);
+        }
     }
 
     /**

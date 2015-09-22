@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -40,6 +41,9 @@ public class MainActivity extends ActionBarActivity {
      * TAG string
      */
     public static final String TAG = MainActivity.class.getName();
+
+    public static final int ACTION_PICK_PHOTO = 1000;
+
     /**
      * DrawerLayout the main drawer layout for menu options
      */
@@ -343,5 +347,29 @@ public class MainActivity extends ActionBarActivity {
                 mLoading.show();
             else
                 mLoading.dismiss();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case ACTION_PICK_PHOTO:
+                setPictureOnProfileFragment(data);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void setPictureOnProfileFragment(Intent data) {
+        //TODO: set picture on profile fragment
+        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+        android.support.v4.app.Fragment f = fragmentManager.findFragmentById(R.id.activity_main_frame_container);
+        if(f == null)
+            return;
+        else
+        if(f instanceof MyProfileFragment)
+            ((MyProfileFragment)f).setImageByIntent(data);
+        LogUtil.d(TAG, data.toString());
     }
 }
