@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -113,6 +114,7 @@ public class ProfileFragment extends Fragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.fragment_profile_picture_take:
+                    takePicture();
                     break;
                 case R.id.fragment_profile_picture_select:
                     selectPicture();
@@ -128,6 +130,12 @@ public class ProfileFragment extends Fragment {
         pick.setType("image/*");
 
         getActivity().startActivityForResult(pick, MainActivity.ACTION_PICK_PHOTO);
+    }
+
+    private void takePicture(){
+        Intent take = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        getActivity().startActivityForResult(take, MainActivity.ACTION_TAKE_PHOTO);
     }
 
     /**

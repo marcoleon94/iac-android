@@ -2,11 +2,15 @@ package com.ievolutioned.iac.fragment;
 
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -20,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.entity.ProfileEntity;
 import com.ievolutioned.iac.net.CloudImageTask;
@@ -31,6 +36,7 @@ import com.ievolutioned.iac.util.ImageFilePath;
 import com.ievolutioned.iac.util.LogUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -192,26 +198,49 @@ public class MyProfileFragment extends Fragment {
         });
     }
 
-    public void setImageByIntent(Intent data) {
+    public void setImageByIntent(Intent data, int requestCode) {
         try {
             Bitmap bitmap = null;
-            if (data.getData() == null) {
-                //Must try for thumbnails
-                bitmap = (Bitmap) data.getExtras().get("data");
-            } else {
+            if (requestCode == MainActivity.ACTION_PICK_PHOTO) {
                 //Must get input stream for image
                 InputStream inputStream = getActivity().getContentResolver().openInputStream(data.getData());
                 bitmap = BitmapFactory.decodeStream(inputStream);
                 inputStream.close();
-                String selectedImagePath;
-                selectedImagePath = ImageFilePath.getPath(getActivity(), data.getData());
-                LogUtil.d(TAG, selectedImagePath);
+                String selectedImagePath = ImageFilePath.getPath(getActivity(), data.getData());
+                File f = new File(selectedImagePath);
+                if (f.exists())
+                    LogUtil.d(TAG, selectedImagePath);
+                //TODO: SET selected image path
+            } else if (requestCode == MainActivity.ACTION_TAKE_PHOTO) {
+                //Must try for thumbnails
+                bitmap = (Bitmap) data.getExtras().get("data");
+                // get the temporal uri
+                Uri tempUri = getImageUri(getActivity().getApplicationContext(), bitmap);
+                // Gets the real path
+                String picturePath = getRealPathFromURI(tempUri);
+                LogUtil.d(TAG, picturePath);
             }
+
             if (bitmap != null)
                 profileFragment.setProfilePicture(bitmap);
         } catch (Exception ee) {
             LogUtil.e(TAG, ee.getMessage(), ee);
         }
+    }
+
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage,
+                "ProfileTemp", null);
+        return Uri.parse(path);
+    }
+
+    public String getRealPathFromURI(Uri uri) {
+        Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
+        cursor.moveToFirst();
+        int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+        return cursor.getString(idx);
     }
 
     /**

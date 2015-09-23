@@ -43,6 +43,7 @@ public class MainActivity extends ActionBarActivity {
     public static final String TAG = MainActivity.class.getName();
 
     public static final int ACTION_PICK_PHOTO = 1000;
+    public static final int ACTION_TAKE_PHOTO = 2000;
 
     /**
      * DrawerLayout the main drawer layout for menu options
@@ -354,22 +355,22 @@ public class MainActivity extends ActionBarActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case ACTION_PICK_PHOTO:
-                setPictureOnProfileFragment(data);
+            case ACTION_TAKE_PHOTO:
+                setPictureOnProfileFragment(data, requestCode);
                 break;
             default:
                 break;
         }
     }
 
-    private void setPictureOnProfileFragment(Intent data) {
+    private void setPictureOnProfileFragment(Intent data, int requestCode) {
         //TODO: set picture on profile fragment
         android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
         android.support.v4.app.Fragment f = fragmentManager.findFragmentById(R.id.activity_main_frame_container);
-        if(f == null)
+        if (f == null)
             return;
-        else
-        if(f instanceof MyProfileFragment)
-            ((MyProfileFragment)f).setImageByIntent(data);
+        else if (f instanceof MyProfileFragment)
+            ((MyProfileFragment) f).setImageByIntent(data, requestCode);
         LogUtil.d(TAG, data.toString());
     }
 }
