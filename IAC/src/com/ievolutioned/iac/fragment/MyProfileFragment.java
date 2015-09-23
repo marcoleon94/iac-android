@@ -27,6 +27,7 @@ import com.ievolutioned.iac.net.service.ProfileService;
 import com.ievolutioned.iac.net.service.ResponseBase;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
+import com.ievolutioned.iac.util.ImageFilePath;
 import com.ievolutioned.iac.util.LogUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 
@@ -202,6 +203,9 @@ public class MyProfileFragment extends Fragment {
                 InputStream inputStream = getActivity().getContentResolver().openInputStream(data.getData());
                 bitmap = BitmapFactory.decodeStream(inputStream);
                 inputStream.close();
+                String selectedImagePath;
+                selectedImagePath = ImageFilePath.getPath(getActivity(), data.getData());
+                LogUtil.d(TAG, selectedImagePath);
             }
             if (bitmap != null)
                 profileFragment.setProfilePicture(bitmap);

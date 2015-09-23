@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -125,16 +124,10 @@ public class ProfileFragment extends Fragment {
     };
 
     private void selectPicture() {
-        Intent pick = new Intent(Intent.ACTION_PICK);
+        Intent pick = new Intent(Intent.ACTION_GET_CONTENT);
         pick.setType("image/*");
-        pick.setAction(Intent.ACTION_GET_CONTENT);
 
-        Intent take = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        String pickTitle = "Selecciona o toma una nueva foto";
-        Intent chooser = Intent.createChooser(pick, pickTitle);
-        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{take});
-        getActivity().startActivityForResult(chooser, MainActivity.ACTION_PICK_PHOTO);
+        getActivity().startActivityForResult(pick, MainActivity.ACTION_PICK_PHOTO);
     }
 
     /**
