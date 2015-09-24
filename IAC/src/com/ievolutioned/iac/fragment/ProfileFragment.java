@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,6 +78,10 @@ public class ProfileFragment extends Fragment {
      * TextView text control for holidays
      */
     private TextView mTextHolidays;
+    /**
+     * Image selected or taken path
+     */
+    private String imagePath = null;
 
 
     @Override
@@ -132,7 +137,7 @@ public class ProfileFragment extends Fragment {
         getActivity().startActivityForResult(pick, MainActivity.ACTION_PICK_PHOTO);
     }
 
-    private void takePicture(){
+    private void takePicture() {
         Intent take = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         getActivity().startActivityForResult(take, MainActivity.ACTION_TAKE_PHOTO);
@@ -200,7 +205,41 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+    /**
+     * Sets the profile picture to image view
+     *
+     * @param bitmap - Bitmap image
+     */
     public void setProfilePicture(Bitmap bitmap) {
         mImageProfile.setImageBitmap(bitmap);
+    }
+
+    /**
+     * Sets the image path of selected or taken picture
+     *
+     * @param imagePath - the path of image
+     */
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    /**
+     * Gets the image path
+     *
+     * @return - the image path
+     */
+    public String getImagePath() {
+        return this.imagePath;
+    }
+
+    /**
+     * Gets the email
+     *
+     * @return - the email
+     */
+    public String getEmail() {
+        if (mEditEmail != null && !TextUtils.isEmpty(mEditEmail.getText()))
+            return mEditEmail.getText().toString();
+        return null;
     }
 }

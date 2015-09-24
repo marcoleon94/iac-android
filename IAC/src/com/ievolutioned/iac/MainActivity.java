@@ -353,14 +353,15 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case ACTION_PICK_PHOTO:
-            case ACTION_TAKE_PHOTO:
-                setPictureOnProfileFragment(data, requestCode);
-                break;
-            default:
-                break;
-        }
+        if (resultCode == RESULT_OK)
+            switch (requestCode) {
+                case ACTION_PICK_PHOTO:
+                case ACTION_TAKE_PHOTO:
+                    setPictureOnProfileFragment(data, requestCode);
+                    break;
+                default:
+                    break;
+            }
     }
 
     private void setPictureOnProfileFragment(Intent data, int requestCode) {

@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -24,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.gson.JsonObject;
 import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.entity.ProfileEntity;
@@ -172,28 +172,57 @@ public class MyProfileFragment extends Fragment {
      * Get prepared for upload profile info
      */
     private void uploadProfile() {
+        String picturePath = profileFragment.getImagePath();
+        //Verify picture edit
+        if (picturePath != null) {
+            uploadProfilePicture(picturePath);
+
+        } else
+            uploadProfile(null);
+
+    }
+
+    private void uploadProfile(final String picture) {
+        //Get info
+        String email = profileFragment.getEmail();
+        String password = passwordFragment.getPassword();
+        String repassword = passwordFragment.getRepassword();
+
+        JsonObject response = new JsonObject();
+        response.addProperty("email", email);
+        response.addProperty("password", password);
+        response.addProperty("re-password", repassword);
+        response.addProperty("picture", picture);
+        //TODO: Call service
+    }
+
+    private void uploadProfilePicture(final String path) {
+        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
+        loading.show();
         CloudImageTask cloudImageTask = new CloudImageTask();
-        String picturePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-        picturePath += "/Pictures/splash.jpg";
-        File file = new File(picturePath);
+        File file = new File(path);
         cloudImageTask.uploadImageFile(file, new CloudImageTask.CloudImageHandler() {
             @Override
             public void onSuccess(ResponseBase response) {
                 String urlCloudinary = ((CloudImageTask.UploadImageResponse) response).url;
                 if (urlCloudinary != null) {
                     LogUtil.d(TAG, "URL:" + urlCloudinary);
-                    //TODO: proceed with the update
+                    loading.dismiss();
+                    uploadProfile(urlCloudinary);
                 }
             }
 
             @Override
             public void onError(ResponseBase response) {
-
+                LogUtil.e(TAG, response.e.getMessage(), response.e);
+                loading.dismiss();
+                Toast.makeText(getActivity(), "Error al subir imagen", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCancel() {
-
+                loading.dismiss();
+                Toast.makeText(getActivity(), "Cancelado", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -201,28 +230,26 @@ public class MyProfileFragment extends Fragment {
     public void setImageByIntent(Intent data, int requestCode) {
         try {
             Bitmap bitmap = null;
+            String path = null;
             if (requestCode == MainActivity.ACTION_PICK_PHOTO) {
                 //Must get input stream for image
                 InputStream inputStream = getActivity().getContentResolver().openInputStream(data.getData());
                 bitmap = BitmapFactory.decodeStream(inputStream);
                 inputStream.close();
-                String selectedImagePath = ImageFilePath.getPath(getActivity(), data.getData());
-                File f = new File(selectedImagePath);
-                if (f.exists())
-                    LogUtil.d(TAG, selectedImagePath);
-                //TODO: SET selected image path
+                path = ImageFilePath.getPath(getActivity(), data.getData());
             } else if (requestCode == MainActivity.ACTION_TAKE_PHOTO) {
                 //Must try for thumbnails
                 bitmap = (Bitmap) data.getExtras().get("data");
                 // get the temporal uri
                 Uri tempUri = getImageUri(getActivity().getApplicationContext(), bitmap);
                 // Gets the real path
-                String picturePath = getRealPathFromURI(tempUri);
-                LogUtil.d(TAG, picturePath);
+                path = getRealPathFromURI(tempUri);
             }
 
             if (bitmap != null)
                 profileFragment.setProfilePicture(bitmap);
+            if (path != null)
+                profileFragment.setImagePath(path);
         } catch (Exception ee) {
             LogUtil.e(TAG, ee.getMessage(), ee);
         }
