@@ -292,7 +292,9 @@ public class MyProfileFragment extends Fragment {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return getItem(position) instanceof ProfileFragment ? "Perfil" : "Contrasena";
+            return getItem(position) instanceof ProfileFragment ?
+                    getString(R.string.string_fragment_myprofile_profile) :
+                    getString(R.string.string_fragment_myprofile_password);
         }
     }
 

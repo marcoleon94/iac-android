@@ -65,7 +65,7 @@
                 android:layout_alignParentLeft="true"
                 android:background="@color/gray_disabled_control"
                 android:gravity="center_vertical"
-                android:text="Numero de empleado" />
+                android:text="@string/string_fragment_profile_employee_id" />
 
             <TextView
                 android:id="@+id/fragment_profile_employee_id"
@@ -91,7 +91,7 @@
                 android:layout_alignParentLeft="true"
                 android:background="@color/gray_disabled_control"
                 android:gravity="center_vertical"
-                android:text="Nombre" />
+                android:text="@string/string_fragment_profile_name" />
 
             <TextView
                 android:id="@+id/fragment_profile_name"
@@ -117,7 +117,7 @@
                 android:layout_height="40dp"
                 android:layout_alignParentLeft="true"
                 android:gravity="center_vertical"
-                android:text="Correo" />
+                android:text="@string/string_fragment_profile_email" />
 
             <EditText
                 android:id="@+id/fragment_profile_email"
@@ -142,7 +142,7 @@
                 android:layout_height="40dp"
                 android:layout_alignParentLeft="true"
                 android:gravity="center_vertical"
-                android:text="Departamento" />
+                android:text="@string/string_fragment_profile_deparment" />
 
             <TextView
                 android:id="@+id/fragment_profile_department"
@@ -167,7 +167,7 @@
                 android:layout_height="40dp"
                 android:layout_alignParentLeft="true"
                 android:gravity="center_vertical"
-                android:text="Divp" />
+                android:text="@string/string_fragment_profile_divp" />
 
             <TextView
                 android:id="@+id/fragment_profile_divp"
@@ -192,7 +192,7 @@
                 android:layout_height="40dp"
                 android:layout_alignParentLeft="true"
                 android:gravity="center_vertical"
-                android:text="Planta" />
+                android:text="@string/string_fragment_profile_site" />
 
             <TextView
                 android:id="@+id/fragment_profile_site"
@@ -217,7 +217,7 @@
                 android:layout_height="40dp"
                 android:layout_alignParentLeft="true"
                 android:gravity="center_vertical"
-                android:text="Tipo de empleado" />
+                android:text="@string/string_fragment_profile_type" />
 
             <TextView
                 android:id="@+id/fragment_profile_employee_type"
@@ -242,7 +242,7 @@
                 android:layout_height="40dp"
                 android:layout_alignParentLeft="true"
                 android:gravity="center_vertical"
-                android:text="Fecha de ingreso" />
+                android:text="@string/string_fragment_profile_date_admission" />
 
             <TextView
                 android:id="@+id/fragment_profile_employee_date_admission"
@@ -267,7 +267,7 @@
                 android:layout_height="40dp"
                 android:layout_alignParentLeft="true"
                 android:gravity="center_vertical"
-                android:text="Fechas de vacaciones" />
+                android:text="@string/string_fragment_profile_holidays" />
 
             <TextView
                 android:id="@+id/fragment_profile_employee_date_holidays"
