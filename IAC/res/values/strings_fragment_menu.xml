@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="nav_drawer_form_title">FORMULARIOS</string>
+    <string name="nav_drawer_form_home">Inicio</string>
+    <string name="nav_drawer_form_profile">Mi perfil</string>
+    <string name="nav_drawer_form_logout">Cerrar sesión</string>
     <string-array name="nav_drawer_form_items">
         <item>Asistencia a Cursos</item>
     </string-array>
