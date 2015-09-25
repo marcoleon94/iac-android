@@ -1,6 +1,7 @@
 package com.ievolutioned.iac.fragment;
 
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -78,7 +79,14 @@ public class MyProfileFragment extends Fragment {
         setHasOptionsMenu(true);
         bindUI(root);
         bindData(getArguments());
+        setTitle(getString(R.string.string_fragment_myprofile_title));
         return root;
+    }
+
+    private void setTitle(String title) {
+        Activity activity = getActivity();
+        if (activity != null && activity instanceof MainActivity)
+            ((MainActivity) activity).setTitle(title);
     }
 
     @Override

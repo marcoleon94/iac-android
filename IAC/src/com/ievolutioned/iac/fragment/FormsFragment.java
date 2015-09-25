@@ -1,7 +1,7 @@
 package com.ievolutioned.iac.fragment;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -196,7 +196,7 @@ public class FormsFragment extends BaseFragmentClass {
                     widget.getJsonEntries().get(PXWidget.FIELD_KEY).getValue().getAsString()
                             .contains(PXWidget.FIELD_KEY_BARCODE)) {
                 buttonBarCode = (PXFButton) widget;
-                IntentIntegrator.forFragment(FormsFragment.this).initiateScan();
+                IntentIntegrator.forSupportFragment(FormsFragment.this).initiateScan();
 
             }
         }

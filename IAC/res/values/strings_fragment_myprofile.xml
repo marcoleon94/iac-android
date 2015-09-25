@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="string_fragment_myprofile_title">Mi perfil</string>
     <string name="string_fragment_myprofile_profile">Perfil</string>
     <string name="string_fragment_myprofile_password">Contraseña</string>
 </resources>

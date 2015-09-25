@@ -1,12 +1,12 @@
 package com.ievolutioned.iac;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -97,9 +97,9 @@ public class MainActivity extends ActionBarActivity {
                 mDrawerLayout.closeDrawers();
                 return;
             }
-            FragmentManager fm = getFragmentManager();
+            FragmentManager fm = getSupportFragmentManager();
             Fragment fragment = fm.findFragmentById(R.id.activity_main_frame_container);
-            if (fragment == null || fragment instanceof SitesFragment) {
+            if (fragment instanceof MyProfileFragment || fragment instanceof SitesFragment) {
                 //Open drawer
                 mDrawerLayout.openDrawer(R.layout.fragment_menu);
                 return;
@@ -126,7 +126,7 @@ public class MainActivity extends ActionBarActivity {
      * Displays the home view as the main view
      */
     private void showHome() {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment mFragment = new SitesFragment();
         Bundle args = new Bundle();
         args.putString(SitesFragment.ARG_SITE_NAME, getString(R.string.string_site_home));
@@ -282,7 +282,7 @@ public class MainActivity extends ActionBarActivity {
      * <br>This can be call from the {@link FormsFragment fragments childs }
      */
     public void replaceFragment(Fragment mFragment, String tag) {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.activity_main_frame_container, mFragment, tag);
         transaction.addToBackStack(null);
@@ -312,7 +312,7 @@ public class MainActivity extends ActionBarActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         //Catches the keycode back
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            Fragment fragment = getFragmentManager().findFragmentById(R.id.activity_main_frame_container);
+            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_container);
             if (fragment != null)
                 if (fragment instanceof SitesFragment) {
                     ((SitesFragment) fragment).onBackPressed();
@@ -324,7 +324,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public void onBackPressed() {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStackImmediate();
             fragmentManager.beginTransaction().commit();
