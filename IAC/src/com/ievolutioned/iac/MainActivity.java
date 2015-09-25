@@ -83,8 +83,7 @@ public class MainActivity extends ActionBarActivity {
         mLoading = ViewUtility.getLoadingScreen(this);
         showLoading(true);
         setDrawer();
-        //showHome();
-        showMyProfile();
+        showHome();
     }
 
     /**
@@ -100,7 +99,7 @@ public class MainActivity extends ActionBarActivity {
             }
             FragmentManager fm = getFragmentManager();
             Fragment fragment = fm.findFragmentById(R.id.activity_main_frame_container);
-            if (fragment instanceof SitesFragment) {
+            if (fragment == null || fragment instanceof SitesFragment) {
                 //Open drawer
                 mDrawerLayout.openDrawer(R.layout.fragment_menu);
                 return;
@@ -133,9 +132,10 @@ public class MainActivity extends ActionBarActivity {
         args.putString(SitesFragment.ARG_SITE_NAME, getString(R.string.string_site_home));
         mFragment.setArguments(args);
         replaceFragment(mFragment, null);
+        mDrawerLayout.closeDrawers();
     }
 
-    private void showMyProfile() {
+    public void showMyProfile() {
         android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
         android.support.v4.app.Fragment mFragment = new MyProfileFragment();
         Bundle args = new Bundle();
@@ -145,6 +145,7 @@ public class MainActivity extends ActionBarActivity {
         transaction.replace(R.id.activity_main_frame_container, mFragment, null);
         transaction.addToBackStack(null);
         transaction.commit();
+        mDrawerLayout.closeDrawers();
     }
 
     /**
@@ -273,6 +274,7 @@ public class MainActivity extends ActionBarActivity {
         if (mFragment != null) {
             replaceFragment(mFragment, null);
         }
+        mDrawerLayout.closeDrawers();
     }
 
     /**

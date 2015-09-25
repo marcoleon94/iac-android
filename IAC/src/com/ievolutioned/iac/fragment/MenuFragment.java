@@ -35,15 +35,10 @@ public class MenuFragment extends Fragment {
     private String[] menuSitesTitles;
 
     private ListView mDrawerListForm;
-    private ListView mDrawerSiteForm;
 
     private ArrayList<MenuDrawerItem> drawerFormItems = new ArrayList<MenuDrawerItem>();
 
-    private ArrayList<MenuDrawerItem> drawerSitesItems = new ArrayList<MenuDrawerItem>();
-
-
     private MenuDrawerListAdapter adapter_forms;
-    private MenuDrawerListAdapter adapter_sites;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -56,20 +51,19 @@ public class MenuFragment extends Fragment {
     private void bindUI(View root) {
         //Find UI
         mDrawerListForm = (ListView) root.findViewById(R.id.fragment_menu_form_list);
-        mDrawerSiteForm = (ListView) root.findViewById(R.id.fragment_menu_site_list);
 
         //Loads the static menu items for the current adapters
         loadStaticMenuItems();
 
         //Initialize adapters
         adapter_forms = new MenuDrawerListAdapter(getActivity(), drawerFormItems);
-        adapter_sites = new MenuDrawerListAdapter(getActivity(), drawerSitesItems);
         mDrawerListForm.setAdapter(adapter_forms);
-        mDrawerSiteForm.setAdapter(adapter_sites);
 
         //Set on click listeners
         mDrawerListForm.setOnItemClickListener(drawer_click);
-        mDrawerSiteForm.setOnItemClickListener(drawer_click);
+        root.findViewById(R.id.fragment_menu_home).setOnClickListener(menu_click);
+        root.findViewById(R.id.fragment_menu_profile).setOnClickListener(menu_click);
+        root.findViewById(R.id.fragment_menu_singout).setOnClickListener(menu_click);
     }
 
     /**
@@ -82,10 +76,6 @@ public class MenuFragment extends Fragment {
 
         for (String m : menuFormTitles) {
             drawerFormItems.add(new MenuDrawerItem(m));
-        }
-
-        for (String m : menuSitesTitles) {
-            drawerSitesItems.add(new MenuDrawerItem(m));
         }
     }
 
@@ -119,17 +109,15 @@ public class MenuFragment extends Fragment {
                 isSaved = false;
                 JsonObject jo = i.getAsJsonObject();
                 for (Forms form : forms) {
-                    if (form.getName().equalsIgnoreCase(jo.get("name").getAsString()))
-                    {
+                    if (form.getName().equalsIgnoreCase(jo.get("name").getAsString())) {
                         isSaved = true;
                         break;
                     }
                 }
                 if (!isSaved) {
                     f.insert("CACHE", jo.get("name").getAsString());
-                    FileUtil.saveJsonFile(getActivity(),jo.get("name").getAsString(),jo.getAsJsonObject().toString());
-                }
-                else {
+                    FileUtil.saveJsonFile(getActivity(), jo.get("name").getAsString(), jo.getAsJsonObject().toString());
+                } else {
                     //TODO: f.update()
                 }
             }
@@ -164,12 +152,29 @@ public class MenuFragment extends Fragment {
     }
 
 
-    AdapterView.OnItemClickListener drawer_click = new AdapterView.OnItemClickListener() {
+    private AdapterView.OnItemClickListener drawer_click = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+            selectItem(drawerFormItems.get(position));
+        }
+    };
 
-            selectItem(adapterView.getId() == R.id.fragment_menu_form_list ? drawerFormItems.get(position) :
-                    drawerSitesItems.get(position));
+    private View.OnClickListener menu_click = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.fragment_menu_home:
+                    ((MainActivity) getActivity()).selectItem(menuSitesTitles[0]);
+                    break;
+                case R.id.fragment_menu_profile:
+                    ((MainActivity) getActivity()).showMyProfile();
+                    break;
+                case R.id.fragment_menu_singout:
+                    getActivity().finish();
+                    break;
+                default:
+                    break;
+            }
         }
     };
 
@@ -181,7 +186,6 @@ public class MenuFragment extends Fragment {
     protected void showLoading(boolean b) {
         ((MainActivity) getActivity()).showLoading(b);
     }
-
 
 
 }
