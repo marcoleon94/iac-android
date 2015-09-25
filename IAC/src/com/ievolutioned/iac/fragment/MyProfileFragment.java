@@ -3,7 +3,6 @@ package com.ievolutioned.iac.fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -111,7 +110,7 @@ public class MyProfileFragment extends Fragment {
         mPagerTabStrip = (PagerTabStrip) root.findViewById(R.id.fragment_profile_pager_tab_strip);
 
         if (mViewPager == null) {
-
+            //TODO: when it is a tablet
         }
     }
 
@@ -190,6 +189,11 @@ public class MyProfileFragment extends Fragment {
 
     }
 
+    /**
+     * Upload the data of the profile
+     *
+     * @param picture
+     */
     private void uploadProfile(final String picture) {
         //Get info
         String email = profileFragment.getEmail();
@@ -204,6 +208,11 @@ public class MyProfileFragment extends Fragment {
         //TODO: Call service
     }
 
+    /**
+     * Uploads a profile picture
+     *
+     * @param path - Picture path
+     */
     private void uploadProfilePicture(final String path) {
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
         loading.show();
@@ -235,6 +244,12 @@ public class MyProfileFragment extends Fragment {
         });
     }
 
+    /**
+     * Sets the image according to the request code and Intent data
+     *
+     * @param data
+     * @param requestCode
+     */
     public void setImageByIntent(Intent data, int requestCode) {
         try {
             Bitmap bitmap = null;
@@ -249,7 +264,7 @@ public class MyProfileFragment extends Fragment {
                 //Must try for thumbnails
                 bitmap = (Bitmap) data.getExtras().get("data");
                 // get the temporal uri
-                Uri tempUri = getImageUri(getActivity().getApplicationContext(), bitmap);
+                Uri tempUri = getImageUri(bitmap);
                 // Gets the real path
                 path = getRealPathFromURI(tempUri);
             }
@@ -263,14 +278,26 @@ public class MyProfileFragment extends Fragment {
         }
     }
 
-    public Uri getImageUri(Context inContext, Bitmap inImage) {
+    /**
+     * Gets the image Uri
+     *
+     * @param image
+     * @return
+     */
+    public Uri getImageUri(Bitmap image) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage,
+        image.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(getActivity().getContentResolver(), image,
                 "ProfileTemp", null);
         return Uri.parse(path);
     }
 
+    /**
+     * Gets the real path
+     *
+     * @param uri - Uri uri
+     * @return the real path of a uri file
+     */
     public String getRealPathFromURI(Uri uri) {
         Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
         cursor.moveToFirst();

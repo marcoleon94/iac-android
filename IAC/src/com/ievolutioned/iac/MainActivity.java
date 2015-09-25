@@ -366,8 +366,13 @@ public class MainActivity extends ActionBarActivity {
             }
     }
 
+    /**
+     * Sets the profile on profile fragment about the data
+     *
+     * @param data        - Intent data
+     * @param requestCode - request code
+     */
     private void setPictureOnProfileFragment(Intent data, int requestCode) {
-        //TODO: set picture on profile fragment
         android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
         android.support.v4.app.Fragment f = fragmentManager.findFragmentById(R.id.activity_main_frame_container);
         if (f == null)
