@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * User entity class. Determines the attributes to consider for a single User in the system
- *
+ * <p/>
  * Created by Daniel on 21/04/2015.
  */
 public class UserEntity {
@@ -16,6 +16,9 @@ public class UserEntity {
 
     @SerializedName("admin_email")
     private String adminEmail;
+
+    @SerializedName("admin_rol")
+    private String adminRol;
 
     public String getStatus() {
         return status;
@@ -39,5 +42,13 @@ public class UserEntity {
 
     public void setAdminEmail(String adminEmail) {
         this.adminEmail = adminEmail;
+    }
+
+    public String getAdminRol() {
+        return adminRol;
+    }
+
+    public void setAdminRol(String adminRol) {
+        this.adminRol = adminRol;
     }
 }
