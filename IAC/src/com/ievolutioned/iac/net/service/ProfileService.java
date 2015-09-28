@@ -15,11 +15,21 @@ import com.ievolutioned.iac.net.NetUtil;
  */
 public class ProfileService extends ServiceBase {
 
+    /**
+     * Instantiates a profile service with the current parameters
+     *
+     * @param deviceId
+     * @param adminToken
+     */
     public ProfileService(String deviceId, String adminToken) {
         super(deviceId, adminToken);
     }
 
-
+    /**
+     * Gets the profile information for a user about the adminToken id
+     *
+     * @param callback - ProfileServiceHandler
+     */
     public void getProfileInfo(final ProfileServiceHandler callback) {
         task = new AsyncTask<Void, Void, ResponseBase>() {
             @Override
@@ -72,6 +82,38 @@ public class ProfileService extends ServiceBase {
         task.execute();
     }
 
+    public void updateInfo(final String info, final ProfileServiceHandler callback) {
+        task = new AsyncTask<Void, Void, ResponseBase>() {
+            @Override
+            protected ResponseBase doInBackground(Void... params) {
+                if (isCancelled())
+                    return null;
+                try {
+                    if (deviceId == null || adminToken == null) {
+                        callback.onError(new ProfileResponse("Params are null", null));
+                        this.cancel(true);
+                    }
+
+                    //Get headers
+                    HttpHeader headers = getHeaders(ACTION_UPDATE, CONTROLLER_PROFILE);
+
+                    // Get response
+                    NetResponse response = NetUtil.put(URL_PROFILE, null, headers, info);
+
+                    if (response != null) {
+                        if (response.isBadStatus())
+                            return null;
+                        return new ProfileResponse(true, response.result, null);
+                    }
+                    return null;
+                } catch (Exception e) {
+                    return new ProfileResponse(e.getMessage(), e);
+                }
+            }
+        };
+        task.execute();
+    }
+
     /**
      * Handles the result on callback
      *
@@ -97,7 +139,9 @@ public class ProfileService extends ServiceBase {
 
     public class ProfileResponse extends ResponseBase {
 
-        public ProfileEntity profile;
+        public boolean success = false;
+
+        public ProfileEntity profile = null;
 
         public ProfileResponse(String msg, Throwable e) {
             super(msg, e);
@@ -106,6 +150,11 @@ public class ProfileService extends ServiceBase {
         public ProfileResponse(ProfileEntity profile, String msg, Throwable e) {
             super(msg, e);
             this.profile = profile;
+        }
+
+        public ProfileResponse(boolean success, String msg, Throwable e) {
+            super(msg, e);
+            this.success = success;
         }
     }
 

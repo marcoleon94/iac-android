@@ -98,7 +98,8 @@ public class MyProfileFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_fragment_profile_upload)
-            uploadProfile();
+            if (validateForm())
+                uploadProfile();
         return true;
     }
 
@@ -176,6 +177,41 @@ public class MyProfileFragment extends Fragment {
     }
 
     /**
+     * Validates the form
+     *
+     * @return true if it valid, false otherwise
+     */
+    private boolean validateForm() {
+        boolean p = false;
+        boolean c = false;
+        if (profileFragment != null)
+            p = !(profileFragment.getEmail() == null && profileFragment.getImagePath() == null);
+        if (passwordFragment != null)
+            c = !(passwordFragment.getPassword() == null && passwordFragment.getRepassword() == null);
+        if (c == false && p == false) {
+            Toast.makeText(getActivity(), "No hay cambios", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (c)
+            if (passwordFragment.getPassword() == null ||
+                    passwordFragment.getRepassword() == null ||
+                    !passwordFragment.getPassword().contentEquals(passwordFragment.getRepassword())) {
+                focusPasswordFragment();
+                Toast.makeText(getActivity(), "Las contraseñas no son iguales", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        return true;
+    }
+
+    /**
+     * Focuses the password fragment if it is a view pager
+     */
+    private void focusPasswordFragment() {
+        if (mViewPager != null)
+            mViewPager.setCurrentItem(1, true);
+    }
+
+    /**
      * Get prepared for upload profile info
      */
     private void uploadProfile() {
@@ -201,11 +237,16 @@ public class MyProfileFragment extends Fragment {
         String repassword = passwordFragment.getRepassword();
 
         JsonObject response = new JsonObject();
-        response.addProperty("email", email);
-        response.addProperty("password", password);
-        response.addProperty("re-password", repassword);
-        response.addProperty("picture", picture);
+        if (email != null)
+            response.addProperty("email", email);
+        if (password != null && repassword != null) {
+            response.addProperty("password", password);
+            response.addProperty("re-password", repassword);
+        }
+        if (picture != null)
+            response.addProperty("picture", picture);
         //TODO: Call service
+
     }
 
     /**
