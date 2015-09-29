@@ -1,10 +1,10 @@
 package com.ievolutioned.iac.fragment;
 
 import android.app.AlertDialog;
-import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -436,6 +436,8 @@ public class FormsFragment extends BaseFragmentClass {
      * @return the IAC id
      */
     private String getIacId() {
+        final String role = AppPreferences.getRole(getActivity());
+        
         //TODO: This key is only temporal
         PXFAdapter adapter = (PXFAdapter) listView.getAdapter();
         return adapter.getItemValueForKey("employeeID");

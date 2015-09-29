@@ -22,6 +22,7 @@ import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.entity.ProfileEntity;
 import com.ievolutioned.iac.net.CloudImageTask;
 import com.ievolutioned.iac.net.service.ResponseBase;
+import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.view.ViewUtility;
 
 /**
@@ -154,8 +155,11 @@ public class ProfileFragment extends Fragment {
      */
     public void setProfileInfo(ProfileEntity profile) {
         //Load image
-        if (profile.getAvatar() != null && profile.getAvatar().getUrl() != null)
-            loadImageFromURL(profile.getAvatar().getUrl());
+        if (profile.getAvatarCloudinary() == null) {
+            if (profile.getAvatar() != null && profile.getAvatar().getUrl() != null)
+                loadImageFromURL(profile.getAvatar().getUrl());
+        } else
+            loadImageFromURL(AppConfig.CLOUDINARY_HTTP_URL + profile.getAvatarCloudinary());
         //Looad info
         if (mTextEmployeeId != null && profile.getIacId() != null)
             mTextEmployeeId.setText(profile.getIacId());
