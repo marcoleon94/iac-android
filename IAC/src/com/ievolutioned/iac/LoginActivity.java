@@ -88,10 +88,6 @@ public class LoginActivity extends Activity {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.activity_login_btnLogIn:
-                    if (AppConfig.DEBUG) {
-                        logIn();
-                        break;
-                    }
                     if (validateForm())
                         logIn();
                     break;
@@ -164,7 +160,7 @@ public class LoginActivity extends Activity {
 
         @Override
         public void onError(LoginService.LoginResponse response) {
-            showToast("Error: " + response.msg);
+            showToast("Error: No se ha podido autenticar");
             loading(false);
         }
 
