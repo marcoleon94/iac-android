@@ -234,18 +234,38 @@ public class MyProfileFragment extends Fragment {
         //Get info
         String email = profileFragment.getEmail();
         String password = passwordFragment.getPassword();
-        String repassword = passwordFragment.getRepassword();
+        final String repassword = passwordFragment.getRepassword();
 
         JsonObject response = new JsonObject();
         if (email != null)
             response.addProperty("email", email);
         if (password != null && repassword != null) {
             response.addProperty("password", password);
-            response.addProperty("re-password", repassword);
+            response.addProperty("password_confirmation", repassword);
         }
         if (picture != null)
-            response.addProperty("picture", picture);
+            response.addProperty("avatar_cloudinary", picture);
         //TODO: Call service
+        JsonObject info = new JsonObject();
+        info.add("admin", response);
+        ProfileService profileService = new ProfileService(AppConfig.getUUID(getActivity()),
+                AppPreferences.getAdminToken(getActivity()));
+        profileService.updateInfo(info.getAsJsonObject().toString(), new ProfileService.ProfileServiceHandler() {
+            @Override
+            public void onSuccess(ProfileService.ProfileResponse response) {
+                LogUtil.d(TAG, response.msg);
+            }
+
+            @Override
+            public void onError(ProfileService.ProfileResponse response) {
+                LogUtil.e(TAG, response.msg, response.e);
+            }
+
+            @Override
+            public void onCancel() {
+                LogUtil.d(TAG, "Cancelado");
+            }
+        });
 
     }
 

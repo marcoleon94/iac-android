@@ -12,18 +12,25 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.ievolutioned.iac.entity.UserEntity;
 import com.ievolutioned.iac.net.service.LoginService;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.util.LogUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 import com.ievolutioned.pxform.database.FormsDataSet;
+
 import io.fabric.sdk.android.Fabric;
 
 /**
  * Log in activity class. Manages the log in actions
  */
 public class LoginActivity extends Activity {
+
+    /**
+     * TAG
+     */
+    public static final String TAG = LoginActivity.class.getName();
 
     /**
      * EditText email control
@@ -56,11 +63,6 @@ public class LoginActivity extends Activity {
         }
 
         com.ievolutioned.pxform.database.FormsDataSet f = new FormsDataSet(LoginActivity.this);
-
-        /*if (f.countAll() < 1) {
-            long i = f.insert("", "Encuesta de Salida");
-            Log.d("XXX", String.valueOf(i));
-        }*/
         f.deleteAll();
     }
 
@@ -156,7 +158,7 @@ public class LoginActivity extends Activity {
         @Override
         public void onSuccess(LoginService.LoginResponse response) {
             loading(false);
-            saveToken(response.user.getAdminToken());
+            saveUser(response.user);
             startMainActivity();
         }
 
@@ -173,6 +175,7 @@ public class LoginActivity extends Activity {
         }
     };
 
+
     /**
      * Starts the main activity
      */
@@ -181,18 +184,22 @@ public class LoginActivity extends Activity {
     }
 
     /**
-     * Saves the token in the shared preferences
+     * Saves the user response
      *
-     * @param token - The admin token
+     * @param user - UserEntity user
      */
-    private void saveToken(String token) {
-        if (token == null)
+    private void saveUser(UserEntity user) {
+        if (user == null)
             return;
-        LogUtil.d(LoginActivity.class.getName(), "token: " + token);
         try {
-            AppPreferences.setAdminToken(this, token);
+
+            LogUtil.d(TAG, "USER: " + user.getAdminToken() + ":" + user.getAdminRol() + ":" +
+                    user.getIacId());
+            AppPreferences.setIacId(this, user.getIacId());
+            AppPreferences.setAdminToken(this, user.getAdminToken());
+            AppPreferences.setRole(this, user.getAdminRol());
         } catch (Exception e) {
-            LogUtil.e(LoginActivity.class.getName(), "Can not set ADMIN TOKEN", e);
+            LogUtil.e(LoginActivity.class.getName(), "Can not set property on User", e);
         }
     }
 }

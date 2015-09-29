@@ -9,6 +9,9 @@ import com.google.gson.annotations.SerializedName;
  */
 public class UserEntity {
 
+    @SerializedName("amin_iac_id")
+    private String iacId;
+
     private String status;
 
     @SerializedName("admin_token")
@@ -19,6 +22,14 @@ public class UserEntity {
 
     @SerializedName("admin_rol")
     private String adminRol;
+
+    public String getIacId() {
+        return iacId;
+    }
+
+    public void setIacId(String iacId) {
+        this.iacId = iacId;
+    }
 
     public String getStatus() {
         return status;
