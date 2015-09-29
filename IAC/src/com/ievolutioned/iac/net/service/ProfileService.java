@@ -94,11 +94,15 @@ public class ProfileService extends ServiceBase {
                         this.cancel(true);
                     }
 
+                    HttpGetParam getParam = new HttpGetParam();
+                    getParam.add("admin-token", adminToken);
+
                     //Get headers
-                    HttpHeader headers = getHeaders(ACTION_UPDATE, CONTROLLER_PROFILE);
+                    HttpHeader headers = getHeaders(ACTION_UPDATE_ADMIN, CONTROLLER_PROFILE);
 
                     // Get response
-                    NetResponse response = NetUtil.put(URL_PROFILE, null, headers, info);
+                    NetResponse response = NetUtil.put(URL_PROFILE + ACTION_UPDATE_ADMIN, getParam,
+                            headers, info);
 
                     if (response != null) {
                         if (response.isBadStatus())

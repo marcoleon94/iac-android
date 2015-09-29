@@ -57,6 +57,10 @@ public abstract class ServiceBase {
      * Action for get profile
      */
     protected static final String ACTION_GET_INFO = "get_info_admin";
+    /**
+     * Action for update admin profile
+     */
+    protected static final String ACTION_UPDATE_ADMIN = "update_admin";
 
     /**
      * Controller constant for login services
