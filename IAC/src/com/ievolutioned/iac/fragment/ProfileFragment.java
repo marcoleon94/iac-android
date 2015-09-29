@@ -82,6 +82,10 @@ public class ProfileFragment extends Fragment {
      * Image selected or taken path
      */
     private String imagePath = null;
+    /**
+     * Email default value
+     */
+    private String emailDefault = null;
 
 
     @Override
@@ -157,8 +161,10 @@ public class ProfileFragment extends Fragment {
             mTextEmployeeId.setText(profile.getIacId());
         if (mTextName != null && profile.getName() != null)
             mTextName.setText(profile.getName());
-        if (mEditEmail != null && profile.getEmail() != null)
+        if (mEditEmail != null && profile.getEmail() != null) {
             mEditEmail.setText(profile.getEmail());
+            emailDefault = profile.getEmail();
+        }
         if (mTextDepartment != null && profile.getDepartment() != null)
             mTextDepartment.setText(profile.getDepartment());
         if (mTextDivp != null && profile.getDivp() != null)
@@ -238,8 +244,18 @@ public class ProfileFragment extends Fragment {
      * @return - the email
      */
     public String getEmail() {
-        if (mEditEmail != null && !TextUtils.isEmpty(mEditEmail.getText()))
-            return mEditEmail.getText().toString();
+        if (mEditEmail != null && !TextUtils.isEmpty(mEditEmail.getText()) &&
+                !emailDefault.contentEquals(mEditEmail.getText().toString().trim()))
+            return mEditEmail.getText().toString().trim();
         return null;
+    }
+
+    /**
+     * Sets the default email
+     *
+     * @param email
+     */
+    public void setDefaultEmail(String email) {
+        this.emailDefault = email;
     }
 }

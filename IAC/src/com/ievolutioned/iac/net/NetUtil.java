@@ -30,7 +30,7 @@ public class NetUtil {
      * @param params  - A set of GET parameters
      * @param headers - A set of headers
      * @return the server response.
-     * @throws Exception public static String get(String url, HttpGetParam params, HttpHeader headers)
+     * @throws Exception public static String get(String file, HttpGetParam params, HttpHeader headers)
      */
     public static NetResponse get(String url, HttpGetParam params, HttpHeader headers)
             throws Exception {
@@ -45,7 +45,7 @@ public class NetUtil {
      * @param headers - A set of headers
      * @param json    - A JSON string
      * @return the response
-     * @throws Exception public static String post(String url, HttpGetParam params,
+     * @throws Exception public static String post(String file, HttpGetParam params,
      */
 
     public static NetResponse post(String url, HttpGetParam params,

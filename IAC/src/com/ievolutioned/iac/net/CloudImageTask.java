@@ -34,6 +34,9 @@ public class CloudImageTask {
      */
     private AsyncTask<Void, Void, ResponseBase> task = null;
 
+    private static final String NAME = "public_id";
+    private static final String FORMAT = "format";
+
     /**
      * Downloads a image from any URL as a get method
      *
@@ -83,7 +86,8 @@ public class CloudImageTask {
                     try {
                         Map result = cloudinary.uploader().upload(file, null);
                         if (result != null)
-                            return new UploadImageResponse(result, result.get("url").toString(), result.toString(), null);
+                            return new UploadImageResponse(result,
+                                    getFileName(result), result.toString(), null);
                         return null;
                     } catch (Exception e) {
                         LogUtil.e(TAG, e.getMessage(), e);
@@ -99,6 +103,10 @@ public class CloudImageTask {
             }
         };
         task.execute();
+    }
+
+    private String getFileName(Map result) {
+        return String.format("%s.%s", result.get(NAME).toString(), result.get(FORMAT).toString());
     }
 
     /**
@@ -164,14 +172,14 @@ public class CloudImageTask {
          */
         public Map response;
         /**
-         * The main url for uploaded image
+         * The main file name for uploaded image
          */
-        public String url;
+        public String file;
 
-        public UploadImageResponse(Map response, String url, final String msg, final Throwable e) {
+        public UploadImageResponse(Map response, String file, final String msg, final Throwable e) {
             super(msg, e);
             this.response = response;
-            this.url = url;
+            this.file = file;
         }
     }
 }

@@ -232,8 +232,8 @@ public class MyProfileFragment extends Fragment {
      */
     private void uploadProfile(final String picture) {
         //Get info
-        String email = profileFragment.getEmail();
-        String password = passwordFragment.getPassword();
+        final String email = profileFragment.getEmail();
+        final String password = passwordFragment.getPassword();
         final String repassword = passwordFragment.getRepassword();
 
         JsonObject response = new JsonObject();
@@ -250,10 +250,12 @@ public class MyProfileFragment extends Fragment {
         info.add("admin", response);
         ProfileService profileService = new ProfileService(AppConfig.getUUID(getActivity()),
                 AppPreferences.getAdminToken(getActivity()));
+
         profileService.updateInfo(info.getAsJsonObject().toString(), new ProfileService.ProfileServiceHandler() {
             @Override
             public void onSuccess(ProfileService.ProfileResponse response) {
                 LogUtil.d(TAG, response.msg);
+                profileFragment.setDefaultEmail(email);
             }
 
             @Override
@@ -266,7 +268,6 @@ public class MyProfileFragment extends Fragment {
                 LogUtil.d(TAG, "Cancelado");
             }
         });
-
     }
 
     /**
@@ -282,7 +283,7 @@ public class MyProfileFragment extends Fragment {
         cloudImageTask.uploadImageFile(file, new CloudImageTask.CloudImageHandler() {
             @Override
             public void onSuccess(ResponseBase response) {
-                String urlCloudinary = ((CloudImageTask.UploadImageResponse) response).url;
+                String urlCloudinary = ((CloudImageTask.UploadImageResponse) response).file;
                 if (urlCloudinary != null) {
                     LogUtil.d(TAG, "URL:" + urlCloudinary);
                     loading.dismiss();
