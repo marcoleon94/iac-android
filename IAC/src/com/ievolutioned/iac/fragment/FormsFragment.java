@@ -247,7 +247,7 @@ public class FormsFragment extends BaseFragmentClass {
         //Verify IAC ID
         String iacID = getIacId();
         if (iacID == null || iacID.isEmpty())
-            msg = "IAC ID no es válido";
+            msg = "El IAC ID no es válido";
         if (msg != null) {
             showValidationMessage(msg);
             return false;
@@ -436,11 +436,12 @@ public class FormsFragment extends BaseFragmentClass {
      * @return the IAC id
      */
     private String getIacId() {
-        final String role = AppPreferences.getRole(getActivity());
-        
         //TODO: This key is only temporal
         PXFAdapter adapter = (PXFAdapter) listView.getAdapter();
-        return adapter.getItemValueForKey("employeeID");
+        String iacId = adapter.getItemValueForKey("employeeID");
+        if (iacId == null)
+            iacId = AppPreferences.getIacId(getActivity());
+        return iacId;
     }
 
 
