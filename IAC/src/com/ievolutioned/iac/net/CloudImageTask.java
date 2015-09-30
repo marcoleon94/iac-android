@@ -29,10 +29,12 @@ public class CloudImageTask {
      * TAG
      */
     public static final String TAG = CloudImageTask.class.getName();
+    public static final int CLOUDINARY = 10;
+    public static final int URL = 11;
     /**
      * Main task
      */
-    private AsyncTask<Void, Void, ResponseBase> task = null;
+    private AsyncTask<Integer, Void, ResponseBase> task = null;
 
     private static final String NAME = "public_id";
     private static final String FORMAT = "format";
@@ -41,15 +43,17 @@ public class CloudImageTask {
      * Downloads a image from any URL as a get method
      *
      * @param url      - the URL of image
+     * @param param
      * @param callback - CloudImageHandler callback
      */
-    public void downloadImageFromURL(final String url, final CloudImageHandler callback) {
-        task = new AsyncTask<Void, Void, ResponseBase>() {
+    public void downloadImageFromURL(final String url, final int param, final CloudImageHandler callback) {
+        task = new AsyncTask<Integer, Void, ResponseBase>() {
             @Override
-            protected ResponseBase doInBackground(Void... params) {
+            protected ResponseBase doInBackground(Integer... params) {
                 Bitmap bitmap = null;
                 try {
-                    URL u = new URL(url);
+                    String temp = params[0] == CLOUDINARY ? getCloudinaryURLFromName(url) : url;
+                    URL u = new URL(temp);
                     HttpURLConnection connection = (HttpURLConnection) u.openConnection();
                     InputStream inputStream = connection.getInputStream();
                     bitmap = BitmapFactory.decodeStream(inputStream);
@@ -68,7 +72,13 @@ public class CloudImageTask {
                 handleResult(callback, responseBase);
             }
         };
-        task.execute();
+        task.execute(param);
+    }
+
+    private String getCloudinaryURLFromName(String url) {
+        Map config = getCloudinarySettings();
+        Cloudinary cloudinary = new Cloudinary(config);
+        return cloudinary.url().generate(url);
     }
 
     /**
@@ -78,9 +88,9 @@ public class CloudImageTask {
      * @param callback - CloudImageHandler callback
      */
     public void uploadImageFile(final File file, final CloudImageHandler callback) {
-        task = new AsyncTask<Void, Void, ResponseBase>() {
+        task = new AsyncTask<Integer, Void, ResponseBase>() {
             @Override
-            protected ResponseBase doInBackground(Void... params) {
+            protected ResponseBase doInBackground(Integer... params) {
                 Cloudinary cloudinary = new Cloudinary(getCloudinarySettings());
                 if (file.exists())
                     try {

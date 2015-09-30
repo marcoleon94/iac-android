@@ -22,7 +22,6 @@ import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.entity.ProfileEntity;
 import com.ievolutioned.iac.net.CloudImageTask;
 import com.ievolutioned.iac.net.service.ResponseBase;
-import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.view.ViewUtility;
 
 /**
@@ -157,9 +156,9 @@ public class ProfileFragment extends Fragment {
         //Load image
         if (profile.getAvatarCloudinary() == null) {
             if (profile.getAvatar() != null && profile.getAvatar().getUrl() != null)
-                loadImageFromURL(profile.getAvatar().getUrl());
+                loadImageFromURL(profile.getAvatar().getUrl(), CloudImageTask.URL);
         } else
-            loadImageFromURL(AppConfig.CLOUDINARY_HTTP_URL + profile.getAvatarCloudinary());
+            loadImageFromURL(profile.getAvatarCloudinary(), CloudImageTask.CLOUDINARY);
         //Looad info
         if (mTextEmployeeId != null && profile.getIacId() != null)
             mTextEmployeeId.setText(profile.getIacId());
@@ -186,13 +185,14 @@ public class ProfileFragment extends Fragment {
     /**
      * Load an image from the current URL
      *
-     * @param url - URL of the web image to be downloaded
+     * @param url        - URL of the web image to be downloaded
+     * @param cloudinary
      */
-    private void loadImageFromURL(String url) {
+    private void loadImageFromURL(String url, int param) {
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
         loading.show();
         CloudImageTask task = new CloudImageTask();
-        task.downloadImageFromURL(url, new CloudImageTask.CloudImageHandler() {
+        task.downloadImageFromURL(url, param, new CloudImageTask.CloudImageHandler() {
             @Override
             public void onSuccess(ResponseBase response) {
                 if (mImageProfile != null)
