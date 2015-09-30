@@ -27,6 +27,11 @@ public abstract class ServiceBase {
      * URL for form or inquests on the server
      */
     protected static final String URL_FORM = "https://iacgroup.herokuapp.com/api/inquests/";
+    /**
+     * URL for Profile
+     */
+    protected static final String URL_PROFILE = "http://iacgroup.herokuapp.com/api/admin/";
+
 
     /**
      * Action for login
@@ -48,6 +53,14 @@ public abstract class ServiceBase {
      * Action for get a single inquest
      */
     protected static final String ACTION_SHOW = "show";
+    /**
+     * Action for get profile
+     */
+    protected static final String ACTION_GET_INFO = "get_info_admin";
+    /**
+     * Action for update admin profile
+     */
+    protected static final String ACTION_UPDATE_ADMIN = "update_admin";
 
     /**
      * Controller constant for login services
@@ -61,6 +74,10 @@ public abstract class ServiceBase {
      * Controller constant for inquests
      */
     protected static final String CONTROLLER_INQUESTS = "inquests";
+    /**
+     * Controller constant for profile
+     */
+    protected static final String CONTROLLER_PROFILE = "admin";
 
 
     /**

@@ -37,6 +37,27 @@ public class AppConfig {
     public static final String API_DATE_FORMAT = "yyyy-MM-dd";
 
     // --------------------------------------------
+    // Cloudinary Configuration
+    // --------------------------------------------
+    /**
+     * Cloudinary cloud name
+     */
+    public static final String CLOUDINARY_CLOUD_NAME = "iacgroup";
+    /**
+     * Cloudinary api key
+     */
+    public static final String CLOUDINARY_API_KEY = "855275749257973";
+    /**
+     * Cloudinary api secret
+     */
+    public static final String CLOUDINARY_API_SECRET = "xcWDVYFPZ9eeigoVMgrr2AjE3go";
+
+    private static final String CLOUDINARY_UPLOAD_POSTFIX = "/image/upload/v1443555932/";
+    public static final String CLOUDINARY_HTTP_URL = "http://res.cloudinary.com/" +
+            CLOUDINARY_CLOUD_NAME + CLOUDINARY_UPLOAD_POSTFIX;
+
+
+    // --------------------------------------------
     // UUID Configuration
     // --------------------------------------------
     protected static UUID uuid;
@@ -46,6 +67,7 @@ public class AppConfig {
 
     /**
      * Sets the UUID of the phone
+     *
      * @param context - the current context for SharedPreferences
      */
     private static void setUUID(Context context) {
@@ -93,12 +115,11 @@ public class AppConfig {
     /**
      * Gets the UUID string. No warranties indeed.
      *
-     * @param context
-     *            the current context for SharedPreferences
+     * @param context the current context for SharedPreferences
      * @return the UUID if it exists.
      */
     public static String getUUID(Context context) {
-        if(DEBUG)
+        if (DEBUG)
             return "7027E1C7-8215-43AA-98EE-F7E5EC2DDE67";
         if (uuid == null)
             setUUID(context);

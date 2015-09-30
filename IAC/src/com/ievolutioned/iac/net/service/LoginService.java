@@ -63,7 +63,9 @@ public class LoginService extends ServiceBase {
                     //Parse response
                     Gson g = new Gson();
                     UserEntity user = g.fromJson(response.result, UserEntity.class);
-                    return new LoginResponse(true, user, response.result, null);
+                    if (user.getIacId() != null)
+                        return new LoginResponse(true, user, response.result, null);
+                    return new LoginResponse(false, null, null, null);
                 } catch (Exception e) {
                     return new LoginResponse(false, null, e.getMessage(), e);
                 }
@@ -86,7 +88,7 @@ public class LoginService extends ServiceBase {
     /**
      * Logs the user out of system
      *
-     * @param token - The token
+     * @param token    - The token
      * @param callback a LoginHandler callback handler
      */
     public void logOut(final String token, final LoginHandler callback) {
@@ -136,7 +138,7 @@ public class LoginService extends ServiceBase {
     protected void hanldeResult(final LoginHandler callback, final LoginResponse response) {
         if (response == null)
             callback.onError(new LoginResponse(false, null, "Service error", new RuntimeException()));
-        else if (response.e != null)
+        else if (response.e != null || !response.logged)
             callback.onError(response);
         else
             callback.onSuccess(response);
@@ -161,7 +163,7 @@ public class LoginService extends ServiceBase {
         public UserEntity user;
 
         public LoginResponse(final boolean logged, final UserEntity user, final String msg, final Throwable e) {
-            super(msg,e);
+            super(msg, e);
             this.logged = logged;
             this.user = user;
         }

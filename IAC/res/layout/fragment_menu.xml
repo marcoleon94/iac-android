@@ -3,32 +3,35 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_gray_light"
-    android:orientation="vertical"
-    android:paddingLeft="15dp"
-    android:paddingStart="15dp">
+    android:orientation="vertical">
+
 
     <TextView
+        android:id="@+id/fragment_menu_home"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/nav_drawer_sites_title"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingBottom="10dp"
+        android:paddingLeft="15dp"
+        android:paddingTop="10dp"
+        android:text="@string/nav_drawer_form_home"
         android:textAllCaps="true"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textStyle="bold" />
 
-    <ListView
-        android:id="@+id/fragment_menu_site_list"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:choiceMode="singleChoice"
-        android:divider="@android:color/darker_gray"
-        android:dividerHeight="1dp"></ListView>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingLeft="15dp"
+        android:paddingTop="10dp"
         android:text="@string/nav_drawer_form_title"
         android:textAllCaps="true"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textStyle="bold" />
 
     <ListView
@@ -37,6 +40,44 @@
         android:layout_height="wrap_content"
         android:choiceMode="singleChoice"
         android:divider="@android:color/darker_gray"
-        android:dividerHeight="1dp"></ListView>
+        android:dividerHeight="1dp"
+        android:paddingLeft="20dp"></ListView>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray" />
+
+    <TextView
+        android:id="@+id/fragment_menu_profile"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingBottom="10dp"
+        android:paddingLeft="15dp"
+        android:paddingTop="10dp"
+        android:text="@string/nav_drawer_form_profile"
+        android:textAllCaps="true"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray" />
+
+    <TextView
+        android:id="@+id/fragment_menu_singout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingBottom="10dp"
+        android:paddingLeft="15dp"
+        android:paddingTop="10dp"
+        android:text="@string/nav_drawer_form_logout"
+        android:textAllCaps="true"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
 
 </LinearLayout>

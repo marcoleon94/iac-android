@@ -3,18 +3,12 @@
 
     <string-array name="sites_item_key">
         <item>@string/string_site_home</item>
-        <item>@string/string_site_recibos</item>
-        <item>@string/string_site_reconocimiento</item>
     </string-array>
     <string-array name="sites_item_values">
         <item>https://iacgroup.herokuapp.com/admin</item>
-        <item>http://www.iacgroup.com/</item>
-        <item>http://www.iacgroup.com/who-we-are</item>
     </string-array>
 
     <string name="string_site_home">Inicio</string>
-    <string name="string_site_recibos">Recibos de nomina</string>
-    <string name="string_site_reconocimiento">Programa de reconocimiento</string>
 
 
 </resources>
