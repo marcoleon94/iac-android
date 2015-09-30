@@ -41,10 +41,14 @@ public class MainActivity extends ActionBarActivity {
      * TAG string
      */
     public static final String TAG = MainActivity.class.getName();
-
+    /**
+     * Activity action for pick a picture
+     */
     public static final int ACTION_PICK_PHOTO = 1000;
+    /**
+     * Activity action for take a picture
+     */
     public static final int ACTION_TAKE_PHOTO = 2000;
-
     /**
      * DrawerLayout the main drawer layout for menu options
      */
@@ -135,16 +139,15 @@ public class MainActivity extends ActionBarActivity {
         mDrawerLayout.closeDrawers();
     }
 
+    /**
+     * Displays the profile view in the main container
+     */
     public void showMyProfile() {
-        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
-        android.support.v4.app.Fragment mFragment = new MyProfileFragment();
+        Fragment mFragment = new MyProfileFragment();
         Bundle args = new Bundle();
         args.putString(SitesFragment.ARG_SITE_NAME, getString(R.string.string_site_home));
         mFragment.setArguments(args);
-        android.support.v4.app.FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.activity_main_frame_container, mFragment, null);
-        transaction.addToBackStack(null);
-        transaction.commit();
+        replaceFragment(mFragment, null);
         mDrawerLayout.closeDrawers();
     }
 
@@ -202,27 +205,19 @@ public class MainActivity extends ActionBarActivity {
         else {
             // Only for dynamic form menu
             Fragment mFragment = new FormsFragment();
-            Bundle args = new Bundle();
+            Bundle args;
 
             com.ievolutioned.pxform.database.FormsDataSet f = new FormsDataSet(MainActivity.this);
             List<com.ievolutioned.pxform.database.Forms> formsList = f.selectByName(item);
             f.close();
 
+            //Sets the bundle for forms
             if (formsList.size() > 0) {
-
                 JsonElement jsonElement = new JsonParser().parse(FileUtil.readJsonFile(this,
                         formsList.get(0).getName()));
                 String jsonArray = jsonElement.getAsJsonObject().get("content").getAsJsonArray().toString();
-
-                args.putString(FormsFragment.ARG_FORM_NAME, item);
-                args.putLong(FormsFragment.ARGS_FORM_ID, id);
-                args.putLong(FormsFragment.DATABASE_FORM_ID, formsList.get(0).getId());
-                args.putInt(FormsFragment.DATABASE_LEVEL, 0);
-                args.putString(FormsFragment.DATABASE_KEY_PARENT, "");
-                //args.putString(FormsFragment.DATABASE_JSON,com.ievolutioned.pxform.PXFParser.parseFileToString(MainActivity.this,"Form.json"));
-                args.putString(FormsFragment.DATABASE_JSON, jsonArray);
+                args = getFragmentArgs(item, id, formsList.get(0).getId(), 0, "", jsonArray);
                 mFragment = new FormsFragment();
-
                 Bundle b = new Bundle();
                 b.putBundle(FormsFragment.class.getName(), args);
                 mFragment.setArguments(b);
@@ -231,6 +226,46 @@ public class MainActivity extends ActionBarActivity {
             replaceFragment(mFragment, null);
         }
         mDrawerLayout.closeDrawers();
+    }
+
+
+    /**
+     * Gets the fragment arguments from the current parameters
+     *
+     * @param item
+     * @param dbId
+     * @param level
+     * @param key
+     * @param array
+     * @return Bundle args
+     */
+    private Bundle getFragmentArgs(String item, long dbId, int level, String key, String array) {
+        Bundle args = new Bundle();
+        args.putString(FormsFragment.ARG_FORM_NAME, item);
+        args.putLong(FormsFragment.DATABASE_FORM_ID, dbId);
+        args.putInt(FormsFragment.DATABASE_LEVEL, level);
+        args.putString(FormsFragment.DATABASE_KEY_PARENT, key);
+        args.putString(FormsFragment.DATABASE_JSON, array);
+        return args;
+
+    }
+
+    /**
+     * Gets the fragment arguments from the current parameters
+     *
+     * @param item
+     * @param id
+     * @param dbId
+     * @param level
+     * @param key
+     * @param array
+     * @return Bundle args
+     */
+    private Bundle getFragmentArgs(String item, long id, long dbId, int level, String key,
+                                   String array) {
+        Bundle args = getFragmentArgs(item, dbId, level, key, array);
+        args.putLong(FormsFragment.ARGS_FORM_ID, id);
+        return args;
     }
 
     /**
@@ -244,11 +279,7 @@ public class MainActivity extends ActionBarActivity {
 
         for (String form : forms) {
             if (form.equalsIgnoreCase(item)) {
-                args.putString(FormsFragment.ARG_FORM_NAME, item);
-                args.putLong(FormsFragment.DATABASE_FORM_ID, 0);
-                args.putInt(FormsFragment.DATABASE_LEVEL, 0);
-                args.putString(FormsFragment.DATABASE_KEY_PARENT, "");
-                args.putString(FormsFragment.DATABASE_JSON,
+                args = getFragmentArgs(item, 0, 0, "",
                         com.ievolutioned.pxform.PXFParser.parseFileToString(MainActivity.this,
                                 "Form.json"));
                 mFragment = new FormsFragment();
