@@ -85,7 +85,7 @@ public class MenuFragment extends Fragment {
     private void bindData() {
         FormService fs = new FormService(AppConfig.getUUID(getActivity()),
                 AppPreferences.getAdminToken(getActivity()));
-        fs.getForms(form_service_callback);
+        fs.getForms(AppPreferences.getAdminToken(getActivity()), form_service_callback);
     }
 
     /**
