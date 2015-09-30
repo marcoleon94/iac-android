@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="nav_drawer_form_title">FORMULARIOS</string>
+    <string name="nav_drawer_form_home">Inicio</string>
+    <string name="nav_drawer_form_profile">Mi perfil</string>
+    <string name="nav_drawer_form_logout">Cerrar sesión</string>
     <string-array name="nav_drawer_form_items">
         <item>Asistencia a Cursos</item>
     </string-array>
-    <string name="nav_drawer_sites_title">SITIOS DE INTERES</string>
+
     <string-array name="nav_drawer_sites_items">
         <item>@string/string_site_home</item>
-        <item>@string/string_site_recibos</item>
-        <item>@string/string_site_reconocimiento</item>
     </string-array>
 </resources>

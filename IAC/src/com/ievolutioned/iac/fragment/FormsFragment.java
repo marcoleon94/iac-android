@@ -1,10 +1,10 @@
 package com.ievolutioned.iac.fragment;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -196,7 +196,7 @@ public class FormsFragment extends BaseFragmentClass {
                     widget.getJsonEntries().get(PXWidget.FIELD_KEY).getValue().getAsString()
                             .contains(PXWidget.FIELD_KEY_BARCODE)) {
                 buttonBarCode = (PXFButton) widget;
-                IntentIntegrator.forFragment(FormsFragment.this).initiateScan();
+                IntentIntegrator.forSupportFragment(FormsFragment.this).initiateScan();
 
             }
         }
@@ -247,7 +247,7 @@ public class FormsFragment extends BaseFragmentClass {
         //Verify IAC ID
         String iacID = getIacId();
         if (iacID == null || iacID.isEmpty())
-            msg = "IAC ID no es válido";
+            msg = "El IAC ID no es válido";
         if (msg != null) {
             showValidationMessage(msg);
             return false;
@@ -438,7 +438,10 @@ public class FormsFragment extends BaseFragmentClass {
     private String getIacId() {
         //TODO: This key is only temporal
         PXFAdapter adapter = (PXFAdapter) listView.getAdapter();
-        return adapter.getItemValueForKey("employeeID");
+        String iacId = adapter.getItemValueForKey("employeeID");
+        if (iacId == null)
+            iacId = AppPreferences.getIacId(getActivity());
+        return iacId;
     }
 
 

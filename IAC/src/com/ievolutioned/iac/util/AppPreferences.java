@@ -17,6 +17,10 @@ public class AppPreferences {
 
     private static final String KEY_ADMIN_TOKEN = "KEY_ADMIN_TOKEN";
 
+    private static final String KEY_IAC_ID = "KEY_IAC_ID";
+
+    private static final String KEY_ROLE = "KEY_ROLE";
+
     /**
      * Gets the SharedPreferences
      *
@@ -58,4 +62,19 @@ public class AppPreferences {
         return getPrefs(c).getString(KEY_ADMIN_TOKEN, null);
     }
 
+    public static void setIacId(Context c, String value) {
+        getEditor(c).putString(KEY_IAC_ID, value).commit();
+    }
+
+    public static String getIacId(Context c) {
+        return getPrefs(c).getString(KEY_IAC_ID, null);
+    }
+
+    public static void setRole(Context c, String value) {
+        getEditor(c).putString(KEY_ROLE, value).commit();
+    }
+
+    public static String getRole(Context c) {
+        return getPrefs(c).getString(KEY_ROLE, null);
+    }
 }

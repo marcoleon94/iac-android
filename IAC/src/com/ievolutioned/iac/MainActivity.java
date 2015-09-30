@@ -1,11 +1,12 @@
 package com.ievolutioned.iac;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -17,6 +18,7 @@ import com.crashlytics.android.Crashlytics;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.ievolutioned.iac.fragment.FormsFragment;
+import com.ievolutioned.iac.fragment.MyProfileFragment;
 import com.ievolutioned.iac.fragment.SitesFragment;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.FileUtil;
@@ -39,6 +41,10 @@ public class MainActivity extends ActionBarActivity {
      * TAG string
      */
     public static final String TAG = MainActivity.class.getName();
+
+    public static final int ACTION_PICK_PHOTO = 1000;
+    public static final int ACTION_TAKE_PHOTO = 2000;
+
     /**
      * DrawerLayout the main drawer layout for menu options
      */
@@ -91,9 +97,9 @@ public class MainActivity extends ActionBarActivity {
                 mDrawerLayout.closeDrawers();
                 return;
             }
-            FragmentManager fm = getFragmentManager();
+            FragmentManager fm = getSupportFragmentManager();
             Fragment fragment = fm.findFragmentById(R.id.activity_main_frame_container);
-            if (fragment instanceof SitesFragment) {
+            if (fragment instanceof MyProfileFragment || fragment instanceof SitesFragment) {
                 //Open drawer
                 mDrawerLayout.openDrawer(R.layout.fragment_menu);
                 return;
@@ -120,12 +126,26 @@ public class MainActivity extends ActionBarActivity {
      * Displays the home view as the main view
      */
     private void showHome() {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment mFragment = new SitesFragment();
         Bundle args = new Bundle();
         args.putString(SitesFragment.ARG_SITE_NAME, getString(R.string.string_site_home));
         mFragment.setArguments(args);
         replaceFragment(mFragment, null);
+        mDrawerLayout.closeDrawers();
+    }
+
+    public void showMyProfile() {
+        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+        android.support.v4.app.Fragment mFragment = new MyProfileFragment();
+        Bundle args = new Bundle();
+        args.putString(SitesFragment.ARG_SITE_NAME, getString(R.string.string_site_home));
+        mFragment.setArguments(args);
+        android.support.v4.app.FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.activity_main_frame_container, mFragment, null);
+        transaction.addToBackStack(null);
+        transaction.commit();
+        mDrawerLayout.closeDrawers();
     }
 
     /**
@@ -254,6 +274,7 @@ public class MainActivity extends ActionBarActivity {
         if (mFragment != null) {
             replaceFragment(mFragment, null);
         }
+        mDrawerLayout.closeDrawers();
     }
 
     /**
@@ -261,7 +282,7 @@ public class MainActivity extends ActionBarActivity {
      * <br>This can be call from the {@link FormsFragment fragments childs }
      */
     public void replaceFragment(Fragment mFragment, String tag) {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.activity_main_frame_container, mFragment, tag);
         transaction.addToBackStack(null);
@@ -291,7 +312,7 @@ public class MainActivity extends ActionBarActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         //Catches the keycode back
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            Fragment fragment = getFragmentManager().findFragmentById(R.id.activity_main_frame_container);
+            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_container);
             if (fragment != null)
                 if (fragment instanceof SitesFragment) {
                     ((SitesFragment) fragment).onBackPressed();
@@ -303,7 +324,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public void onBackPressed() {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStackImmediate();
             fragmentManager.beginTransaction().commit();
@@ -329,5 +350,35 @@ public class MainActivity extends ActionBarActivity {
                 mLoading.show();
             else
                 mLoading.dismiss();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK)
+            switch (requestCode) {
+                case ACTION_PICK_PHOTO:
+                case ACTION_TAKE_PHOTO:
+                    setPictureOnProfileFragment(data, requestCode);
+                    break;
+                default:
+                    break;
+            }
+    }
+
+    /**
+     * Sets the profile on profile fragment about the data
+     *
+     * @param data        - Intent data
+     * @param requestCode - request code
+     */
+    private void setPictureOnProfileFragment(Intent data, int requestCode) {
+        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+        android.support.v4.app.Fragment f = fragmentManager.findFragmentById(R.id.activity_main_frame_container);
+        if (f == null)
+            return;
+        else if (f instanceof MyProfileFragment)
+            ((MyProfileFragment) f).setImageByIntent(data, requestCode);
+        LogUtil.d(TAG, data.toString());
     }
 }
