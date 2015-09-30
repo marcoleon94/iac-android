@@ -41,7 +41,7 @@ public class FormService extends ServiceBase {
      *
      * @param callback - ServiceHandler callback
      */
-    public void getForms(final ServiceHandler callback) {
+    public void getForms(final String token, final ServiceHandler callback) {
         task = new AsyncTask<Void, Void, ResponseBase>() {
             @Override
             protected FormResponse doInBackground(Void... p) {
@@ -53,6 +53,8 @@ public class FormService extends ServiceBase {
                         this.cancel(true);
                     }
                     HttpGetParam params = new HttpGetParam();
+                    if (token != null)
+                        params.add("admin-token", token);
 
                     //Get headers
                     HttpHeader headers = getHeaders(ACTION_INDEX, CONTROLLER_INQUESTS);

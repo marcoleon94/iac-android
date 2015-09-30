@@ -52,11 +52,6 @@ public class AppConfig {
      */
     public static final String CLOUDINARY_API_SECRET = "xcWDVYFPZ9eeigoVMgrr2AjE3go";
 
-    private static final String CLOUDINARY_UPLOAD_POSTFIX = "/image/upload/v1443555932/";
-    public static final String CLOUDINARY_HTTP_URL = "http://res.cloudinary.com/" +
-            CLOUDINARY_CLOUD_NAME + CLOUDINARY_UPLOAD_POSTFIX;
-
-
     // --------------------------------------------
     // UUID Configuration
     // --------------------------------------------
