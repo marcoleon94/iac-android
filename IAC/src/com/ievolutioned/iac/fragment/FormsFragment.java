@@ -281,7 +281,7 @@ public class FormsFragment extends BaseFragmentClass {
      * @param pos_execute Runnable to be executed after save
      */
     public final void save(final Runnable pos_execute) {
-        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
+        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity(), "Guardando...");
         loading.show();
 
         if (listView.getAdapter() == null || !(listView.getAdapter() instanceof PXFAdapter)) {
@@ -316,7 +316,7 @@ public class FormsFragment extends BaseFragmentClass {
      * Saves the form before upload
      */
     private final void saveAndUpload() {
-        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
+        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity(), "Guardando...");
         loading.show();
 
         if (listView.getAdapter() == null || !(listView.getAdapter() instanceof PXFAdapter)) {
@@ -383,7 +383,7 @@ public class FormsFragment extends BaseFragmentClass {
      * @param jsonElement - the form
      */
     private void createFormService(JsonElement jsonElement) {
-        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
+        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity(), "Subiendo respuestas...");
         loading.show();
         //Ready to upload
         String uuid = AppConfig.getUUID(getActivity());
