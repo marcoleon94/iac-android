@@ -21,6 +21,11 @@
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
     </style>
 
+    <style name="LoadingTheme" parent="Theme.AppCompat.Light">
+        <item name="windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
     <style name="ToolbarStyle" parent="AppTheme">
         <item name="android:textColorPrimary">@color/primary_gray</item>
         <item name="actionMenuTextColor">@color/primary_gray</item>
