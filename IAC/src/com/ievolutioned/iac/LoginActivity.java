@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.ievolutioned.iac.entity.UserEntity;
@@ -104,25 +103,13 @@ public class LoginActivity extends Activity {
         EditText[] forms = {mEmail, mPassword};
         for (EditText f : forms) {
             if (TextUtils.isEmpty(f.getText())) {
-                showToast(R.string.activity_login_required_field);
+                ViewUtility.showMessage(this, ViewUtility.MSG_ERROR,
+                        R.string.activity_login_required_field);
                 f.requestFocus();
                 return false;
             }
         }
         return true;
-    }
-
-    /**
-     * Shows a message toast
-     *
-     * @param msg
-     */
-    private void showToast(int msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-    }
-
-    private void showToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -160,13 +147,15 @@ public class LoginActivity extends Activity {
 
         @Override
         public void onError(LoginService.LoginResponse response) {
-            showToast("Error: No se ha podido autenticar");
+            ViewUtility.showMessage(LoginActivity.this, ViewUtility.MSG_ERROR,
+                    R.string.activity_login_error);
             loading(false);
         }
 
         @Override
         public void onCancel() {
-            showToast("Canceled!");
+            ViewUtility.showMessage(LoginActivity.this, ViewUtility.MSG_ERROR,
+                    R.string.activity_login_error);
             loading(false);
         }
     };
@@ -188,7 +177,6 @@ public class LoginActivity extends Activity {
         if (user == null)
             return;
         try {
-
             LogUtil.d(TAG, "USER: " + user.getAdminToken() + ":" + user.getAdminRol() + ":" +
                     user.getIacId());
             AppPreferences.setIacId(this, user.getIacId());
