@@ -2,7 +2,6 @@ package com.ievolutioned.iac.fragment;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -13,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -34,16 +32,46 @@ import com.ievolutioned.pxform.adapters.PXFAdapter;
  * local database and upload data to web services
  */
 public class FormsFragment extends BaseFragmentClass {
+    /**
+     * Sub form TAG
+     */
     public static final String TAG_SUBFORM = "SUBFORM";
+    /**
+     * Form ID
+     */
     public static final String ARGS_FORM_ID = "ARGS_FORM_ID";
+    /**
+     * Form name
+     */
     public static final String ARG_FORM_NAME = "ARG_FORM_NAME";
+    /**
+     * Database Form ID
+     */
     public static final String DATABASE_FORM_ID = "DATABASE_FORM_ID";
+    /**
+     * Database Level
+     */
     public static final String DATABASE_LEVEL = "DATABASE_LEVEL";
+    /**
+     * Database key parent
+     */
     public static final String DATABASE_KEY_PARENT = "DATABASE_KEY_PARENT";
+    /**
+     * Database JSON
+     */
     public static final String DATABASE_JSON = "DATABASE_JSON";
 
+    /**
+     * Main ListView for PXForms
+     */
     private ListView listView;
+    /**
+     * Saved state
+     */
     private Bundle savedState;
+    /**
+     * Bar code Button
+     */
     private PXFButton buttonBarCode;
 
     @Override
@@ -64,6 +92,11 @@ public class FormsFragment extends BaseFragmentClass {
         return root;
     }
 
+    /**
+     * Sets the title for the toolbar
+     *
+     * @param args
+     */
     private void setTitle(Bundle args) {
         Bundle b = args.getBundle(FormsFragment.class.getName());
         if (b != null && b.containsKey(ARG_FORM_NAME))
@@ -88,7 +121,8 @@ public class FormsFragment extends BaseFragmentClass {
                 saveR = new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getActivity(), "salvado", Toast.LENGTH_SHORT).show();
+                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
+                                R.string.fragment_forms_saved);
                     }
                 };
                 save(saveR);
@@ -99,7 +133,6 @@ public class FormsFragment extends BaseFragmentClass {
                 }
                 break;
             default:
-                Toast.makeText(getActivity(), "????", Toast.LENGTH_SHORT).show();
                 break;
         }
 
@@ -127,8 +160,8 @@ public class FormsFragment extends BaseFragmentClass {
 
             @Override
             public void error(Exception ex, String json) {
-                Toast.makeText(getActivity(), "can't parse json", Toast.LENGTH_SHORT).show();
-                loading.dismiss();
+                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
+                        R.string.fragment_forms_error_parse);
             }
         });
 
@@ -189,43 +222,45 @@ public class FormsFragment extends BaseFragmentClass {
         return state;
     }
 
-    private final PXFAdapter.AdapterEventHandler adapterEventHandler = new PXFAdapter.AdapterEventHandler() {
-        @Override
-        public void onClick(PXWidget widget) {
-            if (widget.getAdapterItemType() == PXWidget.ADAPTER_ITEM_TYPE_BUTTON &&
-                    widget.getJsonEntries().get(PXWidget.FIELD_KEY).getValue().getAsString()
-                            .contains(PXWidget.FIELD_KEY_BARCODE)) {
-                buttonBarCode = (PXFButton) widget;
-                IntentIntegrator.forSupportFragment(FormsFragment.this).initiateScan();
-
-            }
-        }
-
-        @Override
-        public void openSubForm(final String parentKey, final String json, PXFAdapter adapter) {
-            Runnable saveRunnable = new Runnable() {
+    private final PXFAdapter.AdapterEventHandler adapterEventHandler =
+            new PXFAdapter.AdapterEventHandler() {
                 @Override
-                public void run() {
-                    Bundle a = new Bundle();
-                    a.putLong(FormsFragment.DATABASE_FORM_ID,
-                            savedState.getLong(FormsFragment.DATABASE_FORM_ID));
-                    a.putInt(FormsFragment.DATABASE_LEVEL,
-                            savedState.getInt(FormsFragment.DATABASE_LEVEL) + 1);
-                    a.putString(FormsFragment.DATABASE_KEY_PARENT, parentKey);
-                    a.putString(FormsFragment.DATABASE_JSON, json);
+                public void onClick(PXWidget widget) {
+                    if (widget.getAdapterItemType() == PXWidget.ADAPTER_ITEM_TYPE_BUTTON &&
+                            widget.getJsonEntries().get(PXWidget.FIELD_KEY).getValue().getAsString()
+                                    .contains(PXWidget.FIELD_KEY_BARCODE)) {
+                        buttonBarCode = (PXFButton) widget;
+                        IntentIntegrator.forSupportFragment(FormsFragment.this).initiateScan();
 
-                    Bundle args = new Bundle();
-                    args.putBundle(FormsFragment.class.getName(), a);
+                    }
+                }
 
-                    Fragment fragment = new FormsFragment();
-                    fragment.setArguments(args);
-                    setMainActivityReplaceFragment(fragment, TAG_SUBFORM);
+                @Override
+                public void openSubForm(final String parentKey, final String json,
+                                        PXFAdapter adapter) {
+                    Runnable saveRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            Bundle a = new Bundle();
+                            a.putLong(FormsFragment.DATABASE_FORM_ID,
+                                    savedState.getLong(FormsFragment.DATABASE_FORM_ID));
+                            a.putInt(FormsFragment.DATABASE_LEVEL,
+                                    savedState.getInt(FormsFragment.DATABASE_LEVEL) + 1);
+                            a.putString(FormsFragment.DATABASE_KEY_PARENT, parentKey);
+                            a.putString(FormsFragment.DATABASE_JSON, json);
+
+                            Bundle args = new Bundle();
+                            args.putBundle(FormsFragment.class.getName(), a);
+
+                            Fragment fragment = new FormsFragment();
+                            fragment.setArguments(args);
+                            setMainActivityReplaceFragment(fragment, TAG_SUBFORM);
+                        }
+                    };
+
+                    save(saveRunnable);
                 }
             };
-
-            save(saveRunnable);
-        }
-    };
 
     /**
      * Validates the form
@@ -238,7 +273,7 @@ public class FormsFragment extends BaseFragmentClass {
 
         //Verify ID FORM
         if (getFormId() == null)
-            msg = "Error de formulario";
+            msg = getString(R.string.fragment_forms_error_form);
         if (msg != null) {
             showValidationMessage(msg);
             return false;
@@ -247,7 +282,7 @@ public class FormsFragment extends BaseFragmentClass {
         //Verify IAC ID
         String iacID = getIacId();
         if (iacID == null || iacID.isEmpty())
-            msg = "El IAC ID no es válido";
+            msg = getString(R.string.fragment_forms_error_iac_id);
         if (msg != null) {
             showValidationMessage(msg);
             return false;
@@ -256,7 +291,7 @@ public class FormsFragment extends BaseFragmentClass {
         //Verify the form
         msg = adapter.validate(listView);
         if (msg != null) {
-            showValidationMessage("Campo requerido: " + msg);
+            showValidationMessage(getString(R.string.fragment_forms_error_required) + msg);
             return false;
         }
 
@@ -269,10 +304,7 @@ public class FormsFragment extends BaseFragmentClass {
      * @param msg - the message
      */
     private void showValidationMessage(String msg) {
-        Toast toast = Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT);
-        View v = toast.getView();
-        v.setBackgroundColor(Color.RED);
-        toast.show();
+        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR, msg);
     }
 
     /**
@@ -281,7 +313,8 @@ public class FormsFragment extends BaseFragmentClass {
      * @param pos_execute Runnable to be executed after save
      */
     public final void save(final Runnable pos_execute) {
-        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity(), "Guardando...");
+        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity(),
+                getString(R.string.fragment_forms_saving));
         loading.show();
 
         if (listView.getAdapter() == null || !(listView.getAdapter() instanceof PXFAdapter)) {
@@ -306,7 +339,8 @@ public class FormsFragment extends BaseFragmentClass {
                     @Override
                     public void error(Exception ex) {
                         loading.dismiss();
-                        Toast.makeText(getActivity(), "Por el momento no se ha podido salvar", Toast.LENGTH_SHORT).show();
+                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                                R.string.fragment_forms_error_saving);
                     }
                 }
         );
@@ -316,7 +350,8 @@ public class FormsFragment extends BaseFragmentClass {
      * Saves the form before upload
      */
     private final void saveAndUpload() {
-        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity(), "Guardando...");
+        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity(),
+                getString(R.string.fragment_forms_saving));
         loading.show();
 
         if (listView.getAdapter() == null || !(listView.getAdapter() instanceof PXFAdapter)) {
@@ -333,14 +368,16 @@ public class FormsFragment extends BaseFragmentClass {
                     @Override
                     public void saved() {
                         loading.dismiss();
-                        Toast.makeText(getActivity(), "Guardado", Toast.LENGTH_SHORT).show();
+                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
+                                R.string.fragment_forms_saved);
                         getSavedResponse();
                     }
 
                     @Override
                     public void error(Exception ex) {
                         loading.dismiss();
-                        Toast.makeText(getActivity(), "Por el momento no se ha podido salvar", Toast.LENGTH_SHORT).show();
+                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                                R.string.fragment_forms_error_saving);
                     }
                 }
         );
@@ -365,14 +402,16 @@ public class FormsFragment extends BaseFragmentClass {
                     @Override
                     public void success(JsonElement jsonElement) {
                         loading.dismiss();
-                        Toast.makeText(getActivity(), "Formulario cargado", Toast.LENGTH_SHORT).show();
+                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
+                                R.string.fragment_forms_loaded);
                         createFormService(jsonElement);
                     }
 
                     @Override
                     public void error(Exception ex) {
                         loading.dismiss();
-                        Toast.makeText(getActivity(), "Error al cargar formulario", Toast.LENGTH_SHORT).show();
+                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                                R.string.fragment_forms_error_parse);
                     }
                 });
     }
@@ -383,7 +422,8 @@ public class FormsFragment extends BaseFragmentClass {
      * @param jsonElement - the form
      */
     private void createFormService(JsonElement jsonElement) {
-        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity(), "Subiendo respuestas...");
+        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity(),
+                getString(R.string.fragment_forms_loading));
         loading.show();
         //Ready to upload
         String uuid = AppConfig.getUUID(getActivity());
@@ -399,19 +439,22 @@ public class FormsFragment extends BaseFragmentClass {
             @Override
             public void onSuccess(UserService.UserResponse response) {
                 loading.dismiss();
-                Toast.makeText(getActivity(), "Formulario enviado!", Toast.LENGTH_SHORT).show();
+                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
+                        R.string.fragment_forms_uploaded);
             }
 
             @Override
             public void onError(UserService.UserResponse response) {
                 loading.dismiss();
-                Toast.makeText(getActivity(), "Error al enviar fomulario!" + response.msg, Toast.LENGTH_SHORT).show();
+                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                        R.string.fragment_forms_error_send);
             }
 
             @Override
             public void onCancel() {
                 loading.dismiss();
-                Toast.makeText(getActivity(), "Cancelado", Toast.LENGTH_SHORT).show();
+                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                        R.string.fragment_forms_error_cancel);
             }
         });
     }
@@ -449,7 +492,7 @@ public class FormsFragment extends BaseFragmentClass {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null || !TextUtils.isEmpty(result.getContents())) {
-            Toast.makeText(getActivity(), result.getContents(), Toast.LENGTH_SHORT).show();
+            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_DEFAULT, result.getContents());
             if (buttonBarCode != null) {
                 try {
                     buttonBarCode.setValue(result.getContents());
@@ -459,7 +502,8 @@ public class FormsFragment extends BaseFragmentClass {
                 }
             }
         } else {
-            Toast.makeText(getActivity(), "Por el momento no se puede terminar la operacion", Toast.LENGTH_LONG).show();
+            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                    R.string.fragment_forms_error_barcode);
         }
     }
 }

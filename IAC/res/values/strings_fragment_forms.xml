@@ -12,5 +12,20 @@
         <item >Form.json</item>
     </string-array>
 
+    <string name="fragment_forms_saved">Guardado</string>
+    <string name="fragment_forms_saving">Guardando...</string>
+    <string name="fragment_forms_loaded">Formulario cargado</string>
+    <string name="fragment_forms_loading">Subiendo respuestas...</string>
+    <string name="fragment_forms_uploaded">Formulario enviado!</string>
+    <string name="fragment_forms_error_parse">Error al cargar formulario</string>
+    <string name="fragment_forms_error_form">Error de formulario</string>
+    <string name="fragment_forms_error_iac_id">El IAC ID no es válido</string>
+    <string name="fragment_forms_error_required">Campo requerido: </string>
+    <string name="fragment_forms_error_saving">Por el momento no se ha podido salvar</string>
+    <string name="fragment_forms_error_send">Error al enviar fomulario!</string>
+    <string name="fragment_forms_error_cancel">Error al enviar fomulario!</string>
+    <string name="fragment_forms_error_barcode">Por el momento no se puede terminar la operacion</string>
+
+
 
 </resources>

@@ -1,6 +1,5 @@
 package com.ievolutioned.iac.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,7 +64,7 @@ public class MenuDrawerListAdapter extends BaseAdapter {
             h.imgIcon = (ImageView) view.findViewById(R.id.drawer_list_item_icon);
             h.txtTitle = (TextView) view.findViewById(R.id.drawer_list_item_title);
             view.setTag(h);
-        }else{
+        } else {
             h = (HelperMenu) view.getTag();
         }
 
@@ -77,7 +76,10 @@ public class MenuDrawerListAdapter extends BaseAdapter {
         return view;
     }
 
-    static class HelperMenu{
+    /**
+     * HelperMenu menu class for a adapter
+     */
+    static class HelperMenu {
         public ImageView imgIcon;
         public TextView txtTitle;
     }

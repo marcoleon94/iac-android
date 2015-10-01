@@ -9,17 +9,32 @@ import com.google.gson.annotations.SerializedName;
  */
 public class UserEntity {
 
+    /**
+     * IAC ID
+     */
     @SerializedName("amin_iac_id")
     private String iacId;
 
+    /**
+     * STATUS
+     */
     private String status;
 
+    /**
+     * Admin Token
+     */
     @SerializedName("admin_token")
     private String adminToken;
 
+    /**
+     * Email of user
+     */
     @SerializedName("admin_email")
     private String adminEmail;
 
+    /**
+     * Rol of user
+     */
     @SerializedName("admin_rol")
     private String adminRol;
 
