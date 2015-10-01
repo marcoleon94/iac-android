@@ -8,18 +8,32 @@ import com.google.gson.annotations.SerializedName;
  * Created by Daniel on 27/04/2015.
  */
 public class InquestEntity {
-
-    /*
-    {"id":34,"user_id":16,"inquest_id":9,"response":{"gained":"No","newJob":"","salary":"Si","values":"Nada","bossWhy":"mala onda","opinion":"Regular","benefits":"Regular","identity":"Nada","training":"Malo","gainedWhy":"","newSalary":"","salaryWhy":"","teammates":"Bueno","unionized":"Malo","workplace":"Regular","employeeID":"12345678","newCompany":"","opinionWhy":"","trainingOk":"Si","benefitsWhy":"","bossOpinion":"Malo","otherReason":"","trainingWhy":"por que no me enseÃ±aron nada","unionizedWhy":"Â¿Â¿ funcionas,no tengo idea tu si ?????","workPromises":"No","departmentWhy":"","reasonToLeave":"Matrimonio","trainingOkWhy":"","humanResources":"Regular","workInteresting":"Si","dateOfWithdrawal":"04/10/2015","trainingReceived":"Si","departmentOpinion":"Regular","humanResourcesWhy":"","salaryExpectations":"No","trainingReceivedWhy":"","humanResourcesService":"No","workInterestingAnswer":"123 Por ser asi","departmentWithMostRelation":"IngenierÃ­a"},"created_at":"2015-04-27T19:22:09.363Z","updated_at":"2015-04-27T19:22:09.363Z"}
+    /**
+     * Inquest entity ID
      */
     private long id;
+    /**
+     * User ID
+     */
     @SerializedName("user_id")
     private long userId;
+    /**
+     * Inquest ID
+     */
     @SerializedName("inquest_id")
     private long inquestId;
+    /**
+     * Response from service
+     */
     private JsonElement response;
+    /**
+     * Date created at
+     */
     @SerializedName("created_at")
     private String createdAt;
+    /**
+     * Date updated at
+     */
     @SerializedName("updated_at")
     private String updatedAt;
 

@@ -6,5 +6,6 @@
     <string name="activity_login_password">Contraseña</string>
     <string name="activity_login_sing_in">Entrar</string>
     <string name="activity_login_required_field">*Campo requerido</string>
+    <string name="activity_login_error">Error: No se ha podido autenticar</string>
 
 </resources>

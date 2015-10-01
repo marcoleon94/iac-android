@@ -185,8 +185,8 @@ public class ProfileFragment extends Fragment {
     /**
      * Load an image from the current URL
      *
-     * @param url        - URL of the web image to be downloaded
-     * @param cloudinary
+     * @param url   - URL of the web image to be downloaded
+     * @param param - Parameter
      */
     private void loadImageFromURL(String url, int param) {
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());

@@ -3,14 +3,21 @@ package com.ievolutioned.iac.view;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ievolutioned.iac.R;
 
 @SuppressLint("InflateParams")
 public class ViewUtility {
+
+    public static final int MSG_ERROR = Color.RED;
+    public static final int MSG_DEFAULT = Color.LTGRAY;
+    public static final int MSG_SUCCESS = Color.BLUE;
+
     /**
      * Create a loading screen, using an {@link AlertDialog} class
      *
@@ -49,6 +56,31 @@ public class ViewUtility {
      */
     public static AlertDialog getLoadingScreen(Context context) {
         return getLoadingScreen(context, null);
+    }
+
+    /**
+     * Shows a Toast message
+     *
+     * @param c     - Context context
+     * @param color - Color an int color
+     * @param msg   - The message to be displayed
+     */
+    public static void showMessage(Context c, int color, String msg) {
+        Toast toast = Toast.makeText(c, msg, Toast.LENGTH_SHORT);
+        View v = toast.getView();
+        v.setBackgroundColor(color);
+        toast.show();
+    }
+
+    /**
+     * Shows a Toast message
+     *
+     * @param c     - Context context
+     * @param color - Color an int color
+     * @param msg   - The resource string
+     */
+    public static void showMessage(Context c, int color, int msg) {
+        showMessage(c, color, c.getString(msg));
     }
 
 }
