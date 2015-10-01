@@ -2,7 +2,6 @@ package com.ievolutioned.iac.fragment;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -13,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -94,6 +92,11 @@ public class FormsFragment extends BaseFragmentClass {
         return root;
     }
 
+    /**
+     * Sets the title for the toolbar
+     *
+     * @param args
+     */
     private void setTitle(Bundle args) {
         Bundle b = args.getBundle(FormsFragment.class.getName());
         if (b != null && b.containsKey(ARG_FORM_NAME))
@@ -118,8 +121,8 @@ public class FormsFragment extends BaseFragmentClass {
                 saveR = new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getActivity(), R.string.fragment_forms_saved,
-                                Toast.LENGTH_SHORT).show();
+                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
+                                R.string.fragment_forms_saved);
                     }
                 };
                 save(saveR);
@@ -157,9 +160,8 @@ public class FormsFragment extends BaseFragmentClass {
 
             @Override
             public void error(Exception ex, String json) {
-                Toast.makeText(getActivity(), R.string.fragment_forms_error_parse,
-                        Toast.LENGTH_SHORT).show();
-                loading.dismiss();
+                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
+                        R.string.fragment_forms_error_parse);
             }
         });
 
@@ -302,10 +304,7 @@ public class FormsFragment extends BaseFragmentClass {
      * @param msg - the message
      */
     private void showValidationMessage(String msg) {
-        Toast toast = Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT);
-        View v = toast.getView();
-        v.setBackgroundColor(Color.RED);
-        toast.show();
+        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR, msg);
     }
 
     /**
@@ -340,8 +339,8 @@ public class FormsFragment extends BaseFragmentClass {
                     @Override
                     public void error(Exception ex) {
                         loading.dismiss();
-                        Toast.makeText(getActivity(), R.string.fragment_forms_error_saving,
-                                Toast.LENGTH_SHORT).show();
+                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                                R.string.fragment_forms_error_saving);
                     }
                 }
         );
@@ -369,16 +368,16 @@ public class FormsFragment extends BaseFragmentClass {
                     @Override
                     public void saved() {
                         loading.dismiss();
-                        Toast.makeText(getActivity(), R.string.fragment_forms_saved,
-                                Toast.LENGTH_SHORT).show();
+                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
+                                R.string.fragment_forms_saved);
                         getSavedResponse();
                     }
 
                     @Override
                     public void error(Exception ex) {
                         loading.dismiss();
-                        Toast.makeText(getActivity(), R.string.fragment_forms_error_saving,
-                                Toast.LENGTH_SHORT).show();
+                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                                R.string.fragment_forms_error_saving);
                     }
                 }
         );
@@ -403,16 +402,16 @@ public class FormsFragment extends BaseFragmentClass {
                     @Override
                     public void success(JsonElement jsonElement) {
                         loading.dismiss();
-                        Toast.makeText(getActivity(), R.string.fragment_forms_loaded,
-                                Toast.LENGTH_SHORT).show();
+                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
+                                R.string.fragment_forms_loaded);
                         createFormService(jsonElement);
                     }
 
                     @Override
                     public void error(Exception ex) {
                         loading.dismiss();
-                        Toast.makeText(getActivity(), R.string.fragment_forms_error_parse,
-                                Toast.LENGTH_SHORT).show();
+                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                                R.string.fragment_forms_error_parse);
                     }
                 });
     }
@@ -440,22 +439,22 @@ public class FormsFragment extends BaseFragmentClass {
             @Override
             public void onSuccess(UserService.UserResponse response) {
                 loading.dismiss();
-                Toast.makeText(getActivity(), R.string.fragment_forms_uploaded,
-                        Toast.LENGTH_SHORT).show();
+                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
+                        R.string.fragment_forms_uploaded);
             }
 
             @Override
             public void onError(UserService.UserResponse response) {
                 loading.dismiss();
-                Toast.makeText(getActivity(), R.string.fragment_forms_error_send,
-                        Toast.LENGTH_SHORT).show();
+                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                        R.string.fragment_forms_error_send);
             }
 
             @Override
             public void onCancel() {
                 loading.dismiss();
-                Toast.makeText(getActivity(), R.string.fragment_forms_error_cancel,
-                        Toast.LENGTH_SHORT).show();
+                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                        R.string.fragment_forms_error_cancel);
             }
         });
     }
@@ -493,7 +492,7 @@ public class FormsFragment extends BaseFragmentClass {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null || !TextUtils.isEmpty(result.getContents())) {
-            Toast.makeText(getActivity(), result.getContents(), Toast.LENGTH_SHORT).show();
+            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_DEFAULT, result.getContents());
             if (buttonBarCode != null) {
                 try {
                     buttonBarCode.setValue(result.getContents());
@@ -503,8 +502,8 @@ public class FormsFragment extends BaseFragmentClass {
                 }
             }
         } else {
-            Toast.makeText(getActivity(), R.string.fragment_forms_error_barcode,
-                    Toast.LENGTH_LONG).show();
+            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                    R.string.fragment_forms_error_barcode);
         }
     }
 }
