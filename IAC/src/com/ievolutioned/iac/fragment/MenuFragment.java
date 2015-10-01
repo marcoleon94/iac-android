@@ -27,17 +27,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * MenuFragment class, represents the main options of a menu that would be displayed on a drawer
+ * <p/>
  * Created by Daniel on 23/03/2015.
  */
 public class MenuFragment extends Fragment {
 
+    /**
+     * Static form titles
+     */
     private String[] menuFormTitles;
+    /**
+     * Static menu titles
+     */
     private String[] menuSitesTitles;
 
+    /**
+     * ListView list form
+     */
     private ListView mDrawerListForm;
 
+    /**
+     * Drawer form items
+     */
     private ArrayList<MenuDrawerItem> drawerFormItems = new ArrayList<MenuDrawerItem>();
 
+    /**
+     * MenuDrawerListAdapter adapter for form list
+     */
     private MenuDrawerListAdapter adapter_forms;
 
     @Override
@@ -48,6 +65,11 @@ public class MenuFragment extends Fragment {
         return root;
     }
 
+    /**
+     * Binds the main UI
+     *
+     * @param root - View root
+     */
     private void bindUI(View root) {
         //Find UI
         mDrawerListForm = (ListView) root.findViewById(R.id.fragment_menu_form_list);
@@ -100,6 +122,10 @@ public class MenuFragment extends Fragment {
             showLoading(false);
         }
 
+        /**
+         * Saves the response
+         * @param response - JsonElement response
+         */
         public void save(JsonElement response) {
             boolean isSaved = false;
             com.ievolutioned.pxform.database.FormsDataSet f = new FormsDataSet(getActivity());
@@ -152,6 +178,9 @@ public class MenuFragment extends Fragment {
     }
 
 
+    /**
+     * Click listener for select item
+     */
     private AdapterView.OnItemClickListener drawer_click = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -159,6 +188,9 @@ public class MenuFragment extends Fragment {
         }
     };
 
+    /**
+     * Click listener for select item
+     */
     private View.OnClickListener menu_click = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -178,11 +210,21 @@ public class MenuFragment extends Fragment {
         }
     };
 
+    /**
+     * Selects an item from the menu
+     *
+     * @param item - The item
+     */
     protected void selectItem(MenuDrawerItem item) {
         Log.d(MenuFragment.class.getName(), "Selected: " + item);
         ((MainActivity) getActivity()).selectItem(item.getId(), item.getTitle());
     }
 
+    /**
+     * Shows the loading message
+     *
+     * @param b
+     */
     protected void showLoading(boolean b) {
         ((MainActivity) getActivity()).showLoading(b);
     }
