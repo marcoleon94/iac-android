@@ -21,6 +21,7 @@ import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.net.service.UserService;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
+import com.ievolutioned.iac.util.LogUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 import com.ievolutioned.pxform.PXFButton;
 import com.ievolutioned.pxform.PXFParser;
@@ -32,6 +33,10 @@ import com.ievolutioned.pxform.adapters.PXFAdapter;
  * local database and upload data to web services
  */
 public class FormsFragment extends BaseFragmentClass {
+    /**
+     * TAG
+     */
+    public static final String TAG = FormsFragment.class.getName();
     /**
      * Sub form TAG
      */
@@ -61,10 +66,14 @@ public class FormsFragment extends BaseFragmentClass {
      */
     public static final String DATABASE_JSON = "DATABASE_JSON";
 
+    private static final String RESTORE = "RESTORE";
+
     /**
      * Main ListView for PXForms
      */
     private ListView listView;
+
+    private PXFAdapter pxfAdapter;
     /**
      * Saved state
      */
@@ -115,17 +124,9 @@ public class FormsFragment extends BaseFragmentClass {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Runnable saveR;
         switch (item.getItemId()) {
             case R.id.menu_fragment_form_save:
-                saveR = new Runnable() {
-                    @Override
-                    public void run() {
-                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
-                                R.string.fragment_forms_saved);
-                    }
-                };
-                save(saveR);
+                save(null);
                 break;
             case R.id.menu_fragment_form_upload:
                 if (validateForm()) {
@@ -146,7 +147,6 @@ public class FormsFragment extends BaseFragmentClass {
         if (!restoreStateFromArgs()) {
             // first run
         }
-
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
         loading.show();
 
@@ -155,6 +155,7 @@ public class FormsFragment extends BaseFragmentClass {
             public void finish(PXFAdapter adapter, String json) {
                 adapter.setAdapterEventHandler(adapterEventHandler);
                 listView.setAdapter(adapter);
+                pxfAdapter = adapter;
                 loading.dismiss();
             }
 
@@ -162,6 +163,7 @@ public class FormsFragment extends BaseFragmentClass {
             public void error(Exception ex, String json) {
                 ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
                         R.string.fragment_forms_error_parse);
+                loading.dismiss();
             }
         });
 
@@ -171,8 +173,14 @@ public class FormsFragment extends BaseFragmentClass {
                 , savedState.getInt(DATABASE_LEVEL)
                 , savedState.getString(DATABASE_KEY_PARENT)
         );
+
     }
 
+    /**
+     * Restore sate form args
+     *
+     * @return
+     */
     private boolean restoreStateFromArgs() {
         Bundle b = getArguments();
         savedState = b.getBundle(FormsFragment.class.getName());
@@ -183,6 +191,9 @@ public class FormsFragment extends BaseFragmentClass {
         return false;
     }
 
+    /**
+     * Restore state from args
+     */
     private void restoreState() {
         if (savedState != null) {
             // Call the restore
@@ -194,6 +205,32 @@ public class FormsFragment extends BaseFragmentClass {
         super.onSaveInstanceState(outState);
         //Save state
         saveSateToArgs();
+        saveStateToDB();
+    }
+
+    /**
+     * Saves the state to DB
+     */
+    private void saveStateToDB() {
+        PXFAdapter adapter = (PXFAdapter) listView.getAdapter();
+        adapter.save(
+                savedState.getLong(DATABASE_FORM_ID)
+                , savedState.getInt(DATABASE_LEVEL)
+                , savedState.getString(DATABASE_KEY_PARENT)
+                , new PXFAdapter.AdapterSaveHandler() {
+                    @Override
+                    public void saved() {
+                        //After save a form, look if a sub-form must be opened
+                        LogUtil.d(TAG, "Saved");
+
+                    }
+
+                    @Override
+                    public void error(Exception ex) {
+                        LogUtil.e(TAG, ex.getMessage(), ex);
+                    }
+                }
+        );
     }
 
     @Override
@@ -202,6 +239,9 @@ public class FormsFragment extends BaseFragmentClass {
         saveSateToArgs();
     }
 
+    /**
+     * Save state to args
+     */
     private void saveSateToArgs() {
         if (getView() != null)
             savedState = saveState();
@@ -211,6 +251,11 @@ public class FormsFragment extends BaseFragmentClass {
         }
     }
 
+    /**
+     * Save state
+     *
+     * @return
+     */
     private Bundle saveState() {
 
         if (savedState != null)
@@ -222,6 +267,9 @@ public class FormsFragment extends BaseFragmentClass {
         return state;
     }
 
+    /**
+     * Adapter event handler, allows few actions of adapter
+     */
     private final PXFAdapter.AdapterEventHandler adapterEventHandler =
             new PXFAdapter.AdapterEventHandler() {
                 @Override
@@ -238,27 +286,17 @@ public class FormsFragment extends BaseFragmentClass {
                 @Override
                 public void openSubForm(final String parentKey, final String json,
                                         PXFAdapter adapter) {
-                    Runnable saveRunnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            Bundle a = new Bundle();
-                            a.putLong(FormsFragment.DATABASE_FORM_ID,
-                                    savedState.getLong(FormsFragment.DATABASE_FORM_ID));
-                            a.putInt(FormsFragment.DATABASE_LEVEL,
-                                    savedState.getInt(FormsFragment.DATABASE_LEVEL) + 1);
-                            a.putString(FormsFragment.DATABASE_KEY_PARENT, parentKey);
-                            a.putString(FormsFragment.DATABASE_JSON, json);
+                    Bundle a = new Bundle();
+                    a.putLong(FormsFragment.DATABASE_FORM_ID,
+                            savedState.getLong(FormsFragment.DATABASE_FORM_ID));
+                    a.putInt(FormsFragment.DATABASE_LEVEL,
+                            savedState.getInt(FormsFragment.DATABASE_LEVEL) + 1);
+                    a.putString(FormsFragment.DATABASE_KEY_PARENT, parentKey);
+                    a.putString(FormsFragment.DATABASE_JSON, json);
 
-                            Bundle args = new Bundle();
-                            args.putBundle(FormsFragment.class.getName(), a);
-
-                            Fragment fragment = new FormsFragment();
-                            fragment.setArguments(args);
-                            setMainActivityReplaceFragment(fragment, TAG_SUBFORM);
-                        }
-                    };
-
-                    save(saveRunnable);
+                    Bundle args = new Bundle();
+                    args.putBundle(FormsFragment.class.getName(), a);
+                    save(args);
                 }
             };
 
@@ -309,10 +347,8 @@ public class FormsFragment extends BaseFragmentClass {
 
     /**
      * Save current state of the Form data
-     *
-     * @param pos_execute Runnable to be executed after save
      */
-    public final void save(final Runnable pos_execute) {
+    public final void save(final Bundle args) {
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity(),
                 getString(R.string.fragment_forms_saving));
         loading.show();
@@ -330,21 +366,39 @@ public class FormsFragment extends BaseFragmentClass {
                 , new PXFAdapter.AdapterSaveHandler() {
                     @Override
                     public void saved() {
-                        loading.dismiss();
-
-                        if (pos_execute != null)
-                            getActivity().runOnUiThread(pos_execute);
+                        //After save a form, look if a sub-form must be opened
+                        if (args != null)
+                            replaceToSubForm(args);
+                        else if (loading != null) {
+                            ViewUtility.showMessage(loading.getContext(), ViewUtility.MSG_SUCCESS,
+                                    R.string.fragment_forms_saved);
+                            loading.dismiss();
+                        }
                     }
 
                     @Override
                     public void error(Exception ex) {
-                        loading.dismiss();
-                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
-                                R.string.fragment_forms_error_saving);
+                        if (loading != null)
+                            loading.dismiss();
+                        if (getActivity() != null)
+                            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                                    R.string.fragment_forms_error_saving);
                     }
                 }
         );
     }
+
+    /**
+     * Replace to a Subform
+     *
+     * @param args - Bundle args
+     */
+    private void replaceToSubForm(Bundle args) {
+        Fragment fragment = new FormsFragment();
+        fragment.setArguments(args);
+        setMainActivityReplaceFragment(fragment, TAG_SUBFORM);
+    }
+
 
     /**
      * Saves the form before upload
