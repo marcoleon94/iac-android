@@ -21,6 +21,7 @@ import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.net.service.UserService;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
+import com.ievolutioned.iac.util.LogUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 import com.ievolutioned.pxform.PXFButton;
 import com.ievolutioned.pxform.PXFParser;
@@ -32,6 +33,10 @@ import com.ievolutioned.pxform.adapters.PXFAdapter;
  * local database and upload data to web services
  */
 public class FormsFragment extends BaseFragmentClass {
+    /**
+     * TAG
+     */
+    public static final String TAG = FormsFragment.class.getName();
     /**
      * Sub form TAG
      */
@@ -61,10 +66,14 @@ public class FormsFragment extends BaseFragmentClass {
      */
     public static final String DATABASE_JSON = "DATABASE_JSON";
 
+    private static final String RESTORE = "RESTORE";
+
     /**
      * Main ListView for PXForms
      */
     private ListView listView;
+
+    private PXFAdapter pxfAdapter;
     /**
      * Saved state
      */
@@ -138,7 +147,6 @@ public class FormsFragment extends BaseFragmentClass {
         if (!restoreStateFromArgs()) {
             // first run
         }
-
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
         loading.show();
 
@@ -147,6 +155,7 @@ public class FormsFragment extends BaseFragmentClass {
             public void finish(PXFAdapter adapter, String json) {
                 adapter.setAdapterEventHandler(adapterEventHandler);
                 listView.setAdapter(adapter);
+                pxfAdapter = adapter;
                 loading.dismiss();
             }
 
@@ -164,8 +173,14 @@ public class FormsFragment extends BaseFragmentClass {
                 , savedState.getInt(DATABASE_LEVEL)
                 , savedState.getString(DATABASE_KEY_PARENT)
         );
+
     }
 
+    /**
+     * Restore sate form args
+     *
+     * @return
+     */
     private boolean restoreStateFromArgs() {
         Bundle b = getArguments();
         savedState = b.getBundle(FormsFragment.class.getName());
@@ -176,6 +191,9 @@ public class FormsFragment extends BaseFragmentClass {
         return false;
     }
 
+    /**
+     * Restore state from args
+     */
     private void restoreState() {
         if (savedState != null) {
             // Call the restore
@@ -187,6 +205,32 @@ public class FormsFragment extends BaseFragmentClass {
         super.onSaveInstanceState(outState);
         //Save state
         saveSateToArgs();
+        saveStateToDB();
+    }
+
+    /**
+     * Saves the state to DB
+     */
+    private void saveStateToDB() {
+        PXFAdapter adapter = (PXFAdapter) listView.getAdapter();
+        adapter.save(
+                savedState.getLong(DATABASE_FORM_ID)
+                , savedState.getInt(DATABASE_LEVEL)
+                , savedState.getString(DATABASE_KEY_PARENT)
+                , new PXFAdapter.AdapterSaveHandler() {
+                    @Override
+                    public void saved() {
+                        //After save a form, look if a sub-form must be opened
+                        LogUtil.d(TAG, "Saved");
+
+                    }
+
+                    @Override
+                    public void error(Exception ex) {
+                        LogUtil.e(TAG, ex.getMessage(), ex);
+                    }
+                }
+        );
     }
 
     @Override
@@ -195,6 +239,9 @@ public class FormsFragment extends BaseFragmentClass {
         saveSateToArgs();
     }
 
+    /**
+     * Save state to args
+     */
     private void saveSateToArgs() {
         if (getView() != null)
             savedState = saveState();
@@ -204,6 +251,11 @@ public class FormsFragment extends BaseFragmentClass {
         }
     }
 
+    /**
+     * Save state
+     *
+     * @return
+     */
     private Bundle saveState() {
 
         if (savedState != null)
@@ -215,6 +267,9 @@ public class FormsFragment extends BaseFragmentClass {
         return state;
     }
 
+    /**
+     * Adapter event handler, allows few actions of adapter
+     */
     private final PXFAdapter.AdapterEventHandler adapterEventHandler =
             new PXFAdapter.AdapterEventHandler() {
                 @Override
@@ -314,17 +369,20 @@ public class FormsFragment extends BaseFragmentClass {
                         //After save a form, look if a sub-form must be opened
                         if (args != null)
                             replaceToSubForm(args);
-                        else
+                        else if (loading != null) {
                             ViewUtility.showMessage(loading.getContext(), ViewUtility.MSG_SUCCESS,
                                     R.string.fragment_forms_saved);
-                        loading.dismiss();
+                            loading.dismiss();
+                        }
                     }
 
                     @Override
                     public void error(Exception ex) {
-                        loading.dismiss();
-                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
-                                R.string.fragment_forms_error_saving);
+                        if (loading != null)
+                            loading.dismiss();
+                        if (getActivity() != null)
+                            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                                    R.string.fragment_forms_error_saving);
                     }
                 }
         );
