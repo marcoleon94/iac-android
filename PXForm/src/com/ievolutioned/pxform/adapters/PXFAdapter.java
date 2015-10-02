@@ -240,21 +240,6 @@ public class PXFAdapter extends BaseAdapter {
             protected Boolean doInBackground(Void... params) {
                 ValuesDataSet ValuesDS = new ValuesDataSet(aActivity);
                 List<Values> valuesList;
-                Runnable sleep = new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(1);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-
-                            if (callback != null) {
-                                callback.error(e);
-                            }
-                        }
-                    }
-                };
-
                 //check if we have the data base ready
                 valuesList = ValuesDS.selectByFormIDLevelParentKey(formID, level, parentKey);
                 boolean exist = false;
@@ -267,7 +252,6 @@ public class PXFAdapter extends BaseAdapter {
 
                             if (widget.getValue() != null) {
                                 value.setValue(widget.getValue());
-                                //ValuesDS.update(value);
                                 ValuesDS.updateValue(value);
                             }
 
@@ -279,9 +263,6 @@ public class PXFAdapter extends BaseAdapter {
                     if (!exist) {
                         ValuesDS.insert(formID, level, widget.getKey(), parentKey);
                     }
-
-                    // let the thread rest for a bit
-                    sleep.run();
                 }
 
                 try {
