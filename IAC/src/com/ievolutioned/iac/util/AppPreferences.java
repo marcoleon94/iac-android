@@ -3,6 +3,8 @@ package com.ievolutioned.iac.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.ievolutioned.iac.entity.UserRole;
+
 /**
  * Shared preferences class. Manages the shared preferences for the App.
  * <p/>
@@ -62,19 +64,44 @@ public class AppPreferences {
         return getPrefs(c).getString(KEY_ADMIN_TOKEN, null);
     }
 
+    /**
+     * Sets the IAC ID
+     *
+     * @param c     - the context
+     * @param value - the IAC ID
+     */
     public static void setIacId(Context c, String value) {
         getEditor(c).putString(KEY_IAC_ID, value).commit();
     }
 
+    /**
+     * Gets the IAC ID
+     *
+     * @param c - the context
+     * @return the IAC ID, null if it not exist
+     */
     public static String getIacId(Context c) {
         return getPrefs(c).getString(KEY_IAC_ID, null);
     }
 
+    /**
+     * Sets the role of user
+     *
+     * @param c     - the context
+     * @param value - user role
+     * @see UserRole
+     */
     public static void setRole(Context c, String value) {
         getEditor(c).putString(KEY_ROLE, value).commit();
     }
 
+    /**
+     * Gets the role, UserRole.USER by default
+     *
+     * @param c - the context
+     * @return the user role, UserRole.USER by default
+     */
     public static String getRole(Context c) {
-        return getPrefs(c).getString(KEY_ROLE, null);
+        return getPrefs(c).getString(KEY_ROLE, UserRole.USER);
     }
 }

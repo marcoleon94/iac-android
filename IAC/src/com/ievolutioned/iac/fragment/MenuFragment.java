@@ -15,6 +15,7 @@ import com.google.gson.JsonObject;
 import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.adapter.MenuDrawerListAdapter;
+import com.ievolutioned.iac.entity.UserRole;
 import com.ievolutioned.iac.net.service.FormService;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
@@ -96,9 +97,11 @@ public class MenuFragment extends Fragment {
         menuFormTitles = getResources().getStringArray(R.array.nav_drawer_form_items);
         menuSitesTitles = getResources().getStringArray(R.array.nav_drawer_sites_items);
 
-        for (String m : menuFormTitles) {
-            drawerFormItems.add(new MenuDrawerItem(m));
-        }
+        //TODO: how to determine static forms for users
+        if (!AppPreferences.getRole(getActivity()).contentEquals(UserRole.USER))
+            for (String m : menuFormTitles) {
+                drawerFormItems.add(new MenuDrawerItem(m));
+            }
     }
 
     /**
