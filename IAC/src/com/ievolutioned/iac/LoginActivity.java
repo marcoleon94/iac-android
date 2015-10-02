@@ -165,7 +165,9 @@ public class LoginActivity extends Activity {
      * Starts the main activity
      */
     private void startMainActivity() {
-        startActivity(new Intent(getBaseContext(), MainActivity.class));
+        Intent main = new Intent(getBaseContext(), MainActivity.class);
+        main.putExtra(MainActivity.ARGS_DEFAULT_HOME, getString(R.string.string_site_home));
+        startActivity(main);
     }
 
     /**

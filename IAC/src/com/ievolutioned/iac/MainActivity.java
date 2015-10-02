@@ -41,6 +41,8 @@ public class MainActivity extends ActionBarActivity {
      * TAG string
      */
     public static final String TAG = MainActivity.class.getName();
+
+    public static final String ARGS_DEFAULT_HOME = "ARGS_DEFAULT_HOME";
     /**
      * Activity action for pick a picture
      */
@@ -74,6 +76,7 @@ public class MainActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_main);
         bindUI();
+        bindData();
         setToolbarNavigationOnClickListener(mainActivityHomeButton);
     }
 
@@ -87,7 +90,19 @@ public class MainActivity extends ActionBarActivity {
         mLoading = ViewUtility.getLoadingScreen(this);
         showLoading(true);
         setDrawer();
-        showHome();
+    }
+
+    /**
+     * Binds the data
+     */
+    private void bindData() {
+        Bundle args = getIntent().getExtras();
+        if (args != null && !args.isEmpty()) {
+            if (args.getString(ARGS_DEFAULT_HOME, null) != null) {
+                getIntent().removeExtra(ARGS_DEFAULT_HOME);
+                showHome();
+            }
+        }
     }
 
     /**
