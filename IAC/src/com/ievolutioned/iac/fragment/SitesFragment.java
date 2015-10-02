@@ -17,6 +17,7 @@ import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.net.HttpGetParam;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
+import com.ievolutioned.iac.util.LogUtil;
 
 /**
  * SitesFragment class, provides a WebView view to represent a website on the main view
@@ -24,6 +25,10 @@ import com.ievolutioned.iac.util.AppPreferences;
  * Created by Daniel on 24/03/2015.
  */
 public class SitesFragment extends BaseFragmentClass {
+    /**
+     * TAG
+     */
+    public static final String TAG = SitesFragment.class.getName();
     /**
      * Site name
      */
@@ -36,6 +41,10 @@ public class SitesFragment extends BaseFragmentClass {
      * Progress bar
      */
     private ProgressBar mProgress;
+    /**
+     *
+     */
+    private String site;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,17 +67,16 @@ public class SitesFragment extends BaseFragmentClass {
             return;
 
         mWebView = (WebView) root.findViewById(R.id.fragment_sites_web_view);
-        bindData(root, args.getString(ARG_SITE_NAME));
+        bindData(args.getString(ARG_SITE_NAME));
         setTitle(args);
     }
 
     /**
      * Binds the data to the current view
      *
-     * @param root - View
      * @param name - name of site
      */
-    private void bindData(View root, String name) {
+    private void bindData(String name) {
         if (TextUtils.isEmpty(name))
             return;
 
@@ -76,8 +84,10 @@ public class SitesFragment extends BaseFragmentClass {
         String values[] = getActivity().getResources().getStringArray(R.array.sites_item_values);
 
         for (int i = 0; i < keys.length; i++) {
-            if (keys[i].equalsIgnoreCase(name))
+            if (keys[i].equalsIgnoreCase(name)) {
+                site = name;
                 showPage(values[i], keys[i]);
+            }
         }
 
     }
@@ -157,6 +167,11 @@ public class SitesFragment extends BaseFragmentClass {
     private class SiteWebClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            LogUtil.d(TAG, url);
+            //Check if it is log out
+            if (url.contains("admins/sign_in") &&
+                    site.contentEquals(getString(R.string.string_site_home)))
+                bindData(site);
             return false;
         }
 
