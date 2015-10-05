@@ -125,9 +125,6 @@ public class FormsFragment extends BaseFragmentClass {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_fragment_form_save:
-                save(null);
-                break;
             case R.id.menu_fragment_form_upload:
                 if (validateForm()) {
                     saveAndUpload();
