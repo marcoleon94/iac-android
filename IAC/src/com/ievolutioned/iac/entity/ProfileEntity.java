@@ -29,8 +29,8 @@ public class ProfileEntity {
     private String divp;
     @SerializedName("site_id")
     private long siteId;
+    @SerializedName("type_iac")
     private String type;
-    private String department;
     private String position;
     @SerializedName("last_salary")
     private String lastSalary;
@@ -49,8 +49,8 @@ public class ProfileEntity {
     private boolean termsAndConditions;
     @SerializedName("date_accept")
     private String dateAccept;
-    @SerializedName("department_id")
-    private String departmentId;
+    @SerializedName("department")
+    private DepartmentEntity department;
     @SerializedName("employee_type_id")
     private long employeeTypeId;
 
@@ -166,14 +166,6 @@ public class ProfileEntity {
         this.type = type;
     }
 
-    public String getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(String department) {
-        this.department = department;
-    }
-
     public String getPosition() {
         return position;
     }
@@ -262,12 +254,12 @@ public class ProfileEntity {
         this.dateAccept = dateAccept;
     }
 
-    public String getDepartmentId() {
-        return departmentId;
+    public DepartmentEntity getDepartment() {
+        return department;
     }
 
-    public void setDepartmentId(String departmentId) {
-        this.departmentId = departmentId;
+    public void setDepartment(DepartmentEntity department) {
+        this.department = department;
     }
 
     public long getEmployeeTypeId() {
