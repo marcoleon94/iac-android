@@ -12,6 +12,7 @@ import android.widget.ListView;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.adapter.MenuDrawerListAdapter;
@@ -34,6 +35,19 @@ import java.util.List;
  */
 public class MenuFragment extends Fragment {
 
+    /**
+     * TAG
+     */
+    public static final String TAG = MenuFragment.class.getName();
+
+    /**
+     * ARGS for menu items
+     */
+    private static final String ARGS_MENU_ITEMS = "ARGS_MENU_ITEMS";
+    /**
+     * Saved state
+     */
+    private Bundle savedState;
     /**
      * Static form titles
      */
@@ -62,9 +76,83 @@ public class MenuFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_menu, container);
         bindUI(root);
-        bindData();
         return root;
     }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (!restoreFromState(savedInstanceState)) {
+            // First run
+            bindData();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        //saveState();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBundle(TAG, saveState());
+    }
+
+    /**
+     * Restpres the state from Bundle
+     *
+     * @param state - Bundle state
+     * @return true if it is restored, false otherwise
+     */
+    private boolean restoreFromState(Bundle state) {
+        if (state != null) {
+            savedState = state.getBundle(TAG);
+        }
+        if (savedState != null) {
+            restoreState();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Restore state for menu items
+     */
+    private void restoreState() {
+        if (savedState != null) {
+            String items = savedState.getString(ARGS_MENU_ITEMS);
+            JsonParser parser = new JsonParser();
+            JsonElement json = parser.parse(items);
+            drawerFormItems.addAll(getTitlesFromResponse(json));
+            adapter_forms.notifyDataSetChanged();
+            showLoading(false);
+        }
+    }
+
+    /**
+     * Save state for menu items
+     *
+     * @return Bundle saved state
+     */
+    private Bundle saveState() {
+        //Get the items from drawerFormItems
+        JsonArray json = new JsonArray();
+        for (MenuDrawerItem i : drawerFormItems) {
+            JsonObject o = new JsonObject();
+            o.addProperty("id", i.getId());
+            o.addProperty("name", i.getTitle());
+            json.add(o);
+        }
+        //Set json to bundle
+        if (savedState == null)
+            savedState = new Bundle();
+
+        savedState.putString(ARGS_MENU_ITEMS, json.getAsJsonArray().toString());
+        return savedState;
+    }
+
 
     /**
      * Binds the main UI
@@ -75,9 +163,6 @@ public class MenuFragment extends Fragment {
         //Find UI
         mDrawerListForm = (ListView) root.findViewById(R.id.fragment_menu_form_list);
 
-        //Loads the static menu items for the current adapters
-        loadStaticMenuItems();
-
         //Initialize adapters
         adapter_forms = new MenuDrawerListAdapter(getActivity(), drawerFormItems);
         mDrawerListForm.setAdapter(adapter_forms);
@@ -87,6 +172,18 @@ public class MenuFragment extends Fragment {
         root.findViewById(R.id.fragment_menu_home).setOnClickListener(menu_click);
         root.findViewById(R.id.fragment_menu_profile).setOnClickListener(menu_click);
         root.findViewById(R.id.fragment_menu_singout).setOnClickListener(menu_click);
+    }
+
+    /**
+     * Binds the dynamic menu objects form service
+     */
+    private void bindData() {
+        //Loads the static menu items for the current adapters
+        loadStaticMenuItems();
+        //Look for forms on service
+        FormService fs = new FormService(AppConfig.getUUID(getActivity()),
+                AppPreferences.getAdminToken(getActivity()));
+        fs.getForms(AppPreferences.getAdminToken(getActivity()), form_service_callback);
     }
 
     /**
@@ -103,15 +200,6 @@ public class MenuFragment extends Fragment {
             for (String m : menuFormTitles) {
                 drawerFormItems.add(new MenuDrawerItem(m));
             }
-    }
-
-    /**
-     * Binds the dynamic menu objects form service
-     */
-    private void bindData() {
-        FormService fs = new FormService(AppConfig.getUUID(getActivity()),
-                AppPreferences.getAdminToken(getActivity()));
-        fs.getForms(AppPreferences.getAdminToken(getActivity()), form_service_callback);
     }
 
     /**

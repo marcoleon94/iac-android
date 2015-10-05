@@ -73,7 +73,6 @@ public class FormsFragment extends BaseFragmentClass {
      */
     private ListView listView;
 
-    private PXFAdapter pxfAdapter;
     /**
      * Saved state
      */
@@ -152,7 +151,6 @@ public class FormsFragment extends BaseFragmentClass {
             public void finish(PXFAdapter adapter, String json) {
                 adapter.setAdapterEventHandler(adapterEventHandler);
                 listView.setAdapter(adapter);
-                pxfAdapter = adapter;
                 loading.dismiss();
             }
 
@@ -210,24 +208,10 @@ public class FormsFragment extends BaseFragmentClass {
      */
     private void saveStateToDB() {
         PXFAdapter adapter = (PXFAdapter) listView.getAdapter();
-        adapter.save(
-                savedState.getLong(DATABASE_FORM_ID)
-                , savedState.getInt(DATABASE_LEVEL)
-                , savedState.getString(DATABASE_KEY_PARENT)
-                , new PXFAdapter.AdapterSaveHandler() {
-                    @Override
-                    public void saved() {
-                        //After save a form, look if a sub-form must be opened
-                        LogUtil.d(TAG, "Saved");
-
-                    }
-
-                    @Override
-                    public void error(Exception ex) {
-                        LogUtil.e(TAG, ex.getMessage(), ex);
-                    }
-                }
-        );
+        boolean b = adapter.saveState(savedState.getLong(DATABASE_FORM_ID),
+                savedState.getInt(DATABASE_LEVEL), savedState.getString(DATABASE_KEY_PARENT));
+        if (!b)
+            LogUtil.e(TAG, "Unable to save on DB", null);
     }
 
     @Override
