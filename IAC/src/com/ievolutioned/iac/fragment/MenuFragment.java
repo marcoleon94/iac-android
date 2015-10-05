@@ -98,7 +98,8 @@ public class MenuFragment extends Fragment {
         menuSitesTitles = getResources().getStringArray(R.array.nav_drawer_sites_items);
 
         //TODO: how to determine static forms for users
-        if (!AppPreferences.getRole(getActivity()).contentEquals(UserRole.USER))
+        if (!AppPreferences.getRole(getActivity()).contentEquals(UserRole.USER)
+                && menuFormTitles != null)
             for (String m : menuFormTitles) {
                 drawerFormItems.add(new MenuDrawerItem(m));
             }
