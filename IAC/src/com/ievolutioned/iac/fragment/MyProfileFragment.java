@@ -21,7 +21,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 import com.ievolutioned.iac.MainActivity;
@@ -154,7 +153,8 @@ public class MyProfileFragment extends Fragment {
                     public void onError(ProfileService.ProfileResponse response) {
                         LogUtil.e(TAG, response.msg, response.e);
                         loading.dismiss();
-                        Toast.makeText(getActivity(), "Error al cargar", Toast.LENGTH_SHORT).show();
+                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                                R.string.string_fragment_myprofile_error_load);
                     }
 
                     @Override
@@ -189,7 +189,8 @@ public class MyProfileFragment extends Fragment {
         if (passwordFragment != null)
             c = !(passwordFragment.getPassword() == null && passwordFragment.getRepassword() == null);
         if (c == false && p == false) {
-            Toast.makeText(getActivity(), "No hay cambios", Toast.LENGTH_SHORT).show();
+            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                    R.string.string_fragment_myprofile_no_changes);
             return false;
         }
         if (c)
@@ -197,7 +198,8 @@ public class MyProfileFragment extends Fragment {
                     passwordFragment.getRepassword() == null ||
                     !passwordFragment.getPassword().contentEquals(passwordFragment.getRepassword())) {
                 focusPasswordFragment();
-                Toast.makeText(getActivity(), "Las contraseñas no son iguales", Toast.LENGTH_SHORT).show();
+                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                        R.string.string_fragment_myprofile_error_password);
                 return false;
             }
         return true;
@@ -245,27 +247,38 @@ public class MyProfileFragment extends Fragment {
         }
         if (picture != null)
             response.addProperty("avatar_cloudinary", picture);
-        //TODO: Call service
+
         JsonObject info = new JsonObject();
         info.add("admin", response);
         ProfileService profileService = new ProfileService(AppConfig.getUUID(getActivity()),
                 AppPreferences.getAdminToken(getActivity()));
+        final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
+        loading.show();
 
         profileService.updateInfo(info.getAsJsonObject().toString(), new ProfileService.ProfileServiceHandler() {
             @Override
             public void onSuccess(ProfileService.ProfileResponse response) {
-                LogUtil.d(TAG, response.msg);
                 profileFragment.setDefaultEmail(email);
+                loading.dismiss();
+                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
+                        R.string.string_fragment_myprofile_success);
+                LogUtil.d(TAG, response.msg);
             }
 
             @Override
             public void onError(ProfileService.ProfileResponse response) {
+                loading.dismiss();
                 LogUtil.e(TAG, response.msg, response.e);
+                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                        R.string.string_fragment_myprofile_error);
             }
 
             @Override
             public void onCancel() {
+                loading.dismiss();
                 LogUtil.d(TAG, "Cancelado");
+                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                        R.string.string_fragment_myprofile_cancel);
             }
         });
     }
@@ -295,13 +308,15 @@ public class MyProfileFragment extends Fragment {
             public void onError(ResponseBase response) {
                 LogUtil.e(TAG, response.e.getMessage(), response.e);
                 loading.dismiss();
-                Toast.makeText(getActivity(), "Error al subir imagen", Toast.LENGTH_SHORT).show();
+                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                        R.string.string_fragment_myprofile_error_picture);
             }
 
             @Override
             public void onCancel() {
                 loading.dismiss();
-                Toast.makeText(getActivity(), "Cancelado", Toast.LENGTH_SHORT).show();
+                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                        R.string.string_fragment_myprofile_cancel);
             }
         });
     }

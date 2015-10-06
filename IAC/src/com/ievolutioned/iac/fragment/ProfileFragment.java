@@ -169,7 +169,7 @@ public class ProfileFragment extends Fragment {
             emailDefault = profile.getEmail();
         }
         if (mTextDepartment != null && profile.getDepartment() != null)
-            mTextDepartment.setText(profile.getDepartment());
+            mTextDepartment.setText(profile.getDepartment().getTitle());
         if (mTextDivp != null && profile.getDivp() != null)
             mTextDivp.setText(profile.getDivp());
         if (mTextSite != null && profile.getSiteId() > 0)

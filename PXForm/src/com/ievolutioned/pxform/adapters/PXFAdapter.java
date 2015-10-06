@@ -223,7 +223,12 @@ public class PXFAdapter extends BaseAdapter {
     }
 
     /**
-     * Save the items values to the data base
+     * Saves the items values to the data base on a background thread
+     *
+     * @param formID    - Form ID
+     * @param level     - Level for current form or sub-form
+     * @param parentKey - key for parent
+     * @param callback  - AdapterSaveHandler callback
      */
     public void save(final long formID
             , final int level
@@ -238,40 +243,7 @@ public class PXFAdapter extends BaseAdapter {
 
             @Override
             protected Boolean doInBackground(Void... params) {
-                ValuesDataSet ValuesDS = new ValuesDataSet(aActivity);
-                List<Values> valuesList;
-                //check if we have the data base ready
-                valuesList = ValuesDS.selectByFormIDLevelParentKey(formID, level, parentKey);
-                boolean exist = false;
-
-                for (PXWidget widget : lWidgets) {
-                    exist = false;
-
-                    for (Values value : valuesList) {
-                        if (widget.getKey().equals(value.getKey())) {
-
-                            if (widget.getValue() != null) {
-                                value.setValue(widget.getValue());
-                                ValuesDS.updateValue(value);
-                            }
-
-                            exist = true;
-                            break;
-                        }
-                    }
-
-                    if (!exist) {
-                        ValuesDS.insert(formID, level, widget.getKey(), parentKey);
-                    }
-                }
-
-                try {
-                    ValuesDS.importDatabase();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                return true;
+                return saveToDB(formID, level, parentKey);
             }
 
             @Override
@@ -282,6 +254,63 @@ public class PXFAdapter extends BaseAdapter {
                     callback.error(new RuntimeException("Error on doInBackgorund"));
             }
         }).execute();
+    }
+
+    /**
+     * Saves the sate to DB on main thread
+     *
+     * @param formID    - Form ID
+     * @param level     - Level for current form or sub-form
+     * @param parentKey - key for parent
+     * @return true if it was saved, false otherwise
+     */
+    public boolean saveState(final long formID, final int level, final String parentKey) {
+        return saveToDB(formID, level, parentKey);
+    }
+
+    /**
+     * Saves the data to DB
+     *
+     * @param formID    - Form ID
+     * @param level     - Level for current form or sub-form
+     * @param parentKey - key for parent
+     * @return true if it was saved, false otherwise
+     */
+    private boolean saveToDB(final long formID, final int level, final String parentKey) {
+        ValuesDataSet ValuesDS = new ValuesDataSet(aActivity);
+        List<Values> valuesList;
+        //check if we have the data base ready
+        valuesList = ValuesDS.selectByFormIDLevelParentKey(formID, level, parentKey);
+        boolean exist = false;
+
+        for (PXWidget widget : lWidgets) {
+            exist = false;
+
+            for (Values value : valuesList) {
+                if (widget.getKey().equals(value.getKey())) {
+
+                    if (widget.getValue() != null) {
+                        value.setValue(widget.getValue());
+                        ValuesDS.updateValue(value);
+                    }
+
+                    exist = true;
+                    break;
+                }
+            }
+
+            if (!exist) {
+                ValuesDS.insert(formID, level, widget.getKey(), parentKey);
+            }
+        }
+
+        try {
+            ValuesDS.importDatabase();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return true;
     }
 
     /**
