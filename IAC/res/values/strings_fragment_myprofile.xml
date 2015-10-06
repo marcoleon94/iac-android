@@ -3,4 +3,11 @@
     <string name="string_fragment_myprofile_title">Mi perfil</string>
     <string name="string_fragment_myprofile_profile">Perfil</string>
     <string name="string_fragment_myprofile_password">Contraseña</string>
+    <string name="string_fragment_myprofile_success">Perfil actualizado</string>
+    <string name="string_fragment_myprofile_error">Error al actualizar</string>
+    <string name="string_fragment_myprofile_error_picture">Error al actualizar foto</string>
+    <string name="string_fragment_myprofile_error_load">Error al cargar</string>
+    <string name="string_fragment_myprofile_cancel">Cancelado</string>
+    <string name="string_fragment_myprofile_no_changes">No hay cambios</string>
+    <string name="string_fragment_myprofile_error_password">Las contraseñas no son iguales</string>
 </resources>

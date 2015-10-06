@@ -11,6 +11,8 @@ import com.ievolutioned.iac.net.NetResponse;
 import com.ievolutioned.iac.net.NetUtil;
 
 /**
+ * ProfileService class, allows the control of a set operation about user profile
+ * <p/>
  * Created by Daniel on 17/09/2015.
  */
 public class ProfileService extends ServiceBase {
@@ -82,6 +84,15 @@ public class ProfileService extends ServiceBase {
         task.execute();
     }
 
+    /**
+     * Updates the info for the profile, the info JSON must have the following structure
+     * {admin:{
+     * field:"value"
+     * }}
+     *
+     * @param info     - String JSON
+     * @param callback ProfileServiceHandler callback
+     */
     public void updateInfo(final String info, final ProfileServiceHandler callback) {
         task = new AsyncTask<Void, Void, ResponseBase>() {
             @Override
@@ -114,6 +125,12 @@ public class ProfileService extends ServiceBase {
                     return new ProfileResponse(e.getMessage(), e);
                 }
             }
+
+            @Override
+            protected void onPostExecute(ResponseBase responseBase) {
+                super.onPostExecute(responseBase);
+                handleResult(callback, (ProfileResponse) responseBase);
+            }
         };
         task.execute();
     }
@@ -125,7 +142,7 @@ public class ProfileService extends ServiceBase {
      * @param response - the response of service
      */
     protected void handleResult(final ProfileServiceHandler callback, ProfileResponse response) {
-        if (response == null || response.profile == null)
+        if ((response == null || response.profile == null) && !response.success)
             callback.onError(new ProfileResponse("Service error", new RuntimeException()));
         else if (response.e != null)
             callback.onError(response);
@@ -133,6 +150,9 @@ public class ProfileService extends ServiceBase {
             callback.onSuccess(response);
     }
 
+    /**
+     * ProfileServiceHandler interface
+     */
     public interface ProfileServiceHandler {
         void onSuccess(final ProfileResponse response);
 
@@ -141,10 +161,18 @@ public class ProfileService extends ServiceBase {
         void onCancel();
     }
 
+    /**
+     * ProfileResponse class as the service response
+     */
     public class ProfileResponse extends ResponseBase {
 
+        /**
+         * Successful transaction
+         */
         public boolean success = false;
-
+        /**
+         * ProfileEntity user profile
+         */
         public ProfileEntity profile = null;
 
         public ProfileResponse(String msg, Throwable e) {
