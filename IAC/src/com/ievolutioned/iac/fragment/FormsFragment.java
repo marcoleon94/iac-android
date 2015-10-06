@@ -66,7 +66,6 @@ public class FormsFragment extends BaseFragmentClass {
      */
     public static final String DATABASE_JSON = "DATABASE_JSON";
 
-    private static final String RESTORE = "RESTORE";
 
     /**
      * Main ListView for PXForms
@@ -74,6 +73,7 @@ public class FormsFragment extends BaseFragmentClass {
     private ListView listView;
 
     private PXFAdapter pxfAdapter;
+
     /**
      * Saved state
      */
@@ -87,6 +87,7 @@ public class FormsFragment extends BaseFragmentClass {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saved) {
         View root = bindUI(inflater.inflate(R.layout.fragment_forms, container, false));
         setHasOptionsMenu(true);
+        savedState = getArguments() != null ? getArguments().getBundle(TAG) : new Bundle();
         return root;
     }
 
@@ -125,9 +126,6 @@ public class FormsFragment extends BaseFragmentClass {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_fragment_form_save:
-                save(null);
-                break;
             case R.id.menu_fragment_form_upload:
                 if (validateForm()) {
                     saveAndUpload();
@@ -143,10 +141,6 @@ public class FormsFragment extends BaseFragmentClass {
     @Override
     public void onActivityCreated(Bundle saved) {
         super.onActivityCreated(saved);
-        // restore sate
-        if (!restoreStateFromArgs()) {
-            // first run
-        }
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
         loading.show();
 
@@ -154,8 +148,8 @@ public class FormsFragment extends BaseFragmentClass {
             @Override
             public void finish(PXFAdapter adapter, String json) {
                 adapter.setAdapterEventHandler(adapterEventHandler);
-                listView.setAdapter(adapter);
                 pxfAdapter = adapter;
+                listView.setAdapter(adapter);
                 loading.dismiss();
             }
 
@@ -176,96 +170,34 @@ public class FormsFragment extends BaseFragmentClass {
 
     }
 
-    /**
-     * Restore sate form args
-     *
-     * @return
-     */
-    private boolean restoreStateFromArgs() {
-        Bundle b = getArguments();
-        savedState = b.getBundle(FormsFragment.class.getName());
-        if (savedState != null) {
-            restoreState();
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Restore state from args
-     */
-    private void restoreState() {
-        if (savedState != null) {
-            // Call the restore
-        }
-    }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        //Save state
-        saveSateToArgs();
-        saveStateToDB();
+
     }
 
     /**
      * Saves the state to DB
      */
     private void saveStateToDB() {
-        PXFAdapter adapter = (PXFAdapter) listView.getAdapter();
-        adapter.save(
-                savedState.getLong(DATABASE_FORM_ID)
-                , savedState.getInt(DATABASE_LEVEL)
-                , savedState.getString(DATABASE_KEY_PARENT)
-                , new PXFAdapter.AdapterSaveHandler() {
-                    @Override
-                    public void saved() {
-                        //After save a form, look if a sub-form must be opened
-                        LogUtil.d(TAG, "Saved");
-
-                    }
-
-                    @Override
-                    public void error(Exception ex) {
-                        LogUtil.e(TAG, ex.getMessage(), ex);
-                    }
-                }
-        );
+        LogUtil.d(TAG, "Save to DB");
+        if (pxfAdapter == null) {
+            LogUtil.e(TAG, "Unable to save on DB: Adapter is null", null);
+            return;
+        }
+        boolean b = pxfAdapter.saveState(savedState.getLong(DATABASE_FORM_ID),
+                savedState.getInt(DATABASE_LEVEL), savedState.getString(DATABASE_KEY_PARENT));
+        if (!b)
+            LogUtil.e(TAG, "Unable to save on DB: Error on SaveState", null);
     }
 
     @Override
     public void onDestroyView() {
+        //Save state
+        saveStateToDB();
         super.onDestroyView();
-        saveSateToArgs();
     }
 
-    /**
-     * Save state to args
-     */
-    private void saveSateToArgs() {
-        if (getView() != null)
-            savedState = saveState();
-        if (savedState != null) {
-            Bundle args = getArguments();
-            args.putBundle(FormsFragment.class.getName(), savedState);
-        }
-    }
-
-    /**
-     * Save state
-     *
-     * @return
-     */
-    private Bundle saveState() {
-
-        if (savedState != null)
-            return savedState;
-
-        Bundle state = new Bundle();
-        // save the current state
-
-        return state;
-    }
 
     /**
      * Adapter event handler, allows few actions of adapter
@@ -296,7 +228,7 @@ public class FormsFragment extends BaseFragmentClass {
 
                     Bundle args = new Bundle();
                     args.putBundle(FormsFragment.class.getName(), a);
-                    save(args);
+                    replaceToSubForm(args);
                 }
             };
 
@@ -348,6 +280,7 @@ public class FormsFragment extends BaseFragmentClass {
     /**
      * Save current state of the Form data
      */
+    @Deprecated
     public final void save(final Bundle args) {
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity(),
                 getString(R.string.fragment_forms_saving));

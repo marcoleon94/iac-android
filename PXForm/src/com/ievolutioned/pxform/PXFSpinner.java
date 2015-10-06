@@ -2,6 +2,8 @@ package com.ievolutioned.pxform;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -16,17 +18,16 @@ import com.google.gson.JsonElement;
 import java.util.Map;
 
 public class PXFSpinner extends PXWidget {
-    //public static final int VALUE_DEFAULT = -1;
+    public static final int VALUE_DEFAULT = 0;
     //--------------------------------------
     // variable declarations
     private ArrayAdapter<String> adapter;
-    //private int last_position = VALUE_DEFAULT;
     private String value = null;
 
     /**
      * class and interface declaration
      */
-    public static class HelperSpinner extends HelperWidget{
+    public static class HelperSpinner extends HelperWidget {
         protected TextView title;
         protected LinearLayout linearCheckBox;
         protected Spinner spinner;
@@ -50,14 +51,15 @@ public class PXFSpinner extends PXWidget {
 
     @Override
     public void setValue(String value) {
-        try{
+        try {
             //last_position = Integer.parseInt(value);
             this.value = value;
-        }catch(Exception ex){
+        } catch (Exception ex) {
             //last_position = VALUE_DEFAULT;
             this.value = null;
         }
     }
+
     @Override
     public String getValue() {
         //return last_position == VALUE_DEFAULT?"":String.valueOf(last_position);
@@ -72,7 +74,7 @@ public class PXFSpinner extends PXWidget {
         helper.title.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
                 getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
 
-        if(adapter == null){
+        if (adapter == null) {
             adapter = getSpinnerAdapter(view.getContext());
         }
 
@@ -80,8 +82,9 @@ public class PXFSpinner extends PXWidget {
         helper.spinner.setAdapter(adapter);
 
         if (value != null) {
-            int position = adapter.getPosition(value);
-            helper.spinner.setSelection(position < adapter.getCount() ? position : 0);
+            int position = adapter.getPosition(value) - 1;
+            helper.spinner.setSelection(position < adapter.getCount() && position > 0 ? position :
+                    VALUE_DEFAULT);
         }
     }
 
@@ -97,6 +100,8 @@ public class PXFSpinner extends PXWidget {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         linear.setLayoutParams(params);
+        linear.setPadding(0, 5, 0, 5);
+        linear.setGravity(Gravity.CENTER_VERTICAL);
         linear.setOrientation(LinearLayout.HORIZONTAL);
         helper.linearCheckBox = linear;
 
@@ -116,8 +121,8 @@ public class PXFSpinner extends PXWidget {
         adapter = getSpinnerAdapter(context);
         spinner.setAdapter(adapter);
 
-        if(value == null && adapter.getCount()>0)
-            spinner.setSelection(0);
+        if (value == null && adapter.getCount() > 0)
+            spinner.setSelection(VALUE_DEFAULT);
 
         helper.spinner = spinner;
         spinner.setOnItemSelectedListener(spinner_itemSelected);
@@ -137,23 +142,26 @@ public class PXFSpinner extends PXWidget {
         return v;
     }
 
-    private ArrayAdapter<String> getSpinnerAdapter(Context context){
+    private ArrayAdapter<String> getSpinnerAdapter(Context context) {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
-                android.R.layout.simple_spinner_item );
+                android.R.layout.simple_spinner_item);
+
+        //Add a default empty
+        adapter.add("");
 
         //add fields to the adapter
-        if(getJsonEntries().get(FIELD_OPTIONS).getValue().isJsonArray()){
+        if (getJsonEntries().get(FIELD_OPTIONS).getValue().isJsonArray()) {
             JsonArray array = getJsonEntries().get(FIELD_OPTIONS).getValue().getAsJsonArray();
 
-            for(int x = 0; x < array.size(); ++x){
+            for (int x = 0; x < array.size(); ++x) {
                 JsonElement sub = array.get(x);
                 String s;
 
-                if(sub.isJsonPrimitive()){
+                if (sub.isJsonPrimitive()) {
                     s = sub.getAsString();
-                }else if(sub.isJsonObject()) {
+                } else if (sub.isJsonObject()) {
                     // get the array name only
-                    Map.Entry<String,JsonElement> mej =
+                    Map.Entry<String, JsonElement> mej =
                             sub.getAsJsonObject().entrySet().iterator().next();
                     s = mej.getKey();
                 } else {
@@ -171,41 +179,18 @@ public class PXFSpinner extends PXWidget {
             spinner_itemSelected = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            //booleans used to optimize the adapter notifyDataSetChanges() calls
-            //boolean changed_1 = false;
-            //boolean changed_2 = false;
-
-            //if(PXFSpinner.this.last_position != position){
-            //    if(getEventHandler() != null){
-            //        changed_1 = getEventHandler().removeChildWidgets(PXFSpinner.this);
-            //    }
-            //}
-            //
-            //if(PXFSpinner.this.last_position != position) {
-            //    if (PXFSpinner.this.getEventHandler() != null) {
-            //        changed_2 = PXFSpinner.this.getEventHandler().addChildWidgets(
-            //                PXFSpinner.this, position);
-            //    }
-            //}
-
-            //PXFSpinner.this.last_position = getSpinnerAdapter(view.getContext()).getItem(position);
-            if(adapter != null)
-                PXFSpinner.this.value = adapter.getItem(position);
-
-
-            //if((changed_1 || changed_2) && PXFSpinner.this.getEventHandler() != null){
-            //    PXFSpinner.this.getEventHandler().notifyDataSetChanges();
-            //}
+            if (adapter != null)
+                PXFSpinner.this.value = adapter.getItem(position > 0 ? position - 1 : VALUE_DEFAULT);
         }
 
-        @Override public void onNothingSelected(AdapterView<?> parent) { }
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+        }
     };
 
     @Override
     public boolean validate() {
-        if(value != null)
-            return true;
-        return false;
+        return !TextUtils.isEmpty(value);
     }
 
     @Override

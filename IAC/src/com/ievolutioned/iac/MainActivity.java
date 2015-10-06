@@ -129,12 +129,6 @@ public class MainActivity extends ActionBarActivity {
                     mDrawerLayout.openDrawer(R.layout.fragment_menu);
                     return;
                 } else {
-                    //Save subform before exit
-                    try {
-                        ((FormsFragment) fragment).save(null);
-                    } catch (Exception e) {
-                        LogUtil.e(TAG, e.getMessage(), e);
-                    }
                     onBackPressed();
                 }
             }
@@ -145,7 +139,6 @@ public class MainActivity extends ActionBarActivity {
      * Displays the home view as the main view
      */
     private void showHome() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment mFragment = new SitesFragment();
         Bundle args = new Bundle();
         args.putString(SitesFragment.ARG_SITE_NAME, getString(R.string.string_site_home));
