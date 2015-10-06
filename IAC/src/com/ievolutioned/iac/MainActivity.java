@@ -129,12 +129,6 @@ public class MainActivity extends ActionBarActivity {
                     mDrawerLayout.openDrawer(R.layout.fragment_menu);
                     return;
                 } else {
-                    //Save subform before exit
-                    try {
-                        ((FormsFragment) fragment).save(null);
-                    } catch (Exception e) {
-                        LogUtil.e(TAG, e.getMessage(), e);
-                    }
                     onBackPressed();
                 }
             }

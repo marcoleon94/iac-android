@@ -180,6 +180,7 @@ public class FormsFragment extends BaseFragmentClass {
      * Saves the state to DB
      */
     private void saveStateToDB() {
+        LogUtil.d(TAG, "Save to DB");
         if (pxfAdapter == null) {
             LogUtil.e(TAG, "Unable to save on DB: Adapter is null", null);
             return;
@@ -227,7 +228,7 @@ public class FormsFragment extends BaseFragmentClass {
 
                     Bundle args = new Bundle();
                     args.putBundle(FormsFragment.class.getName(), a);
-                    save(args);
+                    replaceToSubForm(args);
                 }
             };
 
@@ -279,6 +280,7 @@ public class FormsFragment extends BaseFragmentClass {
     /**
      * Save current state of the Form data
      */
+    @Deprecated
     public final void save(final Bundle args) {
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity(),
                 getString(R.string.fragment_forms_saving));
