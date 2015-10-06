@@ -101,7 +101,7 @@ public class MenuFragment extends Fragment {
     }
 
     /**
-     * Restpres the state from Bundle
+     * Restores the state from Bundle
      *
      * @param state - Bundle state
      * @return true if it is restored, false otherwise
