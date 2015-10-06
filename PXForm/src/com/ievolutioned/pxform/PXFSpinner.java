@@ -3,6 +3,7 @@ package com.ievolutioned.pxform;
 import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -13,8 +14,6 @@ import android.widget.TextView;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-
-import org.w3c.dom.Text;
 
 import java.util.Map;
 
@@ -101,6 +100,8 @@ public class PXFSpinner extends PXWidget {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         linear.setLayoutParams(params);
+        linear.setPadding(0, 5, 0, 5);
+        linear.setGravity(Gravity.CENTER_VERTICAL);
         linear.setOrientation(LinearLayout.HORIZONTAL);
         helper.linearCheckBox = linear;
 
