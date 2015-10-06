@@ -82,7 +82,7 @@ public class PXFSpinner extends PXWidget {
         helper.spinner.setAdapter(adapter);
 
         if (value != null) {
-            int position = adapter.getPosition(value) - 1;
+            int position = adapter.getPosition(value);
             helper.spinner.setSelection(position < adapter.getCount() && position > 0 ? position :
                     VALUE_DEFAULT);
         }
@@ -180,7 +180,7 @@ public class PXFSpinner extends PXWidget {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             if (adapter != null)
-                PXFSpinner.this.value = adapter.getItem(position > 0 ? position - 1 : VALUE_DEFAULT);
+                PXFSpinner.this.value = adapter.getItem(position);
         }
 
         @Override
