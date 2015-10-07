@@ -138,7 +138,7 @@ public class MainActivity extends ActionBarActivity {
     /**
      * Displays the home view as the main view
      */
-    private void showHome() {
+    public void showHome() {
         Fragment mFragment = new SitesFragment();
         Bundle args = new Bundle();
         args.putString(SitesFragment.ARG_SITE_NAME, getString(R.string.string_site_home));
