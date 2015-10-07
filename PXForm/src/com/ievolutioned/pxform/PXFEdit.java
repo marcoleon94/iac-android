@@ -21,28 +21,34 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class PXFEdit extends PXWidget{
+public class PXFEdit extends PXWidget {
 
     private String current_text = "";
 
-    public static class HelperEdit extends HelperWidget{
+    public static class HelperEdit extends HelperWidget {
         protected TextView title;
         protected EditTextCustom inputEdit;
         protected LinearLayout linearEdit;
     }
 
-    public class EditTextCustom extends EditText{
+    public class EditTextCustom extends EditText {
         private List<TextWatcher> watcherList;
 
-        public EditTextCustom(Context context) { super(context); }
-        public EditTextCustom(Context context, AttributeSet attrs) { super(context, attrs); }
+        public EditTextCustom(Context context) {
+            super(context);
+        }
+
+        public EditTextCustom(Context context, AttributeSet attrs) {
+            super(context, attrs);
+        }
+
         public EditTextCustom(Context context, AttributeSet attrs, int defStyle) {
             super(context, attrs, defStyle);
         }
 
         @Override
         public void addTextChangedListener(TextWatcher watcher) {
-            if(EditTextCustom.this.watcherList == null)
+            if (EditTextCustom.this.watcherList == null)
                 EditTextCustom.this.watcherList = new ArrayList<TextWatcher>();
 
             EditTextCustom.this.watcherList.add(watcher);
@@ -50,10 +56,10 @@ public class PXFEdit extends PXWidget{
             super.addTextChangedListener(watcher);
         }
 
-        public void removeAllTextChangedListener(){
-            if(EditTextCustom.this.watcherList != null){
+        public void removeAllTextChangedListener() {
+            if (EditTextCustom.this.watcherList != null) {
 
-                for(TextWatcher t: EditTextCustom.this.watcherList){
+                for (TextWatcher t : EditTextCustom.this.watcherList) {
                     EditTextCustom.this.removeTextChangedListener(t);
                 }
 
@@ -80,6 +86,7 @@ public class PXFEdit extends PXWidget{
     public void setValue(String value) {
         current_text = value;
     }
+
     @Override
     public String getValue() {
         return current_text == null ? "" : current_text;
@@ -92,14 +99,14 @@ public class PXFEdit extends PXWidget{
             HelperEdit helper = (HelperEdit) view.getTag();
 
 
-        helper.title.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
-                getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
+            helper.title.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
+                    getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
 
-        editConfigureTypeOfInput(helper.inputEdit, getJsonEntries());
-        helper.inputEdit.removeAllTextChangedListener();
-        helper.inputEdit.addTextChangedListener(edit_watcher);
-        helper.inputEdit.setText(current_text);
-        }catch(Exception e){
+            editConfigureTypeOfInput(helper.inputEdit, getJsonEntries());
+            helper.inputEdit.removeAllTextChangedListener();
+            helper.inputEdit.addTextChangedListener(edit_watcher);
+            helper.inputEdit.setText(current_text);
+        } catch (Exception e) {
             Log.e("WHAT?", e.getMessage(), e);
         }
     }
@@ -124,6 +131,11 @@ public class PXFEdit extends PXWidget{
         params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
         text.setLayoutParams(params);
+        try {
+            text.setTextSize(getDimen(context.getBaseContext(), R.dimen.default_text_size));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         helper.title = text;
 
         //edit input control
@@ -131,6 +143,10 @@ public class PXFEdit extends PXWidget{
         params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
         edit.setLayoutParams(params);
+        try {
+            edit.setTextSize(getDimen(context.getBaseContext(), R.dimen.default_text_size));
+        } catch (Exception e) {
+        }
         editConfigureTypeOfInput(edit, getJsonEntries());
         edit.addTextChangedListener(edit_watcher);
         helper.inputEdit = edit;
@@ -151,36 +167,42 @@ public class PXFEdit extends PXWidget{
     }
 
     private void editConfigureTypeOfInput(final EditText edit,
-                                          final Map<String, Map.Entry<String,JsonElement>> map){
+                                          final Map<String, Map.Entry<String, JsonElement>> map) {
         int maxsize = 50;
 
-        if(FIELD_TYPE_LONGTEXT.equals(map.get(FIELD_TYPE).getValue().getAsString())){
-            try{
+        if (FIELD_TYPE_LONGTEXT.equals(map.get(FIELD_TYPE).getValue().getAsString())) {
+            try {
                 maxsize = Integer.parseInt(map.get(FIELD_TYPE).getValue().getAsString());
-            }catch(Exception ex){
+            } catch (Exception ex) {
             }
         }
 
         InputFilter[] FilterArray = new InputFilter[1];
         FilterArray[0] = new InputFilter.LengthFilter(maxsize);
 
-        if(FIELD_TYPE_UNSIGNED.equals(map.get(FIELD_TYPE).getValue().getAsString())){
+        if (FIELD_TYPE_UNSIGNED.equals(map.get(FIELD_TYPE).getValue().getAsString())) {
             edit.setInputType(InputType.TYPE_CLASS_NUMBER);
-        }else{
+        } else {
             edit.setInputType(InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
         }
 
         edit.setFilters(FilterArray);
         edit.setLines(1);
 
-        if(getJsonEntries().containsKey(FIELD_PLACEHOLDER)){
+        if (getJsonEntries().containsKey(FIELD_PLACEHOLDER)) {
             edit.setHint(getJsonEntries().get(FIELD_PLACEHOLDER).getValue().getAsString());
         }
     }
 
     private TextWatcher edit_watcher = new TextWatcher() {
-        @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-        @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
+
         @Override
         public void afterTextChanged(Editable s) {
             current_text = s == null ? "" : s.toString();
@@ -195,7 +217,7 @@ public class PXFEdit extends PXWidget{
         return false;
     }
 
-    public String toString(){
+    public String toString() {
         return this.current_text;
     }
 }
