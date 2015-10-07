@@ -12,6 +12,7 @@ import android.widget.EditText;
 
 import com.crashlytics.android.Crashlytics;
 import com.ievolutioned.iac.entity.UserEntity;
+import com.ievolutioned.iac.net.NetUtil;
 import com.ievolutioned.iac.net.service.LoginService;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
@@ -87,6 +88,10 @@ public class LoginActivity extends Activity {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.activity_login_btnLogIn:
+                    if (!NetUtil.hasNetworkConnection(LoginActivity.this)) {
+                        ViewUtility.displayNetworkPreferences(LoginActivity.this);
+                        break;
+                    }
                     if (validateForm())
                         logIn();
                     break;

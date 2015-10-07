@@ -122,6 +122,10 @@ public class PXFSubMenuButton extends PXWidget {
         params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
         text.setLayoutParams(params);
+        try {
+            text.setTextSize(getDimen(context.getBaseContext(), R.dimen.default_text_size));
+        } catch (Exception e) {
+        }
         helper.title = text;
 
         //sub button menu
@@ -129,6 +133,10 @@ public class PXFSubMenuButton extends PXWidget {
         params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
         button.setLayoutParams(params);
+        try {
+            button.setTextSize(getDimen(context.getBaseContext(), R.dimen.default_text_size));
+        } catch (Exception e) {
+        }
         button.setText(getJsonEntries().containsKey(FIELD_PLACEHOLDER) ?
                 getJsonEntries().get(FIELD_PLACEHOLDER).getValue().getAsString() : "");
         button.setOnClickListener(onclick);

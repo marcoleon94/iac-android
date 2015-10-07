@@ -79,7 +79,7 @@ public class PXFDatePicker extends PXWidget {
         HelperDatePicker helper = (HelperDatePicker) view.getTag();
         helper.title.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
                 getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : " ");
-        if(this.calendarState != null)
+        if (this.calendarState != null)
             helper.buttonDatePicker.setText(getValue());
 
         helper.buttonDatePicker.setOnClickListener(button_click);
@@ -107,12 +107,20 @@ public class PXFDatePicker extends PXWidget {
         params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
         text.setLayoutParams(params);
+        try {
+            text.setTextSize(getDimen(context.getBaseContext(), R.dimen.default_text_size));
+        } catch (Exception e) {
+        }
         helper.title = text;
 
         Button button = new Button(context);
         params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
         button.setLayoutParams(params);
+        try {
+            button.setTextSize(getDimen(context.getBaseContext(), R.dimen.default_text_size));
+        } catch (Exception e) {
+        }
         button.setText(getJsonEntries().containsKey(FIELD_TITLE) ?
                 getJsonEntries().get(FIELD_TITLE).getValue().getAsString() : "Date Picker");
         button.setOnClickListener(button_click);
@@ -193,7 +201,7 @@ public class PXFDatePicker extends PXWidget {
 
     @Override
     public boolean validate() {
-        if(!getValue().isEmpty())
+        if (!getValue().isEmpty())
             return true;
         return false;
     }

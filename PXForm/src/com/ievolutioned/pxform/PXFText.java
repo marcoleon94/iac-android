@@ -76,6 +76,10 @@ public class PXFText extends PXWidget {
         params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
         text.setLayoutParams(params);
+        try {
+            text.setTextSize(getDimen(context.getBaseContext(), R.dimen.default_text_size));
+        } catch (Exception e) {
+        }
         helper.title = text;
 
         //edit input control
@@ -135,7 +139,7 @@ public class PXFText extends PXWidget {
 
     @Override
     public boolean validate() {
-        if(!getValue().isEmpty())
+        if (!getValue().isEmpty())
             return true;
         return false;
     }

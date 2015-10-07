@@ -89,6 +89,7 @@ public class PXFButton extends PXWidget {
                     button.setText(getJsonEntries().get(FIELD_TITLE).getValue().getAsString());
 
             button.setOnClickListener(onclick);
+            button.setTextSize(getDimen(context.getBaseContext(), R.dimen.default_text_size));
             helper.button = button;
 
             //add controls to main container
@@ -105,7 +106,6 @@ public class PXFButton extends PXWidget {
         }
         return null;
     }
-
 
     private View.OnClickListener onclick = new View.OnClickListener() {
         @Override
