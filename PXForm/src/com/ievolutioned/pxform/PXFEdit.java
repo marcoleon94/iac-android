@@ -183,11 +183,14 @@ public class PXFEdit extends PXWidget {
         if (FIELD_TYPE_UNSIGNED.equals(map.get(FIELD_TYPE).getValue().getAsString())) {
             edit.setInputType(InputType.TYPE_CLASS_NUMBER);
         } else {
-            edit.setInputType(InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
+            edit.setInputType(InputType.TYPE_CLASS_TEXT |
+                    InputType.TYPE_TEXT_FLAG_AUTO_CORRECT |
+                    InputType.TYPE_TEXT_FLAG_MULTI_LINE |
+                    InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
         }
 
         edit.setFilters(FilterArray);
-        edit.setLines(1);
+        //edit.setLines(1);
 
         if (getJsonEntries().containsKey(FIELD_PLACEHOLDER)) {
             edit.setHint(getJsonEntries().get(FIELD_PLACEHOLDER).getValue().getAsString());
