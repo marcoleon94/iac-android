@@ -111,6 +111,10 @@ public class PXFSpinner extends PXWidget {
         params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
         text.setLayoutParams(params);
+        try {
+            text.setTextSize(getDimen(context.getBaseContext(), R.dimen.default_text_size));
+        } catch (Exception e) {
+        }
         helper.title = text;
 
         //initial spinner configuration
@@ -144,7 +148,7 @@ public class PXFSpinner extends PXWidget {
 
     private ArrayAdapter<String> getSpinnerAdapter(Context context) {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
-                android.R.layout.simple_spinner_item);
+                R.layout.spinner_item);
 
         //Add a default empty
         adapter.add("");

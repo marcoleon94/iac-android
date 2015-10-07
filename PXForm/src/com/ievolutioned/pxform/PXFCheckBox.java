@@ -1,8 +1,5 @@
 package com.ievolutioned.pxform;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +9,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.JsonElement;
+
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class PXFCheckBox extends PXWidget {
 
@@ -78,6 +78,11 @@ public class PXFCheckBox extends PXWidget {
         params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
         text.setLayoutParams(params);
+        try {
+            text.setTextSize(getDimen(context.getBaseContext(), R.dimen.default_text_size));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         helper.title = text;
 
         //check box control

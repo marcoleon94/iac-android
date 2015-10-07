@@ -1,5 +1,8 @@
 package com.ievolutioned.iac.net;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.ievolutioned.iac.util.LogUtil;
@@ -156,6 +159,13 @@ public class NetUtil {
         for (String key : hs.keySet()) {
             conn.addRequestProperty(key, hs.get(key));
         }
+    }
+
+    public static boolean hasNetworkConnection(Context c) {
+        ConnectivityManager manager = (ConnectivityManager) c.getSystemService(Context.
+                CONNECTIVITY_SERVICE);
+        NetworkInfo info = manager.getActiveNetworkInfo();
+        return info != null && info.isConnected();
     }
 
 }

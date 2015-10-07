@@ -1,5 +1,6 @@
 package com.ievolutioned.iac.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.net.service.UserService;
 import com.ievolutioned.iac.util.AppConfig;
@@ -355,8 +357,6 @@ public class FormsFragment extends BaseFragmentClass {
                     @Override
                     public void saved() {
                         loading.dismiss();
-                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
-                                R.string.fragment_forms_saved);
                         getSavedResponse();
                     }
 
@@ -389,8 +389,6 @@ public class FormsFragment extends BaseFragmentClass {
                     @Override
                     public void success(JsonElement jsonElement) {
                         loading.dismiss();
-                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
-                                R.string.fragment_forms_loaded);
                         createFormService(jsonElement);
                     }
 
@@ -428,6 +426,7 @@ public class FormsFragment extends BaseFragmentClass {
                 loading.dismiss();
                 ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
                         R.string.fragment_forms_uploaded);
+                sendToHome();
             }
 
             @Override
@@ -444,6 +443,15 @@ public class FormsFragment extends BaseFragmentClass {
                         R.string.fragment_forms_error_cancel);
             }
         });
+    }
+
+    /**
+     * Shows home site up
+     */
+    private void sendToHome() {
+        Activity main = getActivity();
+        if (main != null && main instanceof MainActivity)
+            ((MainActivity) main).showHome();
     }
 
     /**

@@ -20,7 +20,7 @@ public class PXFToggleBoolean extends PXWidget {
     private int radio_selected = 0;
     private String value = null;
 
-    public static class HelperToggleBoolean extends HelperWidget{
+    public static class HelperToggleBoolean extends HelperWidget {
         protected TextView title;
         protected LinearLayout linearCheckBox;
         protected RadioGroup radioGroup;
@@ -44,13 +44,13 @@ public class PXFToggleBoolean extends PXWidget {
 
     @Override
     public void setValue(String value) {
-        try{
+        try {
             radio_selected = getIndexOfValue(value);
-        }catch(Exception ex){
+        } catch (Exception ex) {
         }
     }
 
-    private int getIndexOfValue(String value){
+    private int getIndexOfValue(String value) {
         JsonArray array = getJsonEntries().get(FIELD_OPTIONS).getValue().getAsJsonArray();
         for (int i = 0; i < array.size(); i++) {
             if (array.get(i).getAsString().contentEquals(value))
@@ -81,9 +81,9 @@ public class PXFToggleBoolean extends PXWidget {
 
         helper.radioGroup.clearCheck();
 
-        if(radio_selected == 1){
+        if (radio_selected == 1) {
             helper.radioOn.setChecked(true);
-        }else if(radio_selected == 2){
+        } else if (radio_selected == 2) {
             helper.radioOff.setChecked(true);
         }
 
@@ -110,6 +110,10 @@ public class PXFToggleBoolean extends PXWidget {
         params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
         text.setLayoutParams(params);
+        try {
+            text.setTextSize(getDimen(context.getBaseContext(), R.dimen.default_text_size));
+        } catch (Exception e) {
+        }
         helper.title = text;
 
         RadioGroup radioGroup = new RadioGroup(context);
@@ -126,6 +130,10 @@ public class PXFToggleBoolean extends PXWidget {
         radioOn.setLayoutParams(params);
         radioOn.setTag(1);
         radioOn.setOnCheckedChangeListener(box_checked);
+        try {
+            radioOn.setTextSize(getDimen(context.getBaseContext(), R.dimen.default_text_size));
+        } catch (Exception e) {
+        }
         helper.radioOn = radioOn;
 
         RadioButton radioOff = new RadioButton(context);
@@ -134,6 +142,10 @@ public class PXFToggleBoolean extends PXWidget {
         radioOff.setLayoutParams(params);
         radioOff.setTag(2);
         radioOff.setOnCheckedChangeListener(box_checked);
+        try {
+            radioOff.setTextSize(getDimen(context.getBaseContext(), R.dimen.default_text_size));
+        } catch (Exception e) {
+        }
         helper.radioOff = radioOff;
 
         JsonArray array = getJsonEntries().get(FIELD_OPTIONS).getValue().getAsJsonArray();
@@ -162,7 +174,7 @@ public class PXFToggleBoolean extends PXWidget {
             = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton view, boolean isChecked) {
-            if(isChecked) {
+            if (isChecked) {
                 radio_selected = Integer.parseInt(view.getTag().toString());
                 value = view.getText().toString();
             }

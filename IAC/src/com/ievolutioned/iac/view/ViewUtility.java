@@ -3,7 +3,10 @@ package com.ievolutioned.iac.view;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -83,4 +86,24 @@ public class ViewUtility {
         showMessage(c, color, c.getString(msg));
     }
 
+    public static void displayNetworkPreferences(final Context c) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(c);
+        dialog.setTitle(R.string.network_missing_title);
+        dialog.setMessage(R.string.network_missing_msg);
+        dialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                c.startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS));
+                dialog.dismiss();
+            }
+        });
+        dialog.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        dialog.setCancelable(true);
+        dialog.create().show();
+    }
 }
