@@ -37,6 +37,18 @@ public class InquestEntity {
     @SerializedName("updated_at")
     private String updatedAt;
 
+    /**
+     * Status of response
+     */
+    @SerializedName("status")
+    private String status;
+
+    /**
+     * Days remaining of inquest
+     */
+    @SerializedName("days_remaining")
+    private int daysRemaining;
+
     public long getId() {
         return id;
     }
@@ -84,5 +96,21 @@ public class InquestEntity {
     public void setUpdatedAt(String
                                      updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public int getDaysRemaining() {
+        return daysRemaining;
+    }
+
+    public void setDaysRemaining(int daysRemaining) {
+        this.daysRemaining = daysRemaining;
     }
 }
