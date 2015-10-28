@@ -2,14 +2,14 @@
 <resources>
 
     <string-array name="forms_item_key">
-        <item >Asistencia a Cursos</item>
-        <item >Encuesta de Salida</item>
-        <item >Encuesta de satisfaccion</item>
+        <item>Asistencia a Cursos</item>
+        <item>Encuesta de Salida</item>
+        <item>Encuesta de satisfaccion</item>
     </string-array>
     <string-array name="forms_item_values">
-        <item >Form.json</item>
-        <item >Form.json</item>
-        <item >Form.json</item>
+        <item>Form.json</item>
+        <item>Form.json</item>
+        <item>Form.json</item>
     </string-array>
 
     <string name="fragment_forms_saved">Guardado</string>
@@ -23,9 +23,9 @@
     <string name="fragment_forms_error_required">Campo requerido: </string>
     <string name="fragment_forms_error_saving">Por el momento no se ha podido salvar</string>
     <string name="fragment_forms_error_send">Error al enviar fomulario!</string>
+    <string name="fragment_forms_error_days_remaining">Error formulario bloqueado, días restantes: </string>
     <string name="fragment_forms_error_cancel">Error al enviar fomulario!</string>
     <string name="fragment_forms_error_barcode">Por el momento no se puede terminar la operacion</string>
-
 
 
 </resources>

@@ -424,8 +424,17 @@ public class FormsFragment extends BaseFragmentClass {
             @Override
             public void onSuccess(UserService.UserResponse response) {
                 loading.dismiss();
-                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
-                        R.string.fragment_forms_uploaded);
+                if (response != null && response.inquest != null) {
+                    if (response.inquest.getDaysRemaining() > 0)
+                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                                getString(R.string.fragment_forms_error_days_remaining) + " " +
+                                        response.inquest.getDaysRemaining());
+                    else
+                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
+                                R.string.fragment_forms_uploaded);
+                } else
+                    ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                            R.string.fragment_forms_error_send);
                 sendToHome();
             }
 
