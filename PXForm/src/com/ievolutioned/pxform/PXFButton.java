@@ -1,7 +1,6 @@
 package com.ievolutioned.pxform;
 
 import android.app.Activity;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -58,7 +57,6 @@ public class PXFButton extends PXWidget {
         try {
             this.title = value;
         } catch (Exception e) {
-            Log.e(PXFButton.class.getName(), e.getMessage());
         }
     }
 
@@ -102,7 +100,6 @@ public class PXFButton extends PXWidget {
 
             return v;
         } catch (Exception e) {
-            Log.e("Error", e.getMessage(), e);
         }
         return null;
     }

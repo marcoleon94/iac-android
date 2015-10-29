@@ -2,7 +2,6 @@ package com.ievolutioned.pxform.adapters;
 
 import android.app.Activity;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -164,7 +163,6 @@ public class PXFAdapter extends BaseAdapter {
                 view = w.createControl(aActivity);
             }
         } catch (Exception e) {
-            Log.e("Error", e.getMessage(), e);
         }
 
         w.setEventHandler(widgetHandler);
@@ -196,7 +194,6 @@ public class PXFAdapter extends BaseAdapter {
                         title = lWidgets.get(i).getJsonEntries().get("title").getValue().getAsString();
                     else
                         title = "";
-                    Log.d("Validate: ", lWidgets.get(i).getKey());
                     break;
                 }
             }
