@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="sites_item_key">
+        <item>@string/string_site_home</item>
+    </string-array>
+    <string-array name="sites_item_values">
+        <item>https://iacgroup.herokuapp.com/admin</item>
+    </string-array>
+
+    <string name="string_site_home">Inicio</string>
+
+
+</resources>

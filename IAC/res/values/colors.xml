@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background_gray_light">#F3F2F7</color>
+    <color name="primary_blue">#013372</color>
+    <color name="primary_gray">#AEAFB4</color>
+    <color name="white_transparent_login">#66FFFFFF</color>
+
+    <color name="gray_disabled_control">#EEEEEE</color>
+</resources>

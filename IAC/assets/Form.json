@@ -1,0 +1,510 @@
+[
+   {  
+      "header":"Datos Personales",
+      "key":"barcodeReader",
+      "title":"Presiona aquí para leer el código de barras de la credencial",
+      "action":"openCamera:"
+   },
+   {  
+      "header":"Datos Personales",
+      "key":"employeeID",
+      "type":"unsigned",
+      "title":"Número de Empleado",
+      "placeholder":"123456789",
+      "validate":"yes"
+   },
+   {  
+	  "key":"siteTaken",
+	  "title":"Planta",
+	  "placeholder":"Ninguno",
+ 	  "options":[  
+	      "Arteaga",
+	      "Hermosillo",
+	      "Monterrey",
+	      "Puebla",
+	      "Querétaro",
+	      "Ramos Arizpe",
+	      "Saltillo",
+	      "Toluca"
+      ],
+      "cell":"FXFormOptionPickerCell",
+      "validate":"yes"
+   },
+   {  
+      "key":"age",
+      "title":"Edad",
+      "type":"unsigned",
+      "placeholder":"45",
+      "validate":"yes"
+   },
+   {  
+      "key":"bossName",
+      "title":"Jefe Inmediato",
+      "type":"text",
+      "placeholder":"Nombre (ej. Juan Perez)"
+   },
+   {  
+      "key":"jobName",
+      "title":"Puesto",
+      "type":"text",
+      "placeholder":"Su Puesto"
+   },
+   {  
+	  "key":"departmentOpinion",
+	  "title":"Departamento",
+	  "placeholder":"Su Departamento",
+ 	  "options":[  
+	      "Calidad",
+	      "Compras",
+	      "Finanzas",
+	      "Ingeniería",
+	      "Mantenimiento",
+	      "Manufactura",
+	      "Materiales",
+	      "Mejora Continua",
+	      "Recursos Humanos",
+	      "Tecnologías de la información",
+	      "Ventas"
+      ],
+      "cell":"FXFormOptionPickerCell",
+      "validate":"yes"
+   },
+      {  
+      "key":"contractType",
+      "title":"Tipo de Contrato",
+      "options":[  
+         { 
+            "Sindicalizado":[  
+               {  
+                  "key":"newCompany",
+                  "title":"Empresa",
+                  "type":"text",
+                  "placeholder":"La empresa a dónde se va"
+               }
+            ]
+         },
+         {  
+            "Indirecto":[]
+         },
+         {  
+            "Salary":[]
+         }
+      ],
+      "placeholder":"Ninguno"
+   },
+ 
+      {  
+      "header":"",
+      "key": "headerEmpty",
+      "title":"Siguiente",
+      "action":"automaticBackRoot"
+   },
+  
+   {  
+      "key":"sex",
+      "title":"Sexo",
+      "options":[  
+         "Masculino",
+         "Femenino"
+      ],
+      "cell":"FXFormOptionSegmentsCellCustom"
+   },
+   {  
+      "key":"maritalStatus",
+      "title":"Edo. Civil",
+      "placeholder":"Ninguno",
+      "options":[  
+         "Soltero",
+         "Casado",
+         "Divorciado",
+         "Viudo"
+      ],
+      "cell":"FXFormOptionPickerCell"
+   },
+   {  
+      "key":"dateOfAdmission",
+      "title":"Fecha de Ingreso",
+      "type":"date"
+   },
+   {  
+      "key":"dateOfWithdrawal",
+      "title":"Fecha de Baja",
+      "type":"date",
+      "validate":"yes"
+   },
+   {  
+      "key":"lastSalary",
+      "title":"Último Sueldo",
+      "type":"unsigned",
+      "placeholder":"0"
+   },
+ 
+   {  
+      "header":"Motivo de salida",
+      "key":"reasonToLeave",
+      "title":"Motivo",
+      "options":[  
+         {  
+            "Aceptar otro Empleo":[  
+               {  
+                  "key":"newCompany",
+                  "title":"Empresa",
+                  "type":"text",
+                  "placeholder":"La empresa a dónde se va"
+               },
+               {  
+                  "key":"newJob",
+                  "title":"Puesto",
+                  "type":"text",
+                  "placeholder":"Su nuevo puesto"
+               },
+               {  
+                  "key":"newSalary",
+                  "title":"Salario Ofrecido",
+                  "type":"unsigned",
+                  "placeholder":"0"
+               }
+            ]
+         },
+         {  
+            "Matrimonio":[]
+         },
+         {  
+            "Retiro":[]
+         },
+         {  
+            "Negaron Oportunidades de Desarrollo":[]
+         },
+         {  
+            "Problemas Personales o Familiares":[]
+         },
+         {  
+            "Continuar Estudios":[]
+         },
+         {  
+            "Cambio de Residencia":[]
+         },
+         {  
+            "Enfermedad":[]
+         },
+         {  
+            "Negocio Propio":[]
+         },
+         {  
+            "Otro":[  
+               {  
+                  "key":"otherReason",
+                  "title":"Otra Razón",
+                  "type":"text",
+                  "placeholder":"Otra razón"
+               }
+            ]
+         }
+      ],
+      "placeholder":"Ninguno"
+   },
+   {  
+      "header":"",
+      "key":"headerEmpty2",
+      "title":"Siguiente",
+      "action":"atomaticBackRoot"
+   },
+   {  
+      "header":"Trabajo",
+      "key":"workInteresting",
+      "title":"Fué interesante tu trabajo",
+      "options":[  
+         "Si",
+         "No"
+      ],
+      "cell":"FXFormOptionSegmentsCellCustom"
+   },
+   {  
+      "key":"workInterestingAnswer",
+      "title":"¿Por qué?",
+      "type":"longtext",
+      "placeholder":" Escribe tu respuesta aquí"
+   },
+   {  
+      "key":"workPromises",
+      "title":"Promesas no cumplidas",
+      "options":[  
+         "Si",
+         "No"
+      ],
+      "cell":"FXFormOptionSegmentsCellCustom"
+   },
+   {  
+      "key":"workInterestingAnswer",
+      "title":"¿Por qué?",
+      "type":"longtext",
+      "placeholder":" Escribe tu respuesta aquí"
+   },
+   {  
+      "header":"Capacitación",
+      "key":"training",
+      "title":"El entrenamiento que recibiste para desarrollar las funciones a tu cargo fue",
+      "options":[  
+         "Excelente",
+         "Muy Bueno",
+         "Bueno",
+         "Regular",
+         "Malo",
+         "Muy Malo"
+      ],
+      "class":"NSArray"
+   },
+   {  
+      "key":"trainingWhy",
+      "title":"¿Por qué?",
+      "type":"longtext",
+      "placeholder":"  Escribe tu respuesta aquí"
+   },
+   {  
+      "key":"trainingReceived",
+      "title":"Recibiste Capacitación",
+      "options":[  
+         "Si",
+         "No"
+      ],
+      "cell":"FXFormOptionSegmentsCellCustom"
+   },
+   {  
+      "key":"trainingReceivedWhy",
+      "title":"¿Por qué?",
+      "type":"longtext",
+      "placeholder":" Escribe tu respuesta aquí"
+   },
+   {  
+      "key":"trainingOk",
+      "title":"¿La capacitación está dada de acuerdo a las necesidades del área o departamento?",
+      "options":[  
+         "Si",
+         "No"
+      ],
+      "cell":"FXFormOptionSegmentsCell"
+   },
+   {  
+      "key":"trainingOkWhy",
+      "title":"¿Por qué?",
+      "type":"longtext",
+      "placeholder":" Escribe tu respuesta aquí"
+   },
+   {  
+      "header":"Compensaciones",
+      "key":"salary",
+      "title":"Consideras competitivo el sueldo que estabas percibiendo",
+      "options":[  
+         "Si",
+         "No"
+      ],
+      "cell":"FXFormOptionSegmentsCellCustom"
+   },
+   {  
+      "key":"salaryWhy",
+      "title":"¿Por qué?",
+      "type":"longtext",
+      "placeholder":" Escribe tu respuesta aquí"
+   },
+   {  
+      "key":"benefits",
+      "title":"Las prestaciones que tiene la compañía son:",
+      "options":[  
+         "Excelente",
+         "Muy Bueno",
+         "Bueno",
+         "Regular",
+         "Malo",
+         "Muy Malo"
+      ]
+   },
+   {  
+      "key":"benefitsWhy",
+      "title":"¿Por qué?",
+      "type":"longtext",
+      "placeholder":" Escribe tu respuesta aquí"
+   },
+   {  
+      "key":"salaryExpectations",
+      "title":"¿Cubrieron tus expectativas y necesidades?",
+      "options":[  
+         "Si",
+         "No"
+      ],
+      "cell":"FXFormOptionSegmentsCellCustom"
+   },
+   {  
+      "key":"salaryWhy",
+      "title":"¿Por qué?",
+      "type":"longtext",
+      "placeholder":" Escribe tu respuesta aquí"
+   },
+   {  
+      "header":"Ambiente Laboral",
+      "key":"workplace",
+      "title":"¿Cómo calificas el ambiente laboral en el departamento donde prestabas tus servicios?",
+      "options":[  
+         "Excelente",
+         "Muy Bueno",
+         "Bueno",
+         "Regular",
+         "Malo",
+         "Muy Malo"
+      ]
+   },
+   {  
+      "key":"teammates",
+      "title":"¿Cómo era tu relación con tus compañeros de trabajo?",
+      "options":[  
+         "Excelente",
+         "Muy Bueno",
+         "Bueno",
+         "Regular",
+         "Malo",
+         "Muy Malo"
+      ]
+   },
+   {  
+      "key":"identity",
+      "title":"¿Te sentiste identificado con la compañía?",
+      "options":[  
+         "Mucho",
+         "Poco",
+         "Nada"
+      ]
+   },
+   {  
+      "key":"values",
+      "title":"Consideras que en la compañía se viven los valores establecidos?",
+      "options":[  
+         "Mucho",
+         "Poco",
+         "Nada"
+      ]
+   },
+   {  
+      "key":"opinion",
+      "title":"La opinión que tienes de la compañía es",
+      "options":[  
+         "Excelente",
+         "Muy Bueno",
+         "Bueno",
+         "Regular",
+         "Malo",
+         "Muy Malo"
+      ]
+   },
+   {  
+      "key":"opinionWhy",
+      "title":"¿Por qué?",
+      "type":"longtext",
+      "placeholder":" Escribe tu respuesta aquí"
+   },
+   {  
+      "key":"gained",
+      "title":"¿Obtuviste de la compañia lo que esperabas de ella?",
+      "options":[  
+         "Si",
+         "No"
+      ],
+      "cell":"FXFormOptionSegmentsCellCustom"
+   },
+   {  
+      "key":"gainedWhy",
+      "title":"¿Por qué?",
+      "type":"longtext",
+      "placeholder":" Escribe tu respuesta aquí"
+   },
+   {  
+      "key":"bossOpinion",
+      "title":"La opinion que tienes de tu jefe inmediato es:",
+      "options":[  
+         "Excelente",
+         "Muy Bueno",
+         "Bueno",
+         "Regular",
+         "Malo",
+         "Muy Malo"
+      ]
+   },
+   {  
+      "key":"bossWhy",
+      "title":"¿Por qué?",
+      "type":"longtext",
+      "placeholder":" Escribe tu respuesta aquí"
+   },
+   {  
+      "header":"Departamento con el que tuviste mayor relación",
+	  "key":"departmentWithMostRelation",
+	  "title":"Departamento",
+	  "placeholder":"Ninguno",
+ 	  "options":
+      [  
+	      "Calidad",
+	      "Compras",
+	      "Finanzas",
+	      "Ingeniería",
+	      "Mantenimiento",
+	      "Manufactura",
+	      "Materiales",
+	      "Mejora Continua",
+	      "Recursos Humanos",
+	      "Tecnologías de la información",
+	      "Ventas"
+      ],
+      "cell":"FXFormOptionPickerCell",
+      "validate":"yes"
+   },
+ 
+   {  
+      "key":"departmentOpinion",
+      "title":"Tú opinión en general del departamento con el que tuviste mayor relación es",
+      "options":[  
+         "Excelente",
+         "Muy Bueno",
+         "Bueno",
+         "Regular",
+         "Malo",
+         "Muy Malo"
+      ]
+   },
+   {  
+      "key":"departmentWhy",
+      "title":"¿Por qué?",
+      "type":"longtext",
+      "placeholder":" Escribe tu respuesta aquí"
+   },
+   {  
+      "header":"Recursos Humanos",
+      "key":"humanResources",
+      "title":"Tu opinión en general del departamento de Recursos Humanos es",
+      "options":[  
+         "Excelente",
+         "Muy Bueno",
+         "Bueno",
+         "Regular",
+         "Malo",
+         "Muy Malo"
+      ]
+   },
+   {  
+      "key":"humanResourcesService",
+      "title":"¿Recibiste el servicio y/o la atención que esperabas?",
+      "options":[  
+         "Si",
+         "No"
+      ],
+      "cell":"FXFormOptionSegmentsCellCustom"
+   },
+   {  
+      "key":"humanResourcesWhy",
+      "title":"¿Por qué?",
+      "type":"longtext",
+      "placeholder":" Escribe tu respuesta aquí"
+   },
+   {  
+      "header":"",
+      "title":"Enviar",
+      "action":"submitRegistrationForm:"
+   }
+]

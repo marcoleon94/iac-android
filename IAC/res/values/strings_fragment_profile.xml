@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="string_fragment_profile_employee_id">Número de empleado</string>
+    <string name="string_fragment_profile_name">Nombre</string>
+    <string name="string_fragment_profile_email">Correo</string>
+    <string name="string_fragment_profile_deparment">Departamento</string>
+    <string name="string_fragment_profile_divp">Divp</string>
+    <string name="string_fragment_profile_site">Planta</string>
+    <string name="string_fragment_profile_type">Tipo de empleado</string>
+    <string name="string_fragment_profile_date_admission">Fecha de ingreso</string>
+    <string name="string_fragment_profile_holidays">Fechas de vacaciones</string>
+</resources>

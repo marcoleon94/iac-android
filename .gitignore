@@ -20,3 +20,14 @@ project.properties
 .settings/
 crashlytics.properties
 *.png~
+build/*
+IAC/build/*
+PXForm/build/*
+.gradle/*
+.idea/workspace.xml
+*.iml
+.idea/dictionaries/*
+.idea/modules.xml
+.idea/misc.xml
+.idea/libraries/*
+PXForm/assets/databases/*.db-journal
