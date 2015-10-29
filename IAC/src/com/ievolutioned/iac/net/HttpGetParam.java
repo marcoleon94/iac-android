@@ -1,7 +1,5 @@
 package com.ievolutioned.iac.net;
 
-import android.util.Log;
-
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,7 +47,6 @@ public class HttpGetParam {
                 result.append("=");
                 result.append(URLEncoder.encode(pair.getValue(), UTF8));
             } catch (Exception e) {
-                Log.e(HttpGetParam.class.getName(), e.getMessage(), e);
                 return null;
             }
         }

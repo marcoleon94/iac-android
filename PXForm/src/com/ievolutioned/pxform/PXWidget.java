@@ -3,7 +3,6 @@ package com.ievolutioned.pxform;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -127,8 +126,6 @@ public abstract class PXWidget {
 
         if (eEntry.containsKey(FIELD_KEY))
             setKey(eEntry.get(FIELD_KEY).getValue().getAsString());
-        else
-            Log.w(PXWidget.class.getName(), FIELD_KEY + " not found in json");
     }
 
     /**

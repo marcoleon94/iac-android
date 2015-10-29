@@ -3,7 +3,6 @@ package com.ievolutioned.iac.net;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 
 import com.ievolutioned.iac.util.LogUtil;
 
@@ -143,7 +142,6 @@ public class NetUtil {
             sb.append(line).append("\n");
         }
         reader.close();
-        Log.d(NetUtil.class.getName(), sb.toString());
         return sb.toString();
     }
 

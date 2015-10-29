@@ -7,7 +7,6 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -107,7 +106,6 @@ public class PXFEdit extends PXWidget {
             helper.inputEdit.addTextChangedListener(edit_watcher);
             helper.inputEdit.setText(current_text);
         } catch (Exception e) {
-            Log.e("WHAT?", e.getMessage(), e);
         }
     }
 
