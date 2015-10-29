@@ -1,0 +1,68 @@
+apply plugin: 'android'
+apply plugin: 'io.fabric'
+
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'http://dl.bintray.com/journeyapps/maven' }
+    maven { url 'https://maven.fabric.io/public' }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: '*.jar')
+    compile project(':PXForm')
+    compile 'com.android.support:appcompat-v7:22.0.0'
+    compile 'com.android.support:support-v4:20.0.0'
+
+    // Supports Android 4.0.3 and later (API level 15)
+    // compile 'com.journeyapps:zxing-android-embedded:2.3.0@aar'
+    // Supports Android 2.1 and later (API level 7), but not optimal for later Android versions.
+    compile 'com.journeyapps:zxing-android-legacy:2.3.0@aar'
+    //  Version 3.0.x of zxing core contains some code that is not compatible on Android 2.2 and earlier.
+    compile 'com.google.zxing:core:3.2.0'
+    compile 'com.journeyapps:zxing-android-integration:2.3.0@aar'
+    compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') {
+        transitive = true;
+    }
+
+    compile 'com.cloudinary:cloudinary-android:1.1.2'
+}
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "20.0.0"
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            resources.srcDirs = ['src']
+            aidl.srcDirs = ['src']
+            renderscript.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+        }
+
+        // Move the tests to tests/java, tests/res, etc...
+        instrumentTest.setRoot('tests')
+
+        // Move the build types to build-types/<type>
+        // For instance, build-types/debug/java, build-types/debug/AndroidManifest.xml, ...
+        // This moves them out of them default location under src/<type>/... which would
+        // conflict with src/ being used by the main source set.
+        // Adding new build types or product flavors should be accompanied
+        // by a similar customization.
+        debug.setRoot('build-types/debug')
+        release.setRoot('build-types/release')
+    }
+}
