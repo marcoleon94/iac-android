@@ -2,7 +2,6 @@ package com.ievolutioned.iac.fragment;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -308,7 +307,6 @@ public class MenuFragment extends Fragment {
      * @param item - The item
      */
     protected void selectItem(MenuDrawerItem item) {
-        Log.d(MenuFragment.class.getName(), "Selected: " + item);
         ((MainActivity) getActivity()).selectItem(item.getId(), item.getTitle());
     }
 
