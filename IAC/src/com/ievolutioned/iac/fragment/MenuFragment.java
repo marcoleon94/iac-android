@@ -1,5 +1,6 @@
 package com.ievolutioned.iac.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import com.ievolutioned.iac.net.service.FormService;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.util.FileUtil;
+import com.ievolutioned.iac.util.LogUtil;
 import com.ievolutioned.iac.view.MenuDrawerItem;
 import com.ievolutioned.pxform.database.Forms;
 import com.ievolutioned.pxform.database.FormsDataSet;
@@ -71,6 +73,18 @@ public class MenuFragment extends Fragment {
      */
     private MenuDrawerListAdapter adapter_forms;
 
+    /**
+     * MainActivity activity instance
+     */
+    private MainActivity mActivity;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof MainActivity)
+            mActivity = (MainActivity) activity;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_menu, container);
@@ -94,9 +108,16 @@ public class MenuFragment extends Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mActivity = null;
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBundle(TAG, saveState());
+        LogUtil.d(TAG, "Save instance State");
     }
 
     /**
@@ -120,12 +141,14 @@ public class MenuFragment extends Fragment {
      * Restore state for menu items
      */
     private void restoreState() {
+        LogUtil.d(TAG, "Restore state");
         if (savedState != null) {
             String items = savedState.getString(ARGS_MENU_ITEMS);
             JsonParser parser = new JsonParser();
             JsonElement json = parser.parse(items);
             drawerFormItems.addAll(getTitlesFromResponse(json));
             adapter_forms.notifyDataSetChanged();
+            loadStaticMenuItems();
             showLoading(false);
         }
     }
@@ -163,7 +186,7 @@ public class MenuFragment extends Fragment {
         mDrawerListForm = (ListView) root.findViewById(R.id.fragment_menu_form_list);
 
         //Initialize adapters
-        adapter_forms = new MenuDrawerListAdapter(getActivity(), drawerFormItems);
+        adapter_forms = new MenuDrawerListAdapter(mActivity, drawerFormItems);
         mDrawerListForm.setAdapter(adapter_forms);
 
         //Set on click listeners
@@ -180,9 +203,9 @@ public class MenuFragment extends Fragment {
         //Loads the static menu items for the current adapters
         loadStaticMenuItems();
         //Look for forms on service
-        FormService fs = new FormService(AppConfig.getUUID(getActivity()),
-                AppPreferences.getAdminToken(getActivity()));
-        fs.getForms(AppPreferences.getAdminToken(getActivity()), form_service_callback);
+        FormService fs = new FormService(AppConfig.getUUID(mActivity),
+                AppPreferences.getAdminToken(mActivity));
+        fs.getForms(AppPreferences.getAdminToken(mActivity), form_service_callback);
     }
 
     /**
@@ -194,11 +217,13 @@ public class MenuFragment extends Fragment {
         menuSitesTitles = getResources().getStringArray(R.array.nav_drawer_sites_items);
 
         //TODO: how to determine static forms for users
-        if (!AppPreferences.getRole(getActivity()).contentEquals(UserRole.USER)
+        if (!AppPreferences.getRole(mActivity).contentEquals(UserRole.USER)
                 && menuFormTitles != null)
             for (String m : menuFormTitles) {
                 drawerFormItems.add(new MenuDrawerItem(m));
             }
+        LogUtil.d(TAG, "Form Titles:" + menuFormTitles.toString());
+        LogUtil.d(TAG, "Form Sites:" + menuSitesTitles.toString());
     }
 
     /**
@@ -219,7 +244,7 @@ public class MenuFragment extends Fragment {
          */
         public void save(JsonElement response) {
             boolean isSaved = false;
-            com.ievolutioned.pxform.database.FormsDataSet f = new FormsDataSet(getActivity());
+            com.ievolutioned.pxform.database.FormsDataSet f = new FormsDataSet(mActivity);
             List<Forms> forms = f.selectAll();
             JsonArray inquests = response.getAsJsonArray();
             for (JsonElement i : inquests) {
@@ -233,7 +258,7 @@ public class MenuFragment extends Fragment {
                 }
                 if (!isSaved) {
                     f.insert("CACHE", jo.get("name").getAsString());
-                    FileUtil.saveJsonFile(getActivity(), jo.get("name").getAsString(), jo.getAsJsonObject().toString());
+                    FileUtil.saveJsonFile(mActivity, jo.get("name").getAsString(), jo.getAsJsonObject().toString());
                 } else {
                     //TODO: f.update()
                 }
@@ -285,15 +310,19 @@ public class MenuFragment extends Fragment {
     private View.OnClickListener menu_click = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            if (mActivity == null) {
+                LogUtil.e(TAG, "The activity must not be null", null);
+                return;
+            }
             switch (v.getId()) {
                 case R.id.fragment_menu_home:
-                    ((MainActivity) getActivity()).selectItem(menuSitesTitles[0]);
+                    mActivity.selectItem(menuSitesTitles[0]);
                     break;
                 case R.id.fragment_menu_profile:
-                    ((MainActivity) getActivity()).showMyProfile();
+                    mActivity.showMyProfile();
                     break;
                 case R.id.fragment_menu_singout:
-                    getActivity().finish();
+                    mActivity.finish();
                     break;
                 default:
                     break;
@@ -307,7 +336,7 @@ public class MenuFragment extends Fragment {
      * @param item - The item
      */
     protected void selectItem(MenuDrawerItem item) {
-        ((MainActivity) getActivity()).selectItem(item.getId(), item.getTitle());
+        mActivity.selectItem(item.getId(), item.getTitle());
     }
 
     /**
@@ -316,8 +345,7 @@ public class MenuFragment extends Fragment {
      * @param b
      */
     protected void showLoading(boolean b) {
-        ((MainActivity) getActivity()).showLoading(b);
+        mActivity.showLoading(b);
     }
-
 
 }
