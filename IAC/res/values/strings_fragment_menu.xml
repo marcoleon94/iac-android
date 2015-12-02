@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="nav_drawer_form_title">FORMULARIOS</string>
-    <string name="nav_drawer_form_home">Inicio</string>
-    <string name="nav_drawer_form_asks">Preg. Freq</string>
+    <string name="nav_drawer_form_home">@string/string_site_home</string>
+    <string name="nav_drawer_form_asks">@string/string_site_asks</string>
     <string name="nav_drawer_form_profile">Mi perfil</string>
     <string name="nav_drawer_form_logout">Cerrar sesión</string>
     <string name="menu_action_upload">Enviar</string>
