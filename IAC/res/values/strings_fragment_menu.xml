@@ -2,6 +2,7 @@
 <resources>
     <string name="nav_drawer_form_title">FORMULARIOS</string>
     <string name="nav_drawer_form_home">Inicio</string>
+    <string name="nav_drawer_form_asks">Preg. Freq</string>
     <string name="nav_drawer_form_profile">Mi perfil</string>
     <string name="nav_drawer_form_logout">Cerrar sesión</string>
     <string name="menu_action_upload">Enviar</string>
@@ -14,5 +15,6 @@
 
     <string-array name="nav_drawer_sites_items">
         <item>@string/string_site_home</item>
+        <item>@string/string_site_asks</item>
     </string-array>
 </resources>
