@@ -154,6 +154,11 @@ public class SitesFragment extends BaseFragmentClass {
             params.add("ref", "xedni/draobhsad");
             page += "?" + params.toString();
         }
+        else if(key.equalsIgnoreCase(getActivity().getString(R.string.string_site_ppf))){
+            HttpGetParam params = new HttpGetParam();
+            params.add("ref", "xedni/draobhsad");
+            page += "?" + params.toString();
+        }
         return page;
     }
 

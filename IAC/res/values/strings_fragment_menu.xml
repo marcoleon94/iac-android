@@ -3,6 +3,7 @@
     <string name="nav_drawer_form_title">FORMULARIOS</string>
     <string name="nav_drawer_form_home">@string/string_site_home</string>
     <string name="nav_drawer_form_asks">@string/string_site_asks</string>
+    <string name="nav_drawer_form_ppf">@string/string_site_ppf</string>
     <string name="nav_drawer_form_profile">Mi perfil</string>
     <string name="nav_drawer_form_logout">Cerrar sesión</string>
     <string name="menu_action_upload">Enviar</string>
@@ -16,5 +17,6 @@
     <string-array name="nav_drawer_sites_items">
         <item>@string/string_site_home</item>
         <item>@string/string_site_asks</item>
+        <item>@string/string_site_ppf</item>
     </string-array>
 </resources>
