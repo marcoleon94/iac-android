@@ -55,7 +55,7 @@ public class ProfileService extends ServiceBase {
                     if (response != null) {
                         Gson gson = new Gson();
                         JsonElement adminInfo = gson.fromJson(response.result, JsonElement.class).
-                                getAsJsonObject().get("amidn_info");
+                                getAsJsonObject();
                         if (adminInfo.isJsonNull())
                             return null;
                         ProfileEntity profileEntity = gson.fromJson(adminInfo.getAsJsonObject(),
