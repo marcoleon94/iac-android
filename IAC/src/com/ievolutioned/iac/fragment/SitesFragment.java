@@ -149,6 +149,16 @@ public class SitesFragment extends BaseFragmentClass {
             params.add("token_access", AppPreferences.getAdminToken(getActivity()));
             page += "?" + params.toString();
         }
+        else if(key.equalsIgnoreCase(getActivity().getString(R.string.string_site_asks))){
+            HttpGetParam params = new HttpGetParam();
+            params.add("ref", "xedni/draobhsad");
+            page += "?" + params.toString();
+        }
+        else if(key.equalsIgnoreCase(getActivity().getString(R.string.string_site_ppf))){
+            HttpGetParam params = new HttpGetParam();
+            params.add("ref", "xedni/draobhsad");
+            page += "?" + params.toString();
+        }
         return page;
     }
 
