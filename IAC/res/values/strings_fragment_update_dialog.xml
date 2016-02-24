@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="string_fragment_update_title">Nueva actualización disponible</string>
+    <string name="string_fragment_update_body">Una nueva actialización esta disponible para IAC App Android.</string>
+    <string name="string_fragment_update_b_positive">Actualizar</string>
+    <string name="string_fragment_update_b_negative">Cancelar</string>
+</resources>
