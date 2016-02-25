@@ -16,12 +16,12 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
-            android:paddingBottom="10dp"
+            android:paddingBottom="8dp"
             android:paddingLeft="15dp"
-            android:paddingTop="10dp"
+            android:paddingTop="8dp"
             android:text="@string/nav_drawer_form_home"
             android:textAllCaps="true"
-            android:textSize="18sp"
+            android:textSize="17sp"
             android:textStyle="bold" />
 
         <View
@@ -34,12 +34,12 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
-            android:paddingBottom="10dp"
+            android:paddingBottom="8dp"
             android:paddingLeft="15dp"
-            android:paddingTop="10dp"
+            android:paddingTop="8dp"
             android:text="@string/nav_drawer_form_asks"
             android:textAllCaps="true"
-            android:textSize="18sp"
+            android:textSize="17sp"
             android:textStyle="bold" />
 
         <View
@@ -52,12 +52,12 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
-            android:paddingBottom="10dp"
+            android:paddingBottom="8dp"
             android:paddingLeft="15dp"
-            android:paddingTop="10dp"
+            android:paddingTop="8dp"
             android:text="@string/nav_drawer_form_ppf"
             android:textAllCaps="true"
-            android:textSize="18sp"
+            android:textSize="17sp"
             android:textStyle="bold" />
 
         <View
@@ -72,10 +72,10 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/fragment_menu_sites_layout"
         android:paddingLeft="15dp"
-        android:paddingTop="10dp"
+        android:paddingTop="8dp"
         android:text="@string/nav_drawer_form_title"
         android:textAllCaps="true"
-        android:textSize="18sp"
+        android:textSize="17sp"
         android:textStyle="bold" />
 
     <ListView
@@ -83,20 +83,14 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/fragment_menu_forms"
+        android:layout_above="@+id/fragment_menu_bottom"
         android:choiceMode="singleChoice"
         android:divider="@android:color/darker_gray"
-        android:dividerHeight="1dp"
-        android:paddingLeft="20dp" />
+        android:dividerHeight="1dp" />
 
-    <View
-        android:id="@+id/fragment_menu_d2"
-        android:layout_width="fill_parent"
-        android:layout_height="1dp"
-        android:layout_below="@+id/fragment_menu_form_list"
-        android:layout_marginLeft="20dp"
-        android:background="@android:color/darker_gray" />
 
     <LinearLayout
+        android:id="@+id/fragment_menu_bottom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -108,12 +102,30 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
-            android:paddingBottom="10dp"
+            android:paddingBottom="8dp"
             android:paddingLeft="15dp"
-            android:paddingTop="10dp"
+            android:paddingTop="8dp"
             android:text="@string/nav_drawer_form_profile"
             android:textAllCaps="true"
-            android:textSize="18sp"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:id="@+id/fragment_menu_about"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingBottom="8dp"
+            android:paddingLeft="15dp"
+            android:paddingTop="8dp"
+            android:text="@string/nav_drawer_form_about"
+            android:textAllCaps="true"
+            android:textSize="17sp"
             android:textStyle="bold" />
 
         <View
@@ -126,12 +138,12 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
-            android:paddingBottom="10dp"
+            android:paddingBottom="8dp"
             android:paddingLeft="15dp"
-            android:paddingTop="10dp"
+            android:paddingTop="8dp"
             android:text="@string/nav_drawer_form_logout"
             android:textAllCaps="true"
-            android:textSize="18sp"
+            android:textSize="17sp"
             android:textStyle="bold" />
     </LinearLayout>
 </RelativeLayout>
