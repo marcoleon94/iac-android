@@ -1,64 +1,80 @@
 package com.ievolutioned.iac.net.service;
 
-import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
+import com.ievolutioned.iac.R;
+import com.ievolutioned.iac.entity.LastVersionMobile;
 import com.ievolutioned.iac.fragment.UpdateDialogFragment;
 import com.ievolutioned.iac.net.HttpGetParam;
+import com.ievolutioned.iac.net.HttpHeader;
+import com.ievolutioned.iac.net.NetResponse;
+import com.ievolutioned.iac.net.NetUtil;
+import com.ievolutioned.iac.util.LogUtil;
 
 /**
  * Manages the log in / out services for the user on the system
  * Created by Daniel on 24/02/2016.
  */
-public class UtilService {
+public class UtilService extends ServiceBase {
 
-    private AsyncTask<Void, Void, Boolean> task = null;
+    public final static String TAG = UtilService.class.getName();
+
+    private final static String adminToken = "nosession";
+    private AsyncTask<Void, Void, VersionResult> task = null;
     private Context context = null;
     private FragmentManager fragmentManager = null;
+
+    /**
+     * Constructor
+     *
+     * @param deviceId
+     */
+    public UtilService(String deviceId) {
+        super(deviceId, adminToken);
+    }
 
     public void getUpdate(final Context context, FragmentManager fragmentManager) {
         this.context = context;
         this.fragmentManager = fragmentManager;
-        task = new AsyncTask<Void, Void, Boolean>() {
+        task = new AsyncTask<Void, Void, VersionResult>() {
             @Override
-            protected Boolean doInBackground(Void... voids) {
+            protected VersionResult doInBackground(Void... voids) {
                 if (isCancelled())
-                    return false;
+                    return null;
                 try {
 
                     HttpGetParam params = new HttpGetParam();
-                    //params.add("iac_id", id);
 
-                    /*
-                    HttpHeader headers = getHeaders(ACTION_LOGIN, CONTROLLER_LOGIN);
+                    HttpHeader headers = getHeaders(ACTION_MOBILE, CONTROLLER_SERVICES);
 
                     // Get response
-                    NetResponse response = NetUtil.get(URL_LOGIN, params, headers);
+                    NetResponse response = NetUtil.get(URL_MOBILE_VERSION, params, headers);
                     if (response == null)
-                        return new LoginResponse(false, null, "No response", null);
+                        return null;
                     if (response.isBadStatus())
-                        return new LoginResponse(false, null, response.toString(), null);
+                        return null;
 
                     //Parse response
                     Gson g = new Gson();
-                    UserEntity user = g.fromJson(response.result, UserEntity.class);
-                    if (user.getIacId() != null)
-                        return new LoginResponse(true, user, response.result, null);
-                    return new LoginResponse(false, null, null, null);
-                    *
-                    */
-                    return true;
+                    VersionResult versionMobile = g.fromJson(response.result,
+                            VersionResult.class);
+                    if (versionMobile != null)
+                        return versionMobile;
+                    return null;
                 } catch (Exception e) {
-                    return false;
+                    return null;
                 }
             }
 
             @Override
-            protected void onPostExecute(Boolean aBoolean) {
-                super.onPostExecute(aBoolean);
-                showUpdateNotification(aBoolean);
+            protected void onPostExecute(VersionResult versionResult) {
+                super.onPostExecute(versionResult);
+                if (versionResult != null && versionResult.getLastVersionMobile() != null)
+                    showUpdateNotification(versionResult.getLastVersionMobile());
             }
 
             @Override
@@ -69,10 +85,16 @@ public class UtilService {
         task.execute();
     }
 
-    private void showUpdateNotification(Boolean isUpdate) {
-        if (isUpdate && context != null) {
-            DialogFragment dialog = UpdateDialogFragment.newInstance(context);
-            dialog.show(fragmentManager, UpdateDialogFragment.TAG);
+    private void showUpdateNotification(LastVersionMobile versionResult) {
+        try {
+            if (versionResult != null && context != null && !versionResult.getVersioAndroid()
+                    .contentEquals(context.getString(R.string.app_version))) {
+                UpdateDialogFragment dialog = UpdateDialogFragment.newInstance(context);
+                dialog.setLastVersionMobile(versionResult);
+                dialog.show(fragmentManager, UpdateDialogFragment.TAG);
+            }
+        } catch (Exception e) {
+            LogUtil.e(TAG, e.getMessage(), e);
         }
     }
 
@@ -83,6 +105,28 @@ public class UtilService {
     public void cancel() {
         if (task != null)
             task.cancel(true);
+    }
+
+    public class VersionResult {
+        private String status;
+        @SerializedName("last_versions_mobiles")
+        private LastVersionMobile lastVersionMobile;
+
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
+        }
+
+        public LastVersionMobile getLastVersionMobile() {
+            return lastVersionMobile;
+        }
+
+        public void setLastVersionMobile(LastVersionMobile lastVersionMobile) {
+            this.lastVersionMobile = lastVersionMobile;
+        }
     }
 
 }

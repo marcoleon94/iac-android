@@ -70,7 +70,7 @@ public class LoginActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        new UtilService().getUpdate(LoginActivity.this, getFragmentManager());
+        new UtilService(AppConfig.getUUID(this)).getUpdate(LoginActivity.this, getFragmentManager());
     }
 
     /**

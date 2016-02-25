@@ -2,15 +2,16 @@ package com.ievolutioned.iac.fragment;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.app.DialogFragment;
 
 import com.ievolutioned.iac.R;
+import com.ievolutioned.iac.entity.LastVersionMobile;
 
 /**
  * UpdateDialogFragment class, manages the update dialog to update the app
@@ -27,6 +28,7 @@ public class UpdateDialogFragment extends DialogFragment implements DialogInterf
      * Context that allows the new intent for update action
      */
     private Context context;
+    private LastVersionMobile lastVersionMobile;
 
     /**
      * Instantiates a new UpdateDialogFragment fragment object with its context
@@ -47,7 +49,10 @@ public class UpdateDialogFragment extends DialogFragment implements DialogInterf
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(R.string.string_fragment_update_title);
-        builder.setMessage(R.string.string_fragment_update_body);
+        if (lastVersionMobile != null)
+            builder.setMessage(lastVersionMobile.getDescriptionAndroid());
+        else
+            builder.setMessage(R.string.string_fragment_update_body);
         builder.setPositiveButton(R.string.string_fragment_update_b_positive, this);
         builder.setNegativeButton(R.string.string_fragment_update_b_negative, this);
         return builder.create();
@@ -65,6 +70,7 @@ public class UpdateDialogFragment extends DialogFragment implements DialogInterf
         switch (which) {
             case DialogInterface.BUTTON_POSITIVE:
                 startActivityUpdate();
+                dismiss();
                 break;
             case DialogInterface.BUTTON_NEGATIVE:
                 dismiss();
@@ -78,14 +84,24 @@ public class UpdateDialogFragment extends DialogFragment implements DialogInterf
      * Starts the activity for update app
      */
     private void startActivityUpdate() {
-        //Gets the app package name
-        final String appPackageName = context.getPackageName();
-        try {
+        //Look for url on response
+        if (lastVersionMobile != null && !lastVersionMobile.getUrlAndroid().isEmpty())
             startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("market://details?id=" + appPackageName)));
-        } catch (android.content.ActivityNotFoundException e) {
-            startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                    Uri.parse(lastVersionMobile.getUrlAndroid())));
+        else {
+            //Get plays and app package name
+            final String appPackageName = context.getPackageName();
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("market://details?id=" + appPackageName)));
+            } catch (android.content.ActivityNotFoundException e) {
+                startActivity(new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+            }
         }
+    }
+
+    public void setLastVersionMobile(LastVersionMobile lastVersionMobile) {
+        this.lastVersionMobile = lastVersionMobile;
     }
 }
