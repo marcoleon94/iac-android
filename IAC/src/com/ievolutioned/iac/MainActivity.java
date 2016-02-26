@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.JsonElement;
@@ -419,5 +420,10 @@ public class MainActivity extends ActionBarActivity {
         else if (f instanceof MyProfileFragment)
             ((MyProfileFragment) f).setImageByIntent(data, requestCode);
         LogUtil.d(TAG, data.toString());
+    }
+
+    public void showAbout() {
+
+        Toast.makeText(this, "Abriendo about", Toast.LENGTH_SHORT).show();
     }
 }
