@@ -13,7 +13,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.JsonElement;
@@ -120,16 +119,15 @@ public class MainActivity extends ActionBarActivity {
             }
             FragmentManager fm = getSupportFragmentManager();
             Fragment fragment = fm.findFragmentById(R.id.activity_main_frame_container);
-            if (fragment instanceof MyProfileFragment || fragment instanceof SitesFragment) {
+            if (fragment instanceof MyProfileFragment || fragment instanceof SitesFragment ||
+                    fragment instanceof TuobaFragment) {
                 //Open drawer
                 mDrawerLayout.openDrawer(R.layout.fragment_menu);
-                return;
             } else if (fragment instanceof FormsFragment) {
                 //Verify if it is a subform or simple selection
                 if (fragment.getTag() == null) {
                     //Open drawer
                     mDrawerLayout.openDrawer(R.layout.fragment_menu);
-                    return;
                 } else {
                     onBackPressed();
                 }
@@ -424,11 +422,8 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void showAbout() {
-
-        Toast.makeText(this, "Abriendo about", Toast.LENGTH_SHORT).show();
         Fragment mFragment = new TuobaFragment();
         replaceFragment(mFragment, null);
         mDrawerLayout.closeDrawers();
-
     }
 }
