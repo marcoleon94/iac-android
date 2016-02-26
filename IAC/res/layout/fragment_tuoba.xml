@@ -20,7 +20,7 @@
         android:layout_below="@+id/fragment_tuoba_image"
         android:layout_centerHorizontal="true"
         android:layout_margin="15dp"
-        android:text="Titulo"
+        android:text="@string/string_fragment_tuoba_title"
         android:textColor="@color/primary_blue"
         android:textSize="20sp" />
 
@@ -30,8 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/fragment_tuoba_title"
         android:layout_centerHorizontal="true"
-        android:layout_margin="5dp"
-        android:text="Version:" />
+        android:layout_margin="5dp" />
 
     <TextView
         android:id="@+id/fragment_tuoba_year"
@@ -39,8 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/fragment_tuoba_version"
         android:layout_centerHorizontal="true"
-        android:layout_margin="5dp"
-        android:text="Año" />
+        android:layout_margin="5dp" />
 
     <TextView
         android:id="@+id/fragment_tuoba_description"
@@ -49,10 +47,16 @@
         android:layout_below="@+id/fragment_tuoba_year"
         android:layout_centerHorizontal="true"
         android:layout_margin="5dp"
-        android:text="Descripcion"
-        android:textColor="@color/primary_blue" />
+        android:gravity="center"
+        android:paddingEnd="50dp"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp"
+        android:paddingStart="50dp"
+        android:textColor="@color/primary_blue"
+        android:visibility="invisible" />
 
     <Button
+        android:id="@+id/fragment_tuoba_b_download"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/fragment_tuoba_description"
@@ -61,8 +65,9 @@
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
         android:paddingStart="20dp"
-        android:text="Descargar ahora"
-        android:textSize="14sp" />
+        android:text="@string/string_fragment_tuoba_download"
+        android:textSize="14sp"
+        android:visibility="invisible" />
 
 
 </RelativeLayout>

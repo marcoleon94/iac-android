@@ -58,6 +58,8 @@ public class UtilService extends ServiceBase {
                     if (response.isBadStatus())
                         return null;
 
+                    LogUtil.d(TAG, response.result);
+
                     //Parse response
                     Gson g = new Gson();
                     VersionResult versionMobile = g.fromJson(response.result,
@@ -75,6 +77,54 @@ public class UtilService extends ServiceBase {
                 super.onPostExecute(versionResult);
                 if (versionResult != null && versionResult.getLastVersionMobile() != null)
                     showUpdateNotification(versionResult.getLastVersionMobile());
+            }
+
+            @Override
+            protected void onCancelled() {
+                super.onCancelled();
+            }
+        };
+        task.execute();
+    }
+
+    public void getUpdate(final IUpdateVersion callback) {
+        task = new AsyncTask<Void, Void, VersionResult>() {
+            @Override
+            protected VersionResult doInBackground(Void... voids) {
+                if (isCancelled())
+                    return null;
+                try {
+
+                    HttpGetParam params = new HttpGetParam();
+
+                    HttpHeader headers = getHeaders(ACTION_MOBILE, CONTROLLER_SERVICES);
+
+                    // Get response
+                    NetResponse response = NetUtil.get(URL_MOBILE_VERSION, params, headers);
+                    if (response == null)
+                        return null;
+                    if (response.isBadStatus())
+                        return null;
+
+                    LogUtil.d(TAG, response.result);
+                    
+                    //Parse response
+                    Gson g = new Gson();
+                    VersionResult versionMobile = g.fromJson(response.result,
+                            VersionResult.class);
+                    if (versionMobile != null)
+                        return versionMobile;
+                    return null;
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(VersionResult versionResult) {
+                super.onPostExecute(versionResult);
+                if (versionResult != null && versionResult.getLastVersionMobile() != null)
+                    callback.onUpdateVersionResult(versionResult.lastVersionMobile);
             }
 
             @Override
@@ -127,6 +177,19 @@ public class UtilService extends ServiceBase {
         public void setLastVersionMobile(LastVersionMobile lastVersionMobile) {
             this.lastVersionMobile = lastVersionMobile;
         }
+    }
+
+    /**
+     * Interface for Update Version
+     */
+    public interface IUpdateVersion {
+
+        /**
+         * Callback for update version result
+         *
+         * @param lastVersionMobile - Result
+         */
+        void onUpdateVersionResult(final LastVersionMobile lastVersionMobile);
     }
 
 }
