@@ -21,6 +21,7 @@ import com.google.gson.JsonParser;
 import com.ievolutioned.iac.fragment.FormsFragment;
 import com.ievolutioned.iac.fragment.MyProfileFragment;
 import com.ievolutioned.iac.fragment.SitesFragment;
+import com.ievolutioned.iac.fragment.TuobaFragment;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.FileUtil;
 import com.ievolutioned.iac.util.LogUtil;
@@ -425,5 +426,9 @@ public class MainActivity extends ActionBarActivity {
     public void showAbout() {
 
         Toast.makeText(this, "Abriendo about", Toast.LENGTH_SHORT).show();
+        Fragment mFragment = new TuobaFragment();
+        replaceFragment(mFragment, null);
+        mDrawerLayout.closeDrawers();
+
     }
 }
