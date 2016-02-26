@@ -75,6 +75,9 @@ public class TuobaFragment extends Fragment implements View.OnClickListener {
                     lastVersionMobile.getVersioAndroid().isEmpty())
                 return;
 
+            if (lastVersionMobile.getVersioAndroid().contentEquals(getString(R.string.app_version)))
+                return;
+
             mTextDescription.setVisibility(View.VISIBLE);
             mButtonDownload.setVisibility(View.VISIBLE);
             mTextDescription.setText(lastVersionMobile.getDescriptionAndroid());
