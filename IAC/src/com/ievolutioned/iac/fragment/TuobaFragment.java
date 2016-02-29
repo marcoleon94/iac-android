@@ -21,14 +21,30 @@ import java.util.Calendar;
 import java.util.Locale;
 
 /**
+ * About fragment class, displays the about of this app and the option to download a new update if it is necessary
  * Created by Daniel on 26/02/2016.
  */
 public class TuobaFragment extends Fragment implements View.OnClickListener {
 
+    /**
+     * TextView version
+     */
     private TextView mTextVersion;
+    /**
+     * TextView year information
+     */
     private TextView mTextYear;
+    /**
+     * TextView description
+     */
     private TextView mTextDescription;
+    /**
+     * Button download
+     */
     private Button mButtonDownload;
+    /**
+     * Activity main activity
+     */
     private Activity mActivity;
 
 
@@ -47,6 +63,9 @@ public class TuobaFragment extends Fragment implements View.OnClickListener {
         return root;
     }
 
+    /**
+     * Binds the data to the current controls
+     */
     private void bindData() {
         Locale localeDefault = Locale.getDefault();
         String version = String.format(localeDefault, "%s %s",
@@ -64,10 +83,16 @@ public class TuobaFragment extends Fragment implements View.OnClickListener {
         showDescriptionDownloadVersion();
     }
 
+    /**
+     * Show description download version when it is a new version available
+     */
     private void showDescriptionDownloadVersion() {
         new UtilService(AppConfig.getUUID(mActivity)).getUpdate(updatable);
     }
 
+    /**
+     * IUpdateVersion call back, shows if a new version available
+     */
     private UtilService.IUpdateVersion updatable = new UtilService.IUpdateVersion() {
         @Override
         public void onUpdateVersionResult(final LastVersionMobile lastVersionMobile) {
@@ -107,6 +132,11 @@ public class TuobaFragment extends Fragment implements View.OnClickListener {
         }
     };
 
+    /**
+     * Binds the UI
+     *
+     * @param root - View layout
+     */
     private void bindUI(View root) {
         //Find views
         mTextVersion = (TextView) root.findViewById(R.id.fragment_tuoba_version);
@@ -118,6 +148,11 @@ public class TuobaFragment extends Fragment implements View.OnClickListener {
         mButtonDownload.setOnClickListener(this);
     }
 
+    /**
+     * Sets the title
+     *
+     * @param title
+     */
     private void setTitle(String title) {
         Activity activity = getActivity();
         if (activity != null && activity instanceof MainActivity)
