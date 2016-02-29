@@ -32,6 +32,11 @@ public abstract class ServiceBase {
      */
     protected static final String URL_PROFILE = "http://iacgroup.herokuapp.com/api/admin/";
 
+    /**
+     * URL for Mobile Versions
+     */
+    protected static final String URL_MOBILE_VERSION = "http://iacgroup.herokuapp.com/api/services/mobile_versions";
+
 
     /**
      * Action for login
@@ -62,6 +67,15 @@ public abstract class ServiceBase {
      */
     protected static final String ACTION_UPDATE_ADMIN = "update_admin";
 
+    /**
+     * Action for mobile versions
+     */
+    protected static final String ACTION_MOBILE = "mobile_versions";
+
+    /**
+     * Controller constant for services
+     */
+    protected static final String CONTROLLER_SERVICES = "services";
     /**
      * Controller constant for login services
      */
