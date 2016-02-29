@@ -193,7 +193,9 @@ public class MenuFragment extends Fragment {
         mDrawerListForm.setOnItemClickListener(drawer_click);
         root.findViewById(R.id.fragment_menu_home).setOnClickListener(menu_click);
         root.findViewById(R.id.fragment_menu_asks).setOnClickListener(menu_click);
+        root.findViewById(R.id.fragment_menu_ppf).setOnClickListener(menu_click);
         root.findViewById(R.id.fragment_menu_profile).setOnClickListener(menu_click);
+        root.findViewById(R.id.fragment_menu_about).setOnClickListener(menu_click);
         root.findViewById(R.id.fragment_menu_singout).setOnClickListener(menu_click);
     }
 
@@ -322,8 +324,14 @@ public class MenuFragment extends Fragment {
                 case R.id.fragment_menu_asks:
                     mActivity.selectItem(menuSitesTitles[1]);
                     break;
+                case R.id.fragment_menu_ppf:
+                    mActivity.selectItem(menuSitesTitles[2]);
+                    break;
                 case R.id.fragment_menu_profile:
                     mActivity.showMyProfile();
+                    break;
+                case R.id.fragment_menu_about:
+                    mActivity.showAbout();
                     break;
                 case R.id.fragment_menu_singout:
                     mActivity.finish();

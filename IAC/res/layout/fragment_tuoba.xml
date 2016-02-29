@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <ImageView
+        android:id="@+id/fragment_tuoba_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:src="@drawable/ic_launcher" />
+
+    <TextView
+        android:id="@+id/fragment_tuoba_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fragment_tuoba_image"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="15dp"
+        android:text="@string/string_fragment_tuoba_title"
+        android:textColor="@color/primary_blue"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/fragment_tuoba_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fragment_tuoba_title"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="5dp" />
+
+    <TextView
+        android:id="@+id/fragment_tuoba_year"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fragment_tuoba_version"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="5dp" />
+
+    <TextView
+        android:id="@+id/fragment_tuoba_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fragment_tuoba_year"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="5dp"
+        android:gravity="center"
+        android:paddingEnd="50dp"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp"
+        android:paddingStart="50dp"
+        android:textColor="@color/primary_blue"
+        android:visibility="invisible" />
+
+    <Button
+        android:id="@+id/fragment_tuoba_b_download"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fragment_tuoba_description"
+        android:layout_centerHorizontal="true"
+        android:paddingEnd="20dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingStart="20dp"
+        android:text="@string/string_fragment_tuoba_download"
+        android:textSize="14sp"
+        android:visibility="invisible" />
+
+
+</RelativeLayout>

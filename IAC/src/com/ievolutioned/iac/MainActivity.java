@@ -20,6 +20,7 @@ import com.google.gson.JsonParser;
 import com.ievolutioned.iac.fragment.FormsFragment;
 import com.ievolutioned.iac.fragment.MyProfileFragment;
 import com.ievolutioned.iac.fragment.SitesFragment;
+import com.ievolutioned.iac.fragment.TuobaFragment;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.FileUtil;
 import com.ievolutioned.iac.util.LogUtil;
@@ -118,16 +119,15 @@ public class MainActivity extends ActionBarActivity {
             }
             FragmentManager fm = getSupportFragmentManager();
             Fragment fragment = fm.findFragmentById(R.id.activity_main_frame_container);
-            if (fragment instanceof MyProfileFragment || fragment instanceof SitesFragment) {
+            if (fragment instanceof MyProfileFragment || fragment instanceof SitesFragment ||
+                    fragment instanceof TuobaFragment) {
                 //Open drawer
                 mDrawerLayout.openDrawer(R.layout.fragment_menu);
-                return;
             } else if (fragment instanceof FormsFragment) {
                 //Verify if it is a subform or simple selection
                 if (fragment.getTag() == null) {
                     //Open drawer
                     mDrawerLayout.openDrawer(R.layout.fragment_menu);
-                    return;
                 } else {
                     onBackPressed();
                 }
@@ -419,5 +419,11 @@ public class MainActivity extends ActionBarActivity {
         else if (f instanceof MyProfileFragment)
             ((MyProfileFragment) f).setImageByIntent(data, requestCode);
         LogUtil.d(TAG, data.toString());
+    }
+
+    public void showAbout() {
+        Fragment mFragment = new TuobaFragment();
+        replaceFragment(mFragment, null);
+        mDrawerLayout.closeDrawers();
     }
 }
