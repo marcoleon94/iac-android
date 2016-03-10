@@ -203,6 +203,8 @@ public class MenuFragment extends Fragment {
      * Binds the dynamic menu objects form service
      */
     private void bindData() {
+        if (mActivity == null)
+            return;
         //Loads the static menu items for the current adapters
         loadStaticMenuItems();
         //Look for forms on service
@@ -216,6 +218,8 @@ public class MenuFragment extends Fragment {
      * Loads the static menu items from resources
      */
     private void loadStaticMenuItems() {
+        if (mActivity == null)
+            return;
         // static menu items
         menuFormTitles = getResources().getStringArray(R.array.nav_drawer_form_items);
         menuSitesTitles = getResources().getStringArray(R.array.nav_drawer_sites_items);
@@ -236,7 +240,7 @@ public class MenuFragment extends Fragment {
     private FormService.ServiceHandler form_service_callback = new FormService.ServiceHandler() {
         @Override
         public void onSuccess(FormService.FormResponse response) {
-            if(mActivity == null)
+            if (mActivity == null)
                 return;
             drawerFormItems.addAll(getTitlesFromResponse(response.json));
             adapter_forms.notifyDataSetChanged();
@@ -351,6 +355,8 @@ public class MenuFragment extends Fragment {
      * @param item - The item
      */
     protected void selectItem(MenuDrawerItem item) {
+        if (mActivity == null)
+            return;
         mActivity.selectItem(item.getId(), item.getTitle());
     }
 
@@ -360,6 +366,8 @@ public class MenuFragment extends Fragment {
      * @param b
      */
     protected void showLoading(boolean b) {
+        if (mActivity == null)
+            return;
         mActivity.showLoading(b);
     }
 
