@@ -209,6 +209,7 @@ public class MenuFragment extends Fragment {
         FormService fs = new FormService(AppConfig.getUUID(mActivity),
                 AppPreferences.getAdminToken(mActivity));
         fs.getForms(AppPreferences.getAdminToken(mActivity), form_service_callback);
+        //mActivity.finish();
     }
 
     /**
@@ -235,6 +236,8 @@ public class MenuFragment extends Fragment {
     private FormService.ServiceHandler form_service_callback = new FormService.ServiceHandler() {
         @Override
         public void onSuccess(FormService.FormResponse response) {
+            if(mActivity == null)
+                return;
             drawerFormItems.addAll(getTitlesFromResponse(response.json));
             adapter_forms.notifyDataSetChanged();
             save(response.json);
