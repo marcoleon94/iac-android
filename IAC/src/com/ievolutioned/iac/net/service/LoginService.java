@@ -8,6 +8,7 @@ import com.ievolutioned.iac.net.HttpGetParam;
 import com.ievolutioned.iac.net.HttpHeader;
 import com.ievolutioned.iac.net.NetResponse;
 import com.ievolutioned.iac.net.NetUtil;
+import com.ievolutioned.iac.util.LogUtil;
 
 /**
  * Manages the log in / out services for the user on the system
@@ -59,6 +60,8 @@ public class LoginService extends ServiceBase {
                         return new LoginResponse(false, null, "No response", null);
                     if (response.isBadStatus())
                         return new LoginResponse(false, null, response.toString(), null);
+
+                    LogUtil.d(LoginService.class.getName(), response.result);
 
                     //Parse response
                     Gson g = new Gson();

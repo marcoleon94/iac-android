@@ -1,5 +1,6 @@
 package com.ievolutioned.iac.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -28,6 +29,10 @@ public class UpdateDialogFragment extends DialogFragment implements DialogInterf
      * Context that allows the new intent for update action
      */
     private Context context;
+
+    /**
+     * Last version of mobile for android
+     */
     private LastVersionMobile lastVersionMobile;
 
     /**
@@ -42,6 +47,12 @@ public class UpdateDialogFragment extends DialogFragment implements DialogInterf
         fragment.setArguments(args);
         fragment.context = context;
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        context = activity;
     }
 
     @NonNull

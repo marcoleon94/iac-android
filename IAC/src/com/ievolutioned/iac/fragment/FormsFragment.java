@@ -110,9 +110,12 @@ public class FormsFragment extends BaseFragmentClass {
      * @param args
      */
     private void setTitle(Bundle args) {
+        if (args == null)
+            return;
         Bundle b = args.getBundle(FormsFragment.class.getName());
         if (b != null && b.containsKey(ARG_FORM_NAME))
-            getActivity().setTitle(b.getString(ARG_FORM_NAME));
+            if (getActivity() != null)
+                getActivity().setTitle(b.getString(ARG_FORM_NAME));
     }
 
     @Override
@@ -157,18 +160,21 @@ public class FormsFragment extends BaseFragmentClass {
 
             @Override
             public void error(Exception ex, String json) {
-                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
-                        R.string.fragment_forms_error_parse);
-                loading.dismiss();
+                if (getActivity() != null) {
+                    ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
+                            R.string.fragment_forms_error_parse);
+                    loading.dismiss();
+                }
             }
         });
 
-        p.parseJson(getActivity()
-                , savedState.getString(DATABASE_JSON)
-                , savedState.getLong(DATABASE_FORM_ID)
-                , savedState.getInt(DATABASE_LEVEL)
-                , savedState.getString(DATABASE_KEY_PARENT)
-        );
+        if (getActivity() != null)
+            p.parseJson(getActivity()
+                    , savedState.getString(DATABASE_JSON)
+                    , savedState.getLong(DATABASE_FORM_ID)
+                    , savedState.getInt(DATABASE_LEVEL)
+                    , savedState.getString(DATABASE_KEY_PARENT)
+            );
 
     }
 
@@ -276,7 +282,8 @@ public class FormsFragment extends BaseFragmentClass {
      * @param msg - the message
      */
     private void showValidationMessage(String msg) {
-        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR, msg);
+        if (getActivity() != null)
+            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR, msg);
     }
 
     /**
@@ -284,6 +291,8 @@ public class FormsFragment extends BaseFragmentClass {
      */
     @Deprecated
     public final void save(final Bundle args) {
+        if(getActivity() == null)
+            return;
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity(),
                 getString(R.string.fragment_forms_saving));
         loading.show();
@@ -339,6 +348,10 @@ public class FormsFragment extends BaseFragmentClass {
      * Saves the form before upload
      */
     private final void saveAndUpload() {
+        if (getActivity() == null) {
+            LogUtil.d(TAG, "Activity must not be null");
+            return;
+        }
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity(),
                 getString(R.string.fragment_forms_saving));
         loading.show();
@@ -363,8 +376,9 @@ public class FormsFragment extends BaseFragmentClass {
                     @Override
                     public void error(Exception ex) {
                         loading.dismiss();
-                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
-                                R.string.fragment_forms_error_saving);
+                        if (getActivity() != null)
+                            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                                    R.string.fragment_forms_error_saving);
                     }
                 }
         );
@@ -374,6 +388,10 @@ public class FormsFragment extends BaseFragmentClass {
      * Calls an gets the response of submit form
      */
     private void getSavedResponse() {
+        if (getActivity() == null) {
+            LogUtil.e(TAG, "Activity must no be null", null);
+            return;
+        }
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity());
         loading.show();
 
@@ -395,8 +413,9 @@ public class FormsFragment extends BaseFragmentClass {
                     @Override
                     public void error(Exception ex) {
                         loading.dismiss();
-                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
-                                R.string.fragment_forms_error_parse);
+                        if (getActivity() != null)
+                            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                                    R.string.fragment_forms_error_parse);
                     }
                 });
     }
@@ -407,6 +426,10 @@ public class FormsFragment extends BaseFragmentClass {
      * @param jsonElement - the form
      */
     private void createFormService(JsonElement jsonElement) {
+        if (getActivity() == null) {
+            LogUtil.e(TAG, "Activity must no be null", null);
+            return;
+        }
         final AlertDialog loading = ViewUtility.getLoadingScreen(getActivity(),
                 getString(R.string.fragment_forms_loading));
         loading.show();
@@ -424,32 +447,36 @@ public class FormsFragment extends BaseFragmentClass {
             @Override
             public void onSuccess(UserService.UserResponse response) {
                 loading.dismiss();
-                if (response != null && response.inquest != null) {
-                    if (response.inquest.getDaysRemaining() > 0)
+                if (getActivity() != null) {
+                    if (response != null && response.inquest != null) {
+                        if (response.inquest.getDaysRemaining() > 0)
+                            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                                    getString(R.string.fragment_forms_error_days_remaining) + " " +
+                                            response.inquest.getDaysRemaining());
+                        else
+                            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
+                                    R.string.fragment_forms_uploaded);
+                    } else
                         ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
-                                getString(R.string.fragment_forms_error_days_remaining) + " " +
-                                        response.inquest.getDaysRemaining());
-                    else
-                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS,
-                                R.string.fragment_forms_uploaded);
-                } else
-                    ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
-                            R.string.fragment_forms_error_send);
-                sendToHome();
+                                R.string.fragment_forms_error_send);
+                    sendToHome();
+                }
             }
 
             @Override
             public void onError(UserService.UserResponse response) {
                 loading.dismiss();
-                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
-                        R.string.fragment_forms_error_send);
+                if (getActivity() != null)
+                    ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                            R.string.fragment_forms_error_send);
             }
 
             @Override
             public void onCancel() {
                 loading.dismiss();
-                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
-                        R.string.fragment_forms_error_cancel);
+                if (getActivity() != null)
+                    ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                            R.string.fragment_forms_error_cancel);
             }
         });
     }
@@ -484,11 +511,18 @@ public class FormsFragment extends BaseFragmentClass {
      */
     private String getIacId() {
         //TODO: This key is only temporal
-        PXFAdapter adapter = (PXFAdapter) listView.getAdapter();
-        String iacId = adapter.getItemValueForKey("employeeID");
-        if (iacId == null)
-            iacId = AppPreferences.getIacId(getActivity());
-        return iacId;
+        try {
+            PXFAdapter adapter = (PXFAdapter) listView.getAdapter();
+            String iacId = adapter.getItemValueForKey("employeeID");
+            if (iacId == null) {
+                iacId = AppPreferences.getIacId(getActivity());
+                return iacId;
+            }
+        } catch (Exception e) {
+            LogUtil.e(TAG, e.getMessage(), e);
+            return "";
+        }
+        return "";
     }
 
 
@@ -496,7 +530,8 @@ public class FormsFragment extends BaseFragmentClass {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null || !TextUtils.isEmpty(result.getContents())) {
-            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_DEFAULT, result.getContents());
+            if (getActivity() != null)
+                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_DEFAULT, result.getContents());
             if (buttonBarCode != null) {
                 try {
                     buttonBarCode.setValue(result.getContents());
@@ -506,8 +541,9 @@ public class FormsFragment extends BaseFragmentClass {
                 }
             }
         } else {
-            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
-                    R.string.fragment_forms_error_barcode);
+            if (getActivity() != null)
+                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                        R.string.fragment_forms_error_barcode);
         }
     }
 }
