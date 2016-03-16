@@ -12,7 +12,7 @@ public class UserEntity {
     /**
      * IAC ID
      */
-    @SerializedName("amin_iac_id")
+    @SerializedName("admin_iac_id")
     private String iacId;
 
     /**

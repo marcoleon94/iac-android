@@ -65,11 +65,6 @@ public class LoginActivity extends Activity {
 
         com.ievolutioned.pxform.database.FormsDataSet f = new FormsDataSet(LoginActivity.this);
         f.deleteAll();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         new UtilService(AppConfig.getUUID(this)).getUpdate(LoginActivity.this, getFragmentManager());
     }
 
