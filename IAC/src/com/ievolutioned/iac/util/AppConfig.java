@@ -15,7 +15,7 @@ public class AppConfig {
     /**
      * Indicates if it is in a debug mode
      */
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     // ------------------------------------------------
     // API Configurations

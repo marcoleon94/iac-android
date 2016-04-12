@@ -1,12 +1,16 @@
 package com.ievolutioned.iac.fragment;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -45,6 +49,19 @@ public class SitesFragment extends BaseFragmentClass {
      *
      */
     private String site;
+
+    /**
+     * File path callback
+     */
+    private ValueCallback<Uri[]> mFilePathCallback;
+    /**
+     * Upload message
+     */
+    private ValueCallback<Uri> mUploadMessage;
+    /**
+     * Input file
+     */
+    public static final int INPUT_FILE_REQUEST_CODE = 1104;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -118,10 +135,19 @@ public class SitesFragment extends BaseFragmentClass {
      */
     private void showPage(String page, String key) {
         mWebView.setWebViewClient(new SiteWebClient());
+        mWebView.setWebChromeClient(new SiteChromeClient());
 
         WebSettings settings = mWebView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
+        settings.setAllowFileAccess(true);
+
+
+        if (Build.VERSION.SDK_INT >= 19) {
+            mWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        } else if (Build.VERSION.SDK_INT >= 11 && Build.VERSION.SDK_INT < 19) {
+            mWebView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
 
         //Set the web content debugging it is available
         if (AppConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -131,34 +157,21 @@ public class SitesFragment extends BaseFragmentClass {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
 
-        mWebView.loadUrl(setHttpParams(page, key));
+        mWebView.loadUrl(setHttpParams(page));
     }
 
     /**
      * Sets the Http get parameters for the url
      *
      * @param page
-     * @param key
-     * @return
+     * @return url + params
      */
-    private String setHttpParams(String page, String key) {
+    protected String setHttpParams(String page) {
         //HOME site
-        if (key.equalsIgnoreCase(getActivity().getString(R.string.string_site_home))) {
-            HttpGetParam params = new HttpGetParam();
-            params.add("ref", "xedni/draobhsad");
-            params.add("token_access", AppPreferences.getAdminToken(getActivity()));
-            page += "?" + params.toString();
-        }
-        else if(key.equalsIgnoreCase(getActivity().getString(R.string.string_site_asks))){
-            HttpGetParam params = new HttpGetParam();
-            params.add("ref", "xedni/draobhsad");
-            page += "?" + params.toString();
-        }
-        else if(key.equalsIgnoreCase(getActivity().getString(R.string.string_site_ppf))){
-            HttpGetParam params = new HttpGetParam();
-            params.add("ref", "xedni/draobhsad");
-            page += "?" + params.toString();
-        }
+        HttpGetParam params = new HttpGetParam();
+        params.add("ref", "xedni/draobhsad");
+        params.add("token_access", AppPreferences.getAdminToken(getActivity()));
+        page += "?" + params.toString();
         return page;
     }
 
@@ -175,6 +188,8 @@ public class SitesFragment extends BaseFragmentClass {
      * an interface main methods of the web client
      */
     private class SiteWebClient extends WebViewClient {
+        public static final String domain = "iacgroup.herokuapp.com";
+
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             LogUtil.d(TAG, url);
@@ -203,5 +218,105 @@ public class SitesFragment extends BaseFragmentClass {
         }
     }
 
+    /**
+     * Site chrome client. Used for file chooser only, allows open an intent and take a file path for
+     * android 5.0+ and 3.0+
+     */
+    public class SiteChromeClient extends WebChromeClient {
+        /**
+         * Show file chooser for Android 5.0+
+         *
+         * @param view              - WebView
+         * @param filePath          - The ValueCallback path
+         * @param fileChooserParams - FileChooserParams parameters
+         * @return true
+         */
+        public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> filePath, WebChromeClient.FileChooserParams fileChooserParams) {
+            // Double check that we don't have any existing callbacks
+            if (mFilePathCallback != null) {
+                mFilePathCallback.onReceiveValue(null);
+            }
+            mFilePathCallback = filePath;
+
+            Intent contentSelectionIntent = new Intent(Intent.ACTION_GET_CONTENT);
+            contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
+            contentSelectionIntent.setType("*/*");
+            Intent chooserIntent = new Intent(Intent.ACTION_CHOOSER);
+            chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent);
+            chooserIntent.putExtra(Intent.EXTRA_TITLE, "Seleccionar Archivo");
+            getActivity().startActivityForResult(chooserIntent, INPUT_FILE_REQUEST_CODE);
+            return true;
+        }
+
+        /**
+         * Show file chooser for android 3.0+
+         *
+         * @param uploadMsg  - ValueCallback upload message
+         * @param acceptType - String accepType
+         */
+        public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType) {
+            mUploadMessage = uploadMsg;
+            Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+            i.addCategory(Intent.CATEGORY_OPENABLE);
+            i.setType("*/*");
+            // On select image call onActivityResult method of activity
+            getActivity().startActivityForResult(i, INPUT_FILE_REQUEST_CODE);
+        }
+
+        /**
+         * Show file chooser for android < 3.0
+         *
+         * @param uploadMsg - ValueCallback uploadMsg
+         */
+        public void openFileChooser(ValueCallback<Uri> uploadMsg) {
+            openFileChooser(uploadMsg, "");
+        }
+
+        /**
+         * openFileChooser for other Android versions
+         */
+        public void openFileChooser(ValueCallback<Uri> uploadMsg,
+                                    String acceptType,
+                                    String capture) {
+            openFileChooser(uploadMsg, acceptType);
+        }
+    }
+
+    /**
+     * Manages the input file for the activity result data
+     *
+     * @param data        - Intent data that should contain the callback
+     * @param requestCode - Request code
+     */
+    public void manageInputFile(Intent data, int requestCode) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (requestCode != INPUT_FILE_REQUEST_CODE || mFilePathCallback == null) {
+                return;
+            }
+            Uri[] results = null;
+
+            String dataString = data.getDataString();
+            if (dataString != null) {
+                results = new Uri[]{Uri.parse(dataString)};
+            }
+
+            mFilePathCallback.onReceiveValue(results);
+            mFilePathCallback = null;
+        } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            if (requestCode == INPUT_FILE_REQUEST_CODE) {
+                if (this.mUploadMessage == null) {
+                    return;
+                }
+                Uri result = null;
+                try {
+                    result = data.getData();
+                } catch (Exception e) {
+                    LogUtil.e(TAG, e.getMessage(), e);
+                }
+                mUploadMessage.onReceiveValue(result);
+                mUploadMessage = null;
+            }
+        }
+    }
 
 }

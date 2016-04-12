@@ -5,15 +5,21 @@
         <item>@string/string_site_home</item>
         <item>@string/string_site_asks</item>
         <item>@string/string_site_ppf</item>
+        <item>@string/string_site_contact</item>
+        <item>@string/string_site_head</item>
     </string-array>
     <string-array name="sites_item_values">
         <item>https://iacgroup.herokuapp.com/admin</item>
         <item>https://iacgroup.herokuapp.com/admin/asks</item>
         <item>https://iacgroup.herokuapp.com/admin/procedures</item>
+        <item>https://iacgroup.herokuapp.com/admin/comment</item>
+        <item>https://iacgroup.herokuapp.com/admin/head_count</item>
     </string-array>
 
     <string name="string_site_home">Inicio</string>
     <string name="string_site_asks">Preguntas Frecuentes</string>
     <string name="string_site_ppf">Políticas, Procedimientos y Formatos</string>
+    <string name="string_site_contact">Contacto</string>
+    <string name="string_site_head">Head count IAC México</string>
 
 </resources>
