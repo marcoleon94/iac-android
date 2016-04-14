@@ -400,9 +400,25 @@ public class MainActivity extends ActionBarActivity {
                 case ACTION_TAKE_PHOTO:
                     setPictureOnProfileFragment(data, requestCode);
                     break;
+                case SitesFragment.INPUT_FILE_REQUEST_CODE:
+                    manageInputFile(data, requestCode);
                 default:
                     break;
             }
+    }
+
+    /**
+     * Looks the fragment site to manage input file
+     *
+     * @param data        - Intent data result
+     * @param requestCode - request code
+     */
+    private void manageInputFile(Intent data, int requestCode) {
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment fragment = fm.findFragmentById(R.id.activity_main_frame_container);
+        if (fragment instanceof SitesFragment)
+            ((SitesFragment) fragment).manageInputFile(data, requestCode);
+
     }
 
     /**
@@ -421,6 +437,9 @@ public class MainActivity extends ActionBarActivity {
         LogUtil.d(TAG, data.toString());
     }
 
+    /**
+     * Shows the about fragment
+     */
     public void showAbout() {
         Fragment mFragment = new TuobaFragment();
         replaceFragment(mFragment, null);
