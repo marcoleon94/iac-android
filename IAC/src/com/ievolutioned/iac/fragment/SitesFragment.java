@@ -174,7 +174,7 @@ public class SitesFragment extends BaseFragmentClass {
     protected String setHttpParams(String page) {
         //HOME site
         HttpGetParam params = new HttpGetParam();
-        //params.add("ref", "xedni/draobhsad");
+        params.add("ref", "xedni/draobhsad");
         params.add("token_access", AppPreferences.getAdminToken(getActivity()));
         page += "?" + params.toString();
         return page;
