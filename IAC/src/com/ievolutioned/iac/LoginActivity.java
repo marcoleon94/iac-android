@@ -125,10 +125,17 @@ public class LoginActivity extends Activity {
      * @param l
      */
     private void loading(boolean l) {
-        if (l)
-            mLoading.show();
-        else
-            mLoading.dismiss();
+        try {
+            if (mLoading != null)
+                if (l)
+                    mLoading.show();
+                else
+                    mLoading.dismiss();
+        } catch (IllegalArgumentException iae) {
+            LogUtil.e(TAG, "Loading screen not attached to window", iae);
+        } catch (Exception e) {
+            LogUtil.e(TAG, "Thread error", e);
+        }
     }
 
     /**

@@ -97,16 +97,21 @@ public class SitesFragment extends BaseFragmentClass {
         if (TextUtils.isEmpty(name))
             return;
 
-        String keys[] = getActivity().getResources().getStringArray(R.array.sites_item_key);
-        String values[] = getActivity().getResources().getStringArray(R.array.sites_item_values);
+        //Verify if its added or not
+        if (isAdded()) {
+            //Show page
+            String keys[] = getActivity().getResources().getStringArray(R.array.sites_item_key);
+            String values[] = getActivity().getResources().getStringArray(R.array.sites_item_values);
 
-        for (int i = 0; i < keys.length; i++) {
-            if (keys[i].equalsIgnoreCase(name)) {
-                site = name;
-                showPage(values[i], keys[i]);
+            for (int i = 0; i < keys.length; i++) {
+                if (keys[i].equalsIgnoreCase(name)) {
+                    site = name;
+                    showPage(values[i], keys[i]);
+                }
             }
+        } else {
+            LogUtil.e(TAG, "Fragment is not Added!", null);
         }
-
     }
 
     /**
@@ -169,7 +174,7 @@ public class SitesFragment extends BaseFragmentClass {
     protected String setHttpParams(String page) {
         //HOME site
         HttpGetParam params = new HttpGetParam();
-        params.add("ref", "xedni/draobhsad");
+        //params.add("ref", "xedni/draobhsad");
         params.add("token_access", AppPreferences.getAdminToken(getActivity()));
         page += "?" + params.toString();
         return page;
@@ -188,13 +193,16 @@ public class SitesFragment extends BaseFragmentClass {
      * an interface main methods of the web client
      */
     private class SiteWebClient extends WebViewClient {
-        public static final String domain = "iacgroup.herokuapp.com";
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             LogUtil.d(TAG, url);
+            if (!isAdded()) {
+                LogUtil.e(TAG, "Fragment is not added", null);
+                return false;
+            }
             //Check if it is log out
-            if (url.contains("admins/sign_in") &&
+            if (url.contains("admins/sign_in") && isAdded() &&
                     site.contentEquals(getString(R.string.string_site_home)))
                 bindData(site);
             return false;
