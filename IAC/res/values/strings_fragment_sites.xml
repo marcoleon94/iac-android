@@ -7,6 +7,7 @@
         <item>@string/string_site_ppf</item>
         <item>@string/string_site_contact</item>
         <item>@string/string_site_head</item>
+        <item>@string/string_site_video</item>
     </string-array>
     <string-array name="sites_item_values">
         <item>https://iacgroup.herokuapp.com/admin</item>
@@ -14,6 +15,7 @@
         <item>https://iacgroup.herokuapp.com/admin/procedures</item>
         <item>https://iacgroup.herokuapp.com/admin/comment</item>
         <item>https://iacgroup.herokuapp.com/admin/head_count</item>
+        <item>https://iacgroup.herokuapp.com/admin/videoteca</item>
     </string-array>
 
     <string name="string_site_home">Inicio</string>
@@ -21,5 +23,6 @@
     <string name="string_site_ppf">Políticas, Procedimientos y Formatos</string>
     <string name="string_site_contact">Contacto</string>
     <string name="string_site_head">Head count IAC México</string>
+    <string name="string_site_video">Videoteca</string>
 
 </resources>
