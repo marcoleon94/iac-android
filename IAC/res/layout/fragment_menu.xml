@@ -18,6 +18,7 @@
             android:background="?android:attr/selectableItemBackground"
             android:paddingBottom="8dp"
             android:paddingLeft="15dp"
+            android:paddingStart="15dp"
             android:paddingTop="8dp"
             android:text="@string/nav_drawer_form_home"
             android:textAllCaps="true"
@@ -36,6 +37,7 @@
             android:background="?android:attr/selectableItemBackground"
             android:paddingBottom="8dp"
             android:paddingLeft="15dp"
+            android:paddingStart="15dp"
             android:paddingTop="8dp"
             android:text="@string/nav_drawer_form_asks"
             android:textAllCaps="true"
@@ -54,6 +56,7 @@
             android:background="?android:attr/selectableItemBackground"
             android:paddingBottom="8dp"
             android:paddingLeft="15dp"
+            android:paddingStart="15dp"
             android:paddingTop="8dp"
             android:text="@string/nav_drawer_form_ppf"
             android:textAllCaps="true"
@@ -72,6 +75,7 @@
             android:background="?android:attr/selectableItemBackground"
             android:paddingBottom="8dp"
             android:paddingLeft="15dp"
+            android:paddingStart="15dp"
             android:paddingTop="8dp"
             android:text="@string/nav_drawer_form_contact"
             android:textAllCaps="true"
@@ -90,8 +94,28 @@
             android:background="?android:attr/selectableItemBackground"
             android:paddingBottom="8dp"
             android:paddingLeft="15dp"
+            android:paddingStart="15dp"
             android:paddingTop="8dp"
             android:text="@string/nav_drawer_form_head"
+            android:textAllCaps="true"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:id="@+id/fragment_menu_video"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingBottom="8dp"
+            android:paddingLeft="15dp"
+            android:paddingStart="15dp"
+            android:paddingTop="8dp"
+            android:text="@string/nav_drawer_form_video"
             android:textAllCaps="true"
             android:textSize="17sp"
             android:textStyle="bold" />

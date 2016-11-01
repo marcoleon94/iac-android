@@ -107,6 +107,7 @@ public class SitesFragment extends BaseFragmentClass {
                 if (keys[i].equalsIgnoreCase(name)) {
                     site = name;
                     showPage(values[i], keys[i]);
+                    break;
                 }
             }
         } else {
