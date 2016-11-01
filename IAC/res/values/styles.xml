@@ -15,15 +15,13 @@
     </style>
 
     <!-- Application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
-        <item name="windowActionBar">false</item>
-        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+
     </style>
 
-    <style name="LoadingTheme" parent="Theme.AppCompat.Light">
-        <item name="windowActionBar">false</item>
-        <item name="android:windowFullscreen">true</item>
+    <style name="LoadingTheme" parent="Theme.AppCompat.Light.NoActionBar">
+
     </style>
 
     <style name="ToolbarStyle" parent="AppTheme">
