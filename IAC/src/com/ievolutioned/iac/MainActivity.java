@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             //Close drawer if it is open
-            if (mDrawerLayout.isDrawerOpen(R.layout.fragment_menu)) {
+            if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
                 mDrawerLayout.closeDrawers();
                 return;
             }
@@ -123,12 +124,12 @@ public class MainActivity extends AppCompatActivity {
             if (fragment instanceof MyProfileFragment || fragment instanceof SitesFragment ||
                     fragment instanceof TuobaFragment) {
                 //Open drawer
-                mDrawerLayout.openDrawer(R.layout.fragment_menu);
+                mDrawerLayout.openDrawer(GravityCompat.START);
             } else if (fragment instanceof FormsFragment) {
                 //Verify if it is a subform or simple selection
                 if (fragment.getTag() == null) {
                     //Open drawer
-                    mDrawerLayout.openDrawer(R.layout.fragment_menu);
+                    mDrawerLayout.openDrawer(GravityCompat.START);
                 } else {
                     onBackPressed();
                 }
