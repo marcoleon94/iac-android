@@ -20,8 +20,8 @@ repositories {
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
     compile project(':PXForm')
-    compile 'com.android.support:appcompat-v7:22.0.0'
-    compile 'com.android.support:support-v4:20.0.0'
+    compile 'com.android.support:appcompat-v7:25.0.0'
+    compile 'com.android.support:support-v4:25.0.0'
 
     // Supports Android 4.0.3 and later (API level 15)
     // compile 'com.journeyapps:zxing-android-embedded:2.3.0@aar'
@@ -39,8 +39,8 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "20.0.0"
+    compileSdkVersion 24
+    buildToolsVersion "25.0.0"
 
     sourceSets {
         main {
