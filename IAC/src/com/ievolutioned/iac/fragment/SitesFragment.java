@@ -14,7 +14,9 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.VideoView;
 
 import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
@@ -41,6 +43,9 @@ public class SitesFragment extends BaseFragmentClass {
      * Main WebView
      */
     private WebView mWebView;
+
+    private boolean isWebViewAvailable;
+
     /**
      * Progress bar
      */
@@ -67,8 +72,45 @@ public class SitesFragment extends BaseFragmentClass {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_sites, container, false);
         bindUI(root);
+        if (savedInstanceState != null) {
+            //Restore saved instance
+            setSettingsWebView(mWebView);
+            setWebClients(mWebView);
+            mWebView.restoreState(savedInstanceState);
+        } else {
+            Bundle args = getArguments();
+            if (args != null) {
+                setWebClients(mWebView);
+                setSettingsWebView(mWebView);
+                bindData(args.getString(ARG_SITE_NAME));
+                setTitle(args);
+            }
+        }
+
         drawerToggleSynchronizeState();
         return root;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(mWebView != null)
+            mWebView.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(mWebView != null)
+            mWebView.onResume();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mWebView != null) {
+            mWebView.saveState(outState);
+        }
     }
 
     /**
@@ -79,13 +121,7 @@ public class SitesFragment extends BaseFragmentClass {
     private void bindUI(View root) {
         mProgress = (ProgressBar) root.findViewById(R.id.fragment_sites_progressBar);
         mProgress.setVisibility(View.GONE);
-        Bundle args = getArguments();
-        if (args == null)
-            return;
-
         mWebView = (WebView) root.findViewById(R.id.fragment_sites_web_view);
-        bindData(args.getString(ARG_SITE_NAME));
-        setTitle(args);
     }
 
     /**
@@ -115,6 +151,32 @@ public class SitesFragment extends BaseFragmentClass {
         }
     }
 
+    private void setSettingsWebView(WebView webView){
+        WebSettings settings = webView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setDomStorageEnabled(true);
+        settings.setAllowFileAccess(true);
+
+        if (Build.VERSION.SDK_INT >= 19) {
+            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        } else if (Build.VERSION.SDK_INT >= 11 && Build.VERSION.SDK_INT < 19) {
+            webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
+
+        //Set the web content debugging it is available
+        if (AppConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            webView.setWebContentsDebuggingEnabled(true);
+
+        //Set the mixed content mode allowed
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+    }
+
+    private void setWebClients(WebView webView){
+        webView.setWebViewClient(new SiteWebClient());
+        webView.setWebChromeClient(new SiteChromeClient());
+    }
+
     /**
      * Sets the title on the toolbar
      *
@@ -140,29 +202,6 @@ public class SitesFragment extends BaseFragmentClass {
      * @param key  - Key for parameters
      */
     private void showPage(String page, String key) {
-        mWebView.setWebViewClient(new SiteWebClient());
-        mWebView.setWebChromeClient(new SiteChromeClient());
-
-        WebSettings settings = mWebView.getSettings();
-        settings.setJavaScriptEnabled(true);
-        settings.setDomStorageEnabled(true);
-        settings.setAllowFileAccess(true);
-
-
-        if (Build.VERSION.SDK_INT >= 19) {
-            mWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        } else if (Build.VERSION.SDK_INT >= 11 && Build.VERSION.SDK_INT < 19) {
-            mWebView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        }
-
-        //Set the web content debugging it is available
-        if (AppConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            mWebView.setWebContentsDebuggingEnabled(true);
-
-        //Set the mixed content mode allowed
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-
         mWebView.loadUrl(setHttpParams(page));
     }
 
@@ -288,6 +327,18 @@ public class SitesFragment extends BaseFragmentClass {
                                     String acceptType,
                                     String capture) {
             openFileChooser(uploadMsg, acceptType);
+        }
+
+        @Override
+        public void onShowCustomView(View view, CustomViewCallback callback) {
+            super.onShowCustomView(view, callback);
+            if(view instanceof FrameLayout){
+                FrameLayout frame = (FrameLayout) view;
+                VideoView videoView = (VideoView) frame.getFocusedChild();
+                frame.removeView(videoView);
+                getActivity().setContentView(videoView);
+                videoView.start();
+            }
         }
     }
 
