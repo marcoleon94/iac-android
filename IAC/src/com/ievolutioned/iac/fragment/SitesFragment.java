@@ -328,18 +328,6 @@ public class SitesFragment extends BaseFragmentClass {
                                     String capture) {
             openFileChooser(uploadMsg, acceptType);
         }
-
-        @Override
-        public void onShowCustomView(View view, CustomViewCallback callback) {
-            super.onShowCustomView(view, callback);
-            if(view instanceof FrameLayout){
-                FrameLayout frame = (FrameLayout) view;
-                VideoView videoView = (VideoView) frame.getFocusedChild();
-                frame.removeView(videoView);
-                getActivity().setContentView(videoView);
-                videoView.start();
-            }
-        }
     }
 
     /**
