@@ -16,7 +16,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-import android.widget.VideoView;
 
 import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
@@ -24,6 +23,7 @@ import com.ievolutioned.iac.net.HttpGetParam;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.util.LogUtil;
+import com.ievolutioned.iac.util.WebViewManager;
 
 /**
  * SitesFragment class, provides a WebView view to represent a website on the main view
@@ -72,11 +72,16 @@ public class SitesFragment extends BaseFragmentClass {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_sites, container, false);
         bindUI(root);
+        WebViewManager.INSTANCE.init(getContext());
+        mWebView = WebViewManager.INSTANCE.getView();
+        FrameLayout frameLayout = (FrameLayout) root.findViewById(R.id.fragment_sites_frame);
+        frameLayout.addView(mWebView);
         if (savedInstanceState != null) {
             //Restore saved instance
             setSettingsWebView(mWebView);
             setWebClients(mWebView);
-            mWebView.restoreState(savedInstanceState);
+            //mWebView.restoreState(savedInstanceState);
+
         } else {
             Bundle args = getArguments();
             if (args != null) {
@@ -94,15 +99,15 @@ public class SitesFragment extends BaseFragmentClass {
     @Override
     public void onPause() {
         super.onPause();
-        if(mWebView != null)
-            mWebView.onPause();
+//        if(mWebView != null)
+//            mWebView.onPause();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if(mWebView != null)
-            mWebView.onResume();
+//        if(mWebView != null)
+//            mWebView.onResume();
     }
 
     @Override
@@ -121,7 +126,7 @@ public class SitesFragment extends BaseFragmentClass {
     private void bindUI(View root) {
         mProgress = (ProgressBar) root.findViewById(R.id.fragment_sites_progressBar);
         mProgress.setVisibility(View.GONE);
-        mWebView = (WebView) root.findViewById(R.id.fragment_sites_web_view);
+        //mWebView = (WebView) root.findViewById(R.id.fragment_sites_web_view);
     }
 
     /**
