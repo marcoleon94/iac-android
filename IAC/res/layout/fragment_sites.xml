@@ -5,8 +5,8 @@
     android:background="@color/background_gray_light"
     android:orientation="vertical">
 
-    <WebView
-        android:id="@+id/fragment_sites_web_view"
+    <FrameLayout
+        android:id="@+id/fragment_sites_frame"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
