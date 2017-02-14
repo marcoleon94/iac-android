@@ -16,6 +16,7 @@ import com.google.gson.JsonParser;
 import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.adapter.MenuDrawerListAdapter;
+import com.ievolutioned.iac.entity.UserProfessionalGroup;
 import com.ievolutioned.iac.entity.UserRole;
 import com.ievolutioned.iac.net.service.FormService;
 import com.ievolutioned.iac.util.AppConfig;
@@ -197,6 +198,8 @@ public class MenuFragment extends Fragment {
         root.findViewById(R.id.fragment_menu_contact).setOnClickListener(menu_click);
         root.findViewById(R.id.fragment_menu_head).setOnClickListener(menu_click);
         root.findViewById(R.id.fragment_menu_video).setOnClickListener(menu_click);
+        root.findViewById(R.id.fragment_menu_organization_chart).setOnClickListener(menu_click);
+        root.findViewById(R.id.fragment_menu_assists).setOnClickListener(menu_click);
         root.findViewById(R.id.fragment_menu_profile).setOnClickListener(menu_click);
         root.findViewById(R.id.fragment_menu_about).setOnClickListener(menu_click);
         root.findViewById(R.id.fragment_menu_singout).setOnClickListener(menu_click);
@@ -214,7 +217,6 @@ public class MenuFragment extends Fragment {
         FormService fs = new FormService(AppConfig.getUUID(mActivity),
                 AppPreferences.getAdminToken(mActivity));
         fs.getForms(AppPreferences.getAdminToken(mActivity), form_service_callback);
-        //mActivity.finish();
     }
 
     /**
@@ -227,12 +229,34 @@ public class MenuFragment extends Fragment {
         menuFormTitles = getResources().getStringArray(R.array.nav_drawer_form_items);
         menuSitesTitles = getResources().getStringArray(R.array.nav_drawer_sites_items);
 
+        //User role and professional group
+        String role = AppPreferences.getRole(mActivity);
+        String pGroup = AppPreferences.getProfessionalGroup(mActivity);
+
         //TODO: how to determine static forms for users
-        if (!AppPreferences.getRole(mActivity).contentEquals(UserRole.USER)
+        if (!role.contentEquals(UserRole.USER)
                 && menuFormTitles != null)
             for (String m : menuFormTitles) {
                 drawerFormItems.add(new MenuDrawerItem(m));
             }
+
+        //Organization chart
+        //role = admin, rh or professional_group = M4, M5 and E1
+        if (pGroup != null)
+            if (role.contentEquals(UserRole.USER) &&
+                    !(pGroup.contentEquals(UserProfessionalGroup.M4) ||
+                            pGroup.contentEquals(UserProfessionalGroup.M5) ||
+                            pGroup.contentEquals(UserProfessionalGroup.E1))) {
+                if (mActivity.findViewById(R.id.fragment_menu_organization_chart) != null)
+                    mActivity.findViewById(R.id.fragment_menu_organization_chart).setVisibility(View.GONE);
+            }
+
+        //Assists
+        //Only for admins
+        if (!role.contentEquals(UserRole.ADMIN)) {
+            if (mActivity.findViewById(R.id.fragment_menu_assists) != null)
+                mActivity.findViewById(R.id.fragment_menu_assists).setVisibility(View.GONE);
+        }
         LogUtil.d(TAG, "Form Titles:" + menuFormTitles.toString());
         LogUtil.d(TAG, "Form Sites:" + menuSitesTitles.toString());
     }
@@ -345,6 +369,12 @@ public class MenuFragment extends Fragment {
                     break;
                 case R.id.fragment_menu_video:
                     mActivity.selectItem(menuSitesTitles[5]);
+                    break;
+                case R.id.fragment_menu_organization_chart:
+                    mActivity.selectItem(menuSitesTitles[6]);
+                    break;
+                case R.id.fragment_menu_assists:
+                    mActivity.selectItem(menuSitesTitles[7]);
                     break;
                 case R.id.fragment_menu_profile:
                     mActivity.showMyProfile();

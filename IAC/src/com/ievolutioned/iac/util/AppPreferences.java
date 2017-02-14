@@ -23,6 +23,8 @@ public class AppPreferences {
 
     private static final String KEY_ROLE = "KEY_ROLE";
 
+    private static final String KEY_PROFESSIONAL_GROUP = "KEY_PROFESSIONAL_GROUP";
+
     /**
      * Gets the SharedPreferences
      *
@@ -103,5 +105,25 @@ public class AppPreferences {
      */
     public static String getRole(Context c) {
         return getPrefs(c).getString(KEY_ROLE, UserRole.USER);
+    }
+
+    /**
+     * Sets the professional group preference
+     *
+     * @param c     - the context
+     * @param value - the value
+     */
+    public static void setProfessionalGroup(Context c, String value) {
+        getEditor(c).putString(KEY_PROFESSIONAL_GROUP, value).commit();
+    }
+
+    /**
+     * Gets the professional group
+     *
+     * @param c - the context
+     * @return the saved value or null
+     */
+    public static String getProfessionalGroup(Context c) {
+        return getPrefs(c).getString(KEY_PROFESSIONAL_GROUP, null);
     }
 }
