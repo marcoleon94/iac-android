@@ -9,7 +9,9 @@
         android:id="@+id/fragment_menu_sites_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:divider="@drawable/menu_divider"
+        android:orientation="vertical"
+        android:showDividers="middle">
 
         <TextView
             android:id="@+id/fragment_menu_home"
@@ -25,10 +27,6 @@
             android:textSize="17sp"
             android:textStyle="bold" />
 
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
 
         <TextView
             android:id="@+id/fragment_menu_asks"
@@ -44,11 +42,6 @@
             android:textSize="17sp"
             android:textStyle="bold" />
 
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
-
         <TextView
             android:id="@+id/fragment_menu_ppf"
             android:layout_width="fill_parent"
@@ -62,11 +55,6 @@
             android:textAllCaps="true"
             android:textSize="17sp"
             android:textStyle="bold" />
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
 
         <TextView
             android:id="@+id/fragment_menu_contact"
@@ -82,11 +70,6 @@
             android:textSize="17sp"
             android:textStyle="bold" />
 
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
-
         <TextView
             android:id="@+id/fragment_menu_head"
             android:layout_width="fill_parent"
@@ -100,11 +83,6 @@
             android:textAllCaps="true"
             android:textSize="17sp"
             android:textStyle="bold" />
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
 
         <TextView
             android:id="@+id/fragment_menu_video"
@@ -120,17 +98,21 @@
             android:textSize="17sp"
             android:textStyle="bold" />
 
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
     </LinearLayout>
+
+
+    <View
+        android:id="@+id/fragment_menu_form_divider"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/fragment_menu_sites_layout"
+        android:background="@android:color/darker_gray" />
 
     <TextView
         android:id="@+id/fragment_menu_forms"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/fragment_menu_sites_layout"
+        android:layout_below="@+id/fragment_menu_form_divider"
         android:paddingLeft="15dp"
         android:paddingTop="8dp"
         android:text="@string/nav_drawer_form_title"
