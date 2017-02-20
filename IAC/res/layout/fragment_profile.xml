@@ -38,7 +38,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:contentDescription="@string/hello_world"
+                android:contentDescription="@string/default_content_description"
                 android:src="@android:drawable/ic_menu_camera" />
 
             <ImageButton
@@ -48,7 +48,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_toLeftOf="@+id/fragment_profile_picture_take"
                 android:layout_toStartOf="@+id/fragment_profile_picture_take"
-                android:contentDescription="@string/hello_world"
+                android:contentDescription="@string/default_content_description"
                 android:src="@android:drawable/ic_menu_edit" />
 
         </RelativeLayout>
