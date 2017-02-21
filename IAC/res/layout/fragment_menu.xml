@@ -107,7 +107,7 @@
             android:paddingLeft="15dp"
             android:paddingStart="15dp"
             android:paddingTop="@dimen/menu_padding_item"
-            android:text="Organigrama"
+            android:text="@string/string_site_organization_chart"
             android:textAllCaps="true"
             android:textSize="17sp"
             android:textStyle="bold" />
@@ -121,7 +121,7 @@
             android:paddingLeft="15dp"
             android:paddingStart="15dp"
             android:paddingTop="@dimen/menu_padding_item"
-            android:text="Asistencias"
+            android:text="@string/string_site_assists"
             android:textAllCaps="true"
             android:textSize="17sp"
             android:textStyle="bold" />
