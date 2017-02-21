@@ -113,6 +113,21 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/fragment_menu_courses"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingBottom="@dimen/menu_padding_item"
+            android:paddingLeft="15dp"
+            android:paddingStart="15dp"
+            android:paddingTop="@dimen/menu_padding_item"
+            android:text="@string/nav_drawer_form_courses"
+            android:textAllCaps="true"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+
+        <TextView
             android:id="@+id/fragment_menu_assists"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

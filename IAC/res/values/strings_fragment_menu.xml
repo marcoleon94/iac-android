@@ -10,6 +10,7 @@
     <string name="nav_drawer_form_organization_chart">@string/string_site_organization_chart</string>
     <string name="nav_drawer_form_assists">@string/string_site_assists</string>
 
+    <string name="nav_drawer_form_courses">Cursos</string>
     <string name="nav_drawer_form_profile">Mi perfil</string>
     <string name="nav_drawer_form_logout">Cerrar sesión</string>
     <string name="nav_drawer_form_about">Acerca de</string>

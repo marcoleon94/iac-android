@@ -199,6 +199,7 @@ public class MenuFragment extends Fragment {
         root.findViewById(R.id.fragment_menu_head).setOnClickListener(menu_click);
         root.findViewById(R.id.fragment_menu_video).setOnClickListener(menu_click);
         root.findViewById(R.id.fragment_menu_organization_chart).setOnClickListener(menu_click);
+        root.findViewById(R.id.fragment_menu_courses).setOnClickListener(menu_click);
         root.findViewById(R.id.fragment_menu_assists).setOnClickListener(menu_click);
         root.findViewById(R.id.fragment_menu_profile).setOnClickListener(menu_click);
         root.findViewById(R.id.fragment_menu_about).setOnClickListener(menu_click);
@@ -372,6 +373,9 @@ public class MenuFragment extends Fragment {
                     break;
                 case R.id.fragment_menu_organization_chart:
                     mActivity.selectItem(menuSitesTitles[6]);
+                    break;
+                case R.id.fragment_menu_courses:
+                    mActivity.showCourses();
                     break;
                 case R.id.fragment_menu_assists:
                     mActivity.selectItem(menuSitesTitles[7]);
