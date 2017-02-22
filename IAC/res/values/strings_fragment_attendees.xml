@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="string_fragment_attendees_title">Cursos</string>
+    <string name="string_fragment_attendees_courses_title">POR FAVOR ELIJA EL CURSO</string>
+    <string name="string_fragment_attendees_courses">Cursos</string>
+    <string name="string_fragment_attendees_personal_data_title">DATOS PERSONALES</string>
+    <string name="string_fragment_attendees_personal_data">Agregar Asistente</string>
+
+</resources>
