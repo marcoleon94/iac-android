@@ -29,9 +29,10 @@ public class CoursesFragment extends BaseFragmentClass {
     }
 
     private void bindUI(View root) {
+
     }
 
-    private void bindData(Bundle arguments) {
+    private void bindData(Bundle args) {
 
     }
 
