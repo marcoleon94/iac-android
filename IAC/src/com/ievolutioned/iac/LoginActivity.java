@@ -66,26 +66,6 @@ public class LoginActivity extends Activity {
         com.ievolutioned.pxform.database.FormsDataSet f = new FormsDataSet(LoginActivity.this);
         f.deleteAll();
         new UtilService(AppConfig.getUUID(this)).getUpdate(LoginActivity.this, getFragmentManager());
-
-        /*
-        ArrayList<Integer> ids = new ArrayList<>();
-        ids.add(14368);
-        ids.add(4837);
-        ids.add(1430);
-        new CoursesService(AppConfig.getUUID(this), AppPreferences.getAdminToken(this))
-                .getModifyAttendees(AppPreferences.getAdminToken(this), AppPreferences.getIacId(this), 2, ids, new CoursesService.ServiceHandler() {
-                    @Override
-                    public void onSuccess(CoursesService.CoursesResponse response) {
-                    }
-
-                    @Override
-                    public void onError(CoursesService.CoursesResponse response) {
-                    }
-
-                    @Override
-                    public void onCancel() {
-                    }
-                });*/
     }
 
     /**
