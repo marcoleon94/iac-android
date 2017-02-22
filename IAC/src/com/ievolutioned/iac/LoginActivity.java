@@ -65,7 +65,7 @@ public class LoginActivity extends Activity {
 
         com.ievolutioned.pxform.database.FormsDataSet f = new FormsDataSet(LoginActivity.this);
         f.deleteAll();
-        new UtilService(AppConfig.getUUID(this)).getUpdate(LoginActivity.this, getFragmentManager());
+        //new UtilService(AppConfig.getUUID(this)).getUpdate(LoginActivity.this, getFragmentManager());
     }
 
     /**
