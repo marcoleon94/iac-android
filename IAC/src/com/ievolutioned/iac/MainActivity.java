@@ -18,7 +18,7 @@ import android.view.View;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.ievolutioned.iac.fragment.CoursesFragment;
+import com.ievolutioned.iac.fragment.AttendeesFragment;
 import com.ievolutioned.iac.fragment.FormsFragment;
 import com.ievolutioned.iac.fragment.MyProfileFragment;
 import com.ievolutioned.iac.fragment.SitesFragment;
@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
      * Displays the courses for admin users
      */
     public void showCourses() {
-        Fragment fragment = new CoursesFragment();
+        Fragment fragment = new AttendeesFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         replaceFragment(fragment, null);

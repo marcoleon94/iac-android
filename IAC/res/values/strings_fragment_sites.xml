@@ -9,7 +9,6 @@
         <item>@string/string_site_head</item>
         <item>@string/string_site_video</item>
         <item>@string/string_site_organization_chart</item>
-        <item>@string/string_site_assists</item>
     </string-array>
     <string-array name="sites_item_values">
         <item>https://iacgroup.herokuapp.com/admin</item>
@@ -19,7 +18,6 @@
         <item>https://iacgroup.herokuapp.com/admin/head_count</item>
         <item>https://iacgroup.herokuapp.com/admin/videoteca</item>
         <item>https://iacgroup.herokuapp.com/admin/organization_charts</item>
-        <item>https://iacgroup.herokuapp.com/admin/info_courses</item>
     </string-array>
 
     <string name="string_site_home">Inicio</string>
@@ -29,6 +27,5 @@
     <string name="string_site_head">Head count IAC México</string>
     <string name="string_site_video">Videoteca</string>
     <string name="string_site_organization_chart">Organigrama</string>
-    <string name="string_site_assists">Asistencias</string>
 
 </resources>

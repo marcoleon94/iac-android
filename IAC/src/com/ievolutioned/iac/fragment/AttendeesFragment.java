@@ -14,7 +14,7 @@ import com.ievolutioned.iac.R;
  * Created by Daniel on 21/02/2017.
  */
 
-public class CoursesFragment extends BaseFragmentClass {
+public class AttendeesFragment extends BaseFragmentClass {
 
     @Nullable
     @Override

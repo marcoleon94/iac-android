@@ -199,8 +199,7 @@ public class MenuFragment extends Fragment {
         root.findViewById(R.id.fragment_menu_head).setOnClickListener(menu_click);
         root.findViewById(R.id.fragment_menu_video).setOnClickListener(menu_click);
         root.findViewById(R.id.fragment_menu_organization_chart).setOnClickListener(menu_click);
-        root.findViewById(R.id.fragment_menu_courses).setOnClickListener(menu_click);
-        root.findViewById(R.id.fragment_menu_assists).setOnClickListener(menu_click);
+        root.findViewById(R.id.fragment_menu_attendees).setOnClickListener(menu_click);
         root.findViewById(R.id.fragment_menu_profile).setOnClickListener(menu_click);
         root.findViewById(R.id.fragment_menu_about).setOnClickListener(menu_click);
         root.findViewById(R.id.fragment_menu_singout).setOnClickListener(menu_click);
@@ -255,8 +254,8 @@ public class MenuFragment extends Fragment {
         //Assists
         //Only for admins
         if (!role.contentEquals(UserRole.ADMIN)) {
-            if (mActivity.findViewById(R.id.fragment_menu_assists) != null)
-                mActivity.findViewById(R.id.fragment_menu_assists).setVisibility(View.GONE);
+            if (mActivity.findViewById(R.id.fragment_menu_attendees) != null)
+                mActivity.findViewById(R.id.fragment_menu_attendees).setVisibility(View.GONE);
         }
         LogUtil.d(TAG, "Form Titles:" + menuFormTitles.toString());
         LogUtil.d(TAG, "Form Sites:" + menuSitesTitles.toString());
@@ -374,11 +373,8 @@ public class MenuFragment extends Fragment {
                 case R.id.fragment_menu_organization_chart:
                     mActivity.selectItem(menuSitesTitles[6]);
                     break;
-                case R.id.fragment_menu_courses:
+                case R.id.fragment_menu_attendees:
                     mActivity.showCourses();
-                    break;
-                case R.id.fragment_menu_assists:
-                    mActivity.selectItem(menuSitesTitles[7]);
                     break;
                 case R.id.fragment_menu_profile:
                     mActivity.showMyProfile();
