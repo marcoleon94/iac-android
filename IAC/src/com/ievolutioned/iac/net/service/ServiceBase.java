@@ -43,6 +43,11 @@ public abstract class ServiceBase {
     protected static final String URL_COURSES_ATTENDEES = "http://iacgroup.herokuapp.com/api/info_courses/%d/get_course_attendees";
 
     /**
+     * URL for modify courses
+     */
+    protected static final String URL_COURSES_MODIFY_ATTENDEES = "http://iacgroup.herokuapp.com/api/info_courses/%d";
+
+    /**
      * URL for Mobile Versions
      */
     protected static final String URL_MOBILE_VERSION = "http://iacgroup.herokuapp.com/api/services/mobile_versions";

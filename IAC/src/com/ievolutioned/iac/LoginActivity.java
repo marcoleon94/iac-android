@@ -13,7 +13,6 @@ import android.widget.EditText;
 import com.crashlytics.android.Crashlytics;
 import com.ievolutioned.iac.entity.UserEntity;
 import com.ievolutioned.iac.net.NetUtil;
-import com.ievolutioned.iac.net.service.CoursesService;
 import com.ievolutioned.iac.net.service.LoginService;
 import com.ievolutioned.iac.net.service.UtilService;
 import com.ievolutioned.iac.util.AppConfig;
@@ -68,8 +67,13 @@ public class LoginActivity extends Activity {
         f.deleteAll();
         new UtilService(AppConfig.getUUID(this)).getUpdate(LoginActivity.this, getFragmentManager());
 
-        /*new CoursesService(AppConfig.getUUID(this), AppPreferences.getAdminToken(this))
-                .getAttendees(AppPreferences.getAdminToken(this), AppPreferences.getIacId(this), 2, new CoursesService.ServiceHandler() {
+        /*
+        ArrayList<Integer> ids = new ArrayList<>();
+        ids.add(14368);
+        ids.add(4837);
+        ids.add(1430);
+        new CoursesService(AppConfig.getUUID(this), AppPreferences.getAdminToken(this))
+                .getModifyAttendees(AppPreferences.getAdminToken(this), AppPreferences.getIacId(this), 2, ids, new CoursesService.ServiceHandler() {
                     @Override
                     public void onSuccess(CoursesService.CoursesResponse response) {
                     }
