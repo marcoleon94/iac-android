@@ -69,20 +69,17 @@ public class LoginActivity extends Activity {
         new UtilService(AppConfig.getUUID(this)).getUpdate(LoginActivity.this, getFragmentManager());
 
         /*new CoursesService(AppConfig.getUUID(this), AppPreferences.getAdminToken(this))
-                .getActiveCourses(AppPreferences.getAdminToken(this), AppPreferences.getIacId(this), new CoursesService.ServiceHandler() {
+                .getAttendees(AppPreferences.getAdminToken(this), AppPreferences.getIacId(this), 2, new CoursesService.ServiceHandler() {
                     @Override
                     public void onSuccess(CoursesService.CoursesResponse response) {
-
                     }
 
                     @Override
                     public void onError(CoursesService.CoursesResponse response) {
-
                     }
 
                     @Override
                     public void onCancel() {
-
                     }
                 });*/
     }

@@ -9,6 +9,8 @@ import com.ievolutioned.iac.net.HttpHeader;
 import com.ievolutioned.iac.net.NetResponse;
 import com.ievolutioned.iac.net.NetUtil;
 
+import java.util.Locale;
+
 /**
  * Created by Daniel on 21/02/2017.
  */
@@ -28,8 +30,10 @@ public class CoursesService extends ServiceBase {
     }
 
     /**
-     * Gets all the forms
+     * Gets Info Courses. Gets a list of active courses
      *
+     * @param token
+     * @param id
      * @param callback - ServiceHandler callback
      */
     public void getActiveCourses(final String token, final String id, final ServiceHandler callback) {
@@ -46,7 +50,7 @@ public class CoursesService extends ServiceBase {
                     HttpGetParam params = new HttpGetParam();
                     if (token != null)
                         params.add("admin-token", token);
-                    if(id != null)
+                    if (id != null)
                         params.add("iac_id", id);
 
                     //Get headers
@@ -80,6 +84,65 @@ public class CoursesService extends ServiceBase {
         };
         task.execute();
     }
+
+
+    /**
+     * Gets course Attendees. Gets a list of id and users for a course id
+     *
+     * @param token
+     * @param iac_id
+     * @param callback
+     */
+    public void getAttendees(final String token, final String iac_id, final int course_id, final ServiceHandler callback) {
+        task = new AsyncTask<Void, Void, ResponseBase>() {
+            @Override
+            protected CoursesResponse doInBackground(Void... p) {
+                if (isCancelled())
+                    return null;
+                try {
+                    if (deviceId == null || adminToken == null) {
+                        callback.onError(new CoursesResponse(null, "Params are null", null));
+                        this.cancel(true);
+                    }
+                    HttpGetParam params = new HttpGetParam();
+                    if (token != null)
+                        params.add("admin-token", token);
+                    if (iac_id != null)
+                        params.add("iac_id", iac_id);
+
+                    //Get headers
+                    HttpHeader headers = getHeaders(ACTION_COURSE_ATTENDEE, CONTROLLER_COURSES);
+
+                    // Get response
+                    String urlCoursesAttendees = URL_COURSES_ATTENDEES;
+                    NetResponse response = NetUtil.get(String.format(Locale.getDefault(),
+                            urlCoursesAttendees, course_id), params, headers);
+
+                    if (response != null) {
+                        JsonElement json = new JsonParser().parse(response.result);
+                        if (!json.isJsonNull())
+                            return new CoursesResponse(json.getAsJsonArray(), response.result, null);
+                    }
+                    return null;
+                } catch (Exception e) {
+                    return new CoursesResponse(null, e.getMessage(), e);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(ResponseBase response) {
+                hanldeResult(callback, (CoursesResponse) response);
+            }
+
+            @Override
+            protected void onCancelled() {
+                super.onCancelled();
+                callback.onCancel();
+            }
+        };
+        task.execute();
+    }
+
 
     /**
      * Handles the result on callback
