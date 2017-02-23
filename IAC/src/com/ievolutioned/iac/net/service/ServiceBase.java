@@ -100,7 +100,7 @@ public abstract class ServiceBase {
     /**
      * Action for course attendee info
      */
-    protected static final String ACTION_COURSE_ATTENDEE_INFO = "get_course_attendees_info";
+    protected static final String ACTION_COURSE_ATTENDEE_INFO = "get_course_attendee_info";
 
     /**
      * Controller constant for services

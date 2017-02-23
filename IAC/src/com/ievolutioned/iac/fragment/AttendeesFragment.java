@@ -49,7 +49,7 @@ public class AttendeesFragment extends BaseFragmentClass {
     }
 
     private void bindData(Bundle args) {
-        
+
     }
 
     private void setTitle(String title) {

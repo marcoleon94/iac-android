@@ -207,7 +207,13 @@ public class CoursesService extends ServiceBase {
         task.execute();
     }
 
-    //TODO: The new Attendee is not working, due a 401 unauthorized
+    /**
+     * Get Attendee info by id
+     *
+     * @param token
+     * @param iac_id
+     * @param callback
+     */
     public void getNewAttendeeInfo(final String token, final String iac_id, final ServiceHandler callback) {
         task = new AsyncTask<Void, Void, ResponseBase>() {
             @Override
@@ -225,11 +231,10 @@ public class CoursesService extends ServiceBase {
                     if (iac_id != null)
                         params.add("iac_id", iac_id);
 
-
                     //Get headers
                     HttpHeader headers = getHeaders(ACTION_COURSE_ATTENDEE_INFO, CONTROLLER_COURSES);
                     // Get response
-                    NetResponse response = null;/*NetUtil.get(URL_COURSES_ATTENDEE_INFO, params, headers);*/
+                    NetResponse response = NetUtil.get(URL_COURSES_ATTENDEE_INFO, params, headers);
 
                     if (response != null) {
                         JsonElement json = new JsonParser().parse(response.result);
