@@ -3,7 +3,7 @@
     <string name="string_fragment_attendees_title">Cursos</string>
     <string name="string_fragment_attendees_courses_title">POR FAVOR ELIJA EL CURSO</string>
     <string name="string_fragment_attendees_courses">Cursos</string>
-    <string name="string_fragment_attendees_personal_data_title">DATOS PERSONALES</string>
-    <string name="string_fragment_attendees_personal_data">Agregar Asistente</string>
+    <string name="string_fragment_attendees_add_title">AGREGAR ASISTENTES AL CURSO</string>
+    <string name="string_fragment_attendees_add_subtitle">Agregar Nuevo</string>
 
 </resources>
