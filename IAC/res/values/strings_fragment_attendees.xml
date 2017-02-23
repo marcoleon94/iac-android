@@ -5,5 +5,11 @@
     <string name="string_fragment_attendees_courses">Cursos</string>
     <string name="string_fragment_attendees_add_title">AGREGAR ASISTENTES AL CURSO</string>
     <string name="string_fragment_attendees_add_subtitle">Agregar Nuevo</string>
+    <string name="string_fragment_attendees_list_title">Asistentes</string>
+
+    <string name="string_fragment_attendees_delete_title">Eliminar asistente</string>
+    <string name="string_fragment_attendees_delete_body">¿Desea eliminar asistente: %s?</string>
+    <string name="string_fragment_attendees_delete_confirm">Sí</string>
+    <string name="string_fragment_attendees_delete_cancel">No</string>
 
 </resources>

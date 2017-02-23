@@ -2,7 +2,9 @@ package com.ievolutioned.iac.fragment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.CheckedTextView;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +27,8 @@ import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.util.LogUtil;
 
+import java.util.Locale;
+
 /**
  * Created by Daniel on 21/02/2017.
  */
@@ -34,6 +39,11 @@ public class AttendeesFragment extends BaseFragmentClass {
     private Spinner mCoursesSpinner;
     private CoursesAdapter mCoursesSpinnerAdapter;
     private JsonArray mCourses = new JsonArray();
+
+    private ListView mAttendeeListView;
+    private AttendeeAdapter mAttendeeAdapter;
+    private JsonArray mAttendees = new JsonArray();
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,6 +71,12 @@ public class AttendeesFragment extends BaseFragmentClass {
             mCoursesSpinner.setAdapter(mCoursesSpinnerAdapter);
             mCoursesSpinner.setGravity(Gravity.END);
             mCoursesSpinner.setOnItemSelectedListener(courses_selected);
+        }
+
+        mAttendeeListView = (ListView) root.findViewById(R.id.fragment_attendees_list);
+        if (mAttendeeListView != null) {
+            mAttendeeAdapter = new AttendeeAdapter(getActivity());
+            mAttendeeListView.setAdapter(mAttendeeAdapter);
         }
 
     }
@@ -108,6 +124,21 @@ public class AttendeesFragment extends BaseFragmentClass {
             activity.setTitle(title);
     }
 
+    /**
+     * Remove attendee from list of attendees
+     *
+     * @param attendee - the attendee
+     */
+    private void removeAttendee(final JsonObject attendee) {
+        //TODO: Remove it
+        try {
+            mAttendees.remove(attendee);
+            mAttendeeAdapter.notifyDataSetChanged();
+        } catch (Exception e) {
+            Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     private AdapterView.OnItemSelectedListener courses_selected = new AdapterView.OnItemSelectedListener() {
         @Override
@@ -122,6 +153,8 @@ public class AttendeesFragment extends BaseFragmentClass {
                             @Override
                             public void onSuccess(CoursesService.CoursesResponse response) {
                                 LogUtil.d(TAG, response.json.toString());
+                                mAttendees = response.json.getAsJsonArray();
+                                mAttendeeAdapter.notifyDataSetChanged();
                             }
 
                             @Override
@@ -208,6 +241,94 @@ public class AttendeesFragment extends BaseFragmentClass {
             CheckedTextView textView = (CheckedTextView) v.findViewById(R.id.list_item_right_text);
             textView.setText(getItemId(position) != 0 ? name : "");
             return v;
+        }
+    }
+
+    class AttendeeAdapter extends BaseAdapter implements View.OnClickListener {
+
+        protected final static String ATTENDEE_ID = "id";
+        protected final static String ATTENDEE_NAME = "name";
+        private LayoutInflater mInflater;
+
+        public AttendeeAdapter(Context c) {
+            mInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public int getCount() {
+            return mAttendees == null ? 0 : mAttendees.size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+            try {
+                return mAttendees == null ? null : mAttendees.get(i).getAsJsonObject();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        @Override
+        public long getItemId(int i) {
+            try {
+                return mAttendees == null ? 0L :
+                        Long.parseLong(mAttendees.get(i).getAsJsonObject().get(ATTENDEE_ID).getAsString());
+            } catch (Exception e) {
+                return 0L;
+            }
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            if (view == null) {
+                view = mInflater.inflate(R.layout.list_item_attendee, viewGroup, false);
+                view.findViewById(R.id.list_item_attendee_delete_button).setOnClickListener(this);
+            }
+
+            JsonObject attendee = (JsonObject) getItem(i);
+            TextView textViewName = (TextView) view.findViewById(R.id.list_item_attendee_name);
+            textViewName.setText(attendee.get(ATTENDEE_NAME).getAsString());
+            view.findViewById(R.id.list_item_attendee_delete_button).setTag(getItem(i));
+            view.setTag(getItem(i));
+            return view;
+        }
+
+        @Override
+        public void onClick(View view) {
+            try {
+                //What happen when the tag is null?
+                //The tag is the id of the attendee
+                final JsonObject attendee = (JsonObject) view.getTag();
+                if (attendee == null)
+                    return;
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getContext());
+                alertDialog.setTitle(R.string.string_fragment_attendees_delete_title);
+                String body = String.format(Locale.getDefault(),
+                        getString(R.string.string_fragment_attendees_delete_body),
+                        attendee.get(ATTENDEE_NAME).getAsString());
+                alertDialog.setMessage(body);
+                //Yes delete
+                alertDialog.setPositiveButton(R.string.string_fragment_attendees_delete_confirm,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                removeAttendee(attendee);
+                                dialogInterface.dismiss();
+                            }
+                        });
+                //No delete
+                alertDialog.setNegativeButton(R.string.string_fragment_attendees_delete_cancel,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        });
+
+                alertDialog.create().show();
+            } catch (Exception e) {
+                LogUtil.e(TAG, e.getMessage(), e);
+            }
         }
     }
 
