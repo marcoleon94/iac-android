@@ -12,4 +12,10 @@
     <string name="string_fragment_attendees_delete_confirm">Sí</string>
     <string name="string_fragment_attendees_delete_cancel">No</string>
 
+
+    <string name="string_fragment_attendees_new_title">Agregar nuevo asistente</string>
+    <string name="string_fragment_attendees_new_input_hint">Ingrese IAC-ID</string>
+    <string name="string_fragment_attendees_new_confirm">Agregar</string>
+    <string name="string_fragment_attendees_new_cancel">Cancelar</string>
+
 </resources>

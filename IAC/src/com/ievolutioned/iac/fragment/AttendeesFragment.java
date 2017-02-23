@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.text.InputType;
+import android.text.method.DigitsKeyListener;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.CheckedTextView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -79,6 +82,10 @@ public class AttendeesFragment extends BaseFragmentClass {
             mAttendeeListView.setAdapter(mAttendeeAdapter);
         }
 
+
+        root.findViewById(R.id.fragment_attendees_barcode_button).setOnClickListener(button_click);
+        root.findViewById(R.id.fragment_attendees_iac_id_button).setOnClickListener(button_click);
+
     }
 
     private void bindData(Bundle args) {
@@ -137,6 +144,118 @@ public class AttendeesFragment extends BaseFragmentClass {
         } catch (Exception e) {
             Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * Add new attendee by iac id
+     *
+     * @param iacId
+     */
+    private void addNewAttendee(final String iacId) {
+        //Search attendee by id
+        final Context c = getActivity();
+        String adminToken = AppPreferences.getAdminToken(c);
+        //String iacId = AppPreferences.getIacId(c);
+        new CoursesService(AppConfig.getUUID(c), adminToken)
+                .getNewAttendeeInfo(adminToken, iacId,
+                        new CoursesService.ServiceHandler() {
+                            @Override
+                            public void onSuccess(CoursesService.CoursesResponse response) {
+                                if (mAttendees == null)
+                                    mAttendees = new JsonArray();
+                                JsonElement attendeeInfo = response.json.getAsJsonObject()
+                                        .get("info_attendee");
+                                if (attendeeInfo != null && !attendeeInfo.isJsonNull()) {
+                                    mAttendees.add(attendeeInfo.getAsJsonObject());
+                                    if (mAttendeeAdapter != null) {
+                                        mAttendeeAdapter.notifyDataSetChanged();
+                                        mAttendeeListView.smoothScrollByOffset(mAttendeeAdapter.getCount() - 1);
+                                    }
+                                } else
+                                    Toast.makeText(c, "No se encontro registro", Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onError(CoursesService.CoursesResponse response) {
+
+                            }
+
+                            @Override
+                            public void onCancel() {
+
+                            }
+                        });
+        //Add attendee to the local list
+    }
+
+    /**
+     * For Barcode and iac manual inputs
+     */
+    private View.OnClickListener button_click = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.fragment_attendees_iac_id_button:
+                    showIacIdDialog();
+                    break;
+                case R.id.fragment_attendees_barcode_button:
+                    showBarcodeReader();
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    /**
+     * Shows iac id prompt dialog
+     */
+    private void showIacIdDialog() {
+        try {
+            final EditText editTextIacId = new EditText(getActivity());
+            editTextIacId.setHint(R.string.string_fragment_attendees_new_input_hint);
+            editTextIacId.setLayoutParams(new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+            editTextIacId.setRawInputType(InputType.TYPE_CLASS_NUMBER);
+            editTextIacId.setKeyListener(DigitsKeyListener.getInstance("1234567890"));
+            AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+            dialog.setTitle(R.string.string_fragment_attendees_new_title);
+            dialog.setView(editTextIacId);
+
+            //Add
+            dialog.setPositiveButton(R.string.string_fragment_attendees_new_confirm,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            addNewAttendee(editTextIacId.getText().toString());
+                            dialogInterface.dismiss();
+                        }
+                    });
+            //Cancel
+            dialog.setNegativeButton(R.string.string_fragment_attendees_new_cancel,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+
+            dialog.create().show();
+            /*editTextIacId.requestFocus();
+            InputMethodManager imm = (InputMethodManager) getActivity()
+                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);*/
+        } catch (Exception e) {
+            LogUtil.e(TAG, e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Shows barcode reader for id card
+     */
+    private void showBarcodeReader() {
+
     }
 
 
