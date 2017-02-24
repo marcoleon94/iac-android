@@ -3,9 +3,11 @@ package com.ievolutioned.iac.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -18,17 +20,19 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.net.service.CoursesService;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.util.LogUtil;
+import com.ievolutioned.iac.view.ViewUtility;
 
 import java.util.Locale;
 
@@ -82,10 +86,8 @@ public class AttendeesFragment extends BaseFragmentClass {
             mAttendeeListView.setAdapter(mAttendeeAdapter);
         }
 
-
         root.findViewById(R.id.fragment_attendees_barcode_button).setOnClickListener(button_click);
         root.findViewById(R.id.fragment_attendees_iac_id_button).setOnClickListener(button_click);
-
     }
 
     private void bindData(Bundle args) {
@@ -100,7 +102,7 @@ public class AttendeesFragment extends BaseFragmentClass {
                         public void onSuccess(CoursesService.CoursesResponse response) {
                             LogUtil.d(TAG, response.json.toString());
                             try {
-                                //TODO: default value in resourses
+                                //TODO: default value in resources
                                 if (mCourses == null)
                                     mCourses = new JsonArray();
                                 mCourses.addAll(response.json.getAsJsonArray());
@@ -142,7 +144,7 @@ public class AttendeesFragment extends BaseFragmentClass {
             mAttendees.remove(attendee);
             mAttendeeAdapter.notifyDataSetChanged();
         } catch (Exception e) {
-            Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR, "Error");
         }
     }
 
@@ -172,7 +174,7 @@ public class AttendeesFragment extends BaseFragmentClass {
                                         mAttendeeListView.smoothScrollByOffset(mAttendeeAdapter.getCount() - 1);
                                     }
                                 } else
-                                    Toast.makeText(c, "No se encontro registro", Toast.LENGTH_SHORT).show();
+                                    ViewUtility.showMessage(c, ViewUtility.MSG_ERROR, "No se encontro registro");
                             }
 
                             @Override
@@ -255,9 +257,21 @@ public class AttendeesFragment extends BaseFragmentClass {
      * Shows barcode reader for id card
      */
     private void showBarcodeReader() {
-
+        IntentIntegrator.forSupportFragment(AttendeesFragment.this).initiateScan();
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null || !TextUtils.isEmpty(result.getContents())) {
+            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS, result.getContents());
+            addNewAttendee(result.getContents());
+        } else {
+            if (getActivity() != null)
+                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                        R.string.fragment_forms_error_barcode);
+        }
+    }
 
     private AdapterView.OnItemSelectedListener courses_selected = new AdapterView.OnItemSelectedListener() {
         @Override
@@ -278,7 +292,7 @@ public class AttendeesFragment extends BaseFragmentClass {
 
                             @Override
                             public void onError(CoursesService.CoursesResponse response) {
-                                Toast.makeText(c, "No se puede cargar asistentes al curso", Toast.LENGTH_SHORT).show();
+                                ViewUtility.showMessage(c, ViewUtility.MSG_ERROR, "Error");
                             }
 
                             @Override
