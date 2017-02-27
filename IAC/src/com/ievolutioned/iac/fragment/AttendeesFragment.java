@@ -42,6 +42,8 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 /**
+ * Attendees for courses fragment class. Allows to add and modify attendees for any course
+ * <p>
  * Created by Daniel on 21/02/2017.
  */
 
@@ -110,6 +112,11 @@ public class AttendeesFragment extends BaseFragmentClass {
         super.onSaveInstanceState(outState);
     }
 
+    /**
+     * Binds the UI elements
+     *
+     * @param root - {@link View} inflated view
+     */
     private void bindUI(View root) {
         if (root == null)
             return;
@@ -138,6 +145,11 @@ public class AttendeesFragment extends BaseFragmentClass {
         root.findViewById(R.id.fragment_attendees_iac_id_button).setOnClickListener(button_click);
     }
 
+    /**
+     * Binds any data if necessary
+     *
+     * @param args - {@link Bundle} arguments
+     */
     private void bindData(Bundle args) {
         if (mSavedInstanceState != null && mSavedInstanceState.containsKey(ARGS_SAVED_COURSES))
             restoreState(mSavedInstanceState);
@@ -179,6 +191,11 @@ public class AttendeesFragment extends BaseFragmentClass {
         }
     }
 
+    /**
+     * Restores the state of courses loaded
+     *
+     * @param args - previous state
+     */
     private void restoreState(Bundle args) {
         try {
             JsonElement json = new JsonParser().parse(args.getString(ARGS_SAVED_COURSES));
@@ -200,6 +217,11 @@ public class AttendeesFragment extends BaseFragmentClass {
         }
     }
 
+    /**
+     * Set the title
+     *
+     * @param title
+     */
     private void setTitle(String title) {
         Activity activity = getActivity();
         if (activity != null && activity instanceof MainActivity)
@@ -333,10 +355,18 @@ public class AttendeesFragment extends BaseFragmentClass {
         IntentIntegrator.forSupportFragment(AttendeesFragment.this).initiateScan();
     }
 
+    /**
+     * Validates the form before to being sent
+     *
+     * @return true if is valid
+     */
     private boolean validateForm() {
         return mCoursesSpinner.getSelectedItemId() > 0;
     }
 
+    /**
+     * Saves the attendees for the group
+     */
     private void saveAndUpload() {
         final Context c = getActivity();
         if (c != null) {
@@ -370,6 +400,11 @@ public class AttendeesFragment extends BaseFragmentClass {
         }
     }
 
+    /**
+     * Gets the attendee list to be submitted
+     *
+     * @return an integer array list
+     */
     private ArrayList<Integer> getAttendeeList() {
         if (mAttendees == null)
             return null;
@@ -459,12 +494,21 @@ public class AttendeesFragment extends BaseFragmentClass {
         }
     }
 
+    /**
+     * Courses spinner adapter. Shows a list of courses for {@link Spinner} view.
+     * Displays an empty item by default
+     */
     class CoursesAdapter extends BaseAdapter {
         private static final String COURSE_ID = "id";
         private static final String COURSE_NAME = "name";
         private LayoutInflater mInflater;
         private JsonElement mDefaultValue = new JsonObject();
 
+        /**
+         * Initializes the courses adapter
+         *
+         * @param context
+         */
         public CoursesAdapter(Context context) {
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             mDefaultValue.getAsJsonObject().addProperty(COURSE_ID, "0");
@@ -525,12 +569,20 @@ public class AttendeesFragment extends BaseFragmentClass {
         }
     }
 
+    /**
+     * Attendees list adapter. A list of attendees in the {@link ListView} element
+     */
     class AttendeeAdapter extends BaseAdapter implements View.OnClickListener {
 
         protected final static String ATTENDEE_ID = "id";
         protected final static String ATTENDEE_NAME = "name";
         private LayoutInflater mInflater;
 
+        /**
+         * {@link AttendeeAdapter} initializer
+         *
+         * @param c
+         */
         public AttendeeAdapter(Context c) {
             mInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }

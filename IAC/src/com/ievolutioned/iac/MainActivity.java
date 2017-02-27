@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
             FragmentManager fm = getSupportFragmentManager();
             Fragment fragment = fm.findFragmentById(R.id.activity_main_frame_container);
             if (fragment instanceof MyProfileFragment || fragment instanceof SitesFragment ||
-                    fragment instanceof TuobaFragment) {
+                    fragment instanceof TuobaFragment || fragment instanceof AttendeesFragment) {
                 //Open drawer
                 mDrawerLayout.openDrawer(GravityCompat.START);
             } else if (fragment instanceof FormsFragment) {
@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Displays the courses for admin users
      */
-    public void showCourses() {
+    public void showAttendees() {
         Fragment fragment = new AttendeesFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);

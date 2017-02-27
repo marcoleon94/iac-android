@@ -374,7 +374,7 @@ public class MenuFragment extends Fragment {
                     mActivity.selectItem(menuSitesTitles[6]);
                     break;
                 case R.id.fragment_menu_attendees:
-                    mActivity.showCourses();
+                    mActivity.showAttendees();
                     break;
                 case R.id.fragment_menu_profile:
                     mActivity.showMyProfile();
