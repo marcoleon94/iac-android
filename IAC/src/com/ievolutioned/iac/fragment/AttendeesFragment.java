@@ -249,6 +249,9 @@ public class AttendeesFragment extends BaseFragmentClass {
      * @param iacId
      */
     private void addNewAttendee(final String iacId) {
+        //Verify if it exists
+        if (isAttendeeInList(iacId))
+            return;
         //Search attendee by id
         final Context c = getActivity();
         String adminToken = AppPreferences.getAdminToken(c);
@@ -269,7 +272,7 @@ public class AttendeesFragment extends BaseFragmentClass {
                                         mAttendeeListView.smoothScrollByOffset(mAttendeeAdapter.getCount() - 1);
                                     }
                                 } else
-                                    ViewUtility.showMessage(c, ViewUtility.MSG_ERROR, "No se encontro registro");
+                                    ViewUtility.showMessage(c, ViewUtility.MSG_ERROR, R.string.string_fragment_attendees_new_no_record);
                             }
 
                             @Override
@@ -283,6 +286,15 @@ public class AttendeesFragment extends BaseFragmentClass {
                             }
                         });
         //Add attendee to the local list
+    }
+
+    private boolean isAttendeeInList(String iacId) {
+        ArrayList<Integer> attendeesIds = getAttendeeList();
+        if (attendeesIds != null && attendeesIds.size() > 0)
+            for (Integer i : attendeesIds)
+                if (iacId.contentEquals(i.toString()))
+                    return true;
+        return false;
     }
 
     /**
@@ -380,14 +392,14 @@ public class AttendeesFragment extends BaseFragmentClass {
                                 new CoursesService.ServiceHandler() {
                                     @Override
                                     public void onSuccess(CoursesService.CoursesResponse response) {
-                                        //LogUtil.d(TAG, response.json.toString());
+                                        LogUtil.d(TAG, response.json.toString());
                                         ViewUtility.showMessage(c, ViewUtility.MSG_SUCCESS,
                                                 R.string.string_fragment_attendees_modify_save_success);
                                     }
 
                                     @Override
                                     public void onError(CoursesService.CoursesResponse response) {
-                                        //LogUtil.e(TAG, response.msg, null);
+                                        LogUtil.e(TAG, response.msg, null);
                                         ViewUtility.showMessage(c, ViewUtility.MSG_SUCCESS,
                                                 R.string.string_fragment_attendees_modify_save_success);
                                     }
@@ -450,8 +462,10 @@ public class AttendeesFragment extends BaseFragmentClass {
                             @Override
                             public void onSuccess(CoursesService.CoursesResponse response) {
                                 LogUtil.d(TAG, response.json.toString());
-                                mAttendees = response.json.getAsJsonArray();
-                                mAttendeeAdapter.notifyDataSetChanged();
+                                if (response.json != null || !response.json.isJsonNull()) {
+                                    mAttendees = response.json.getAsJsonArray();
+                                    mAttendeeAdapter.notifyDataSetChanged();
+                                }
                             }
 
                             @Override
@@ -464,8 +478,6 @@ public class AttendeesFragment extends BaseFragmentClass {
 
                             }
                         });
-                //Display hidden things
-
             }
             showAttendeeElements(itemId);
             mTouchedSpinner = false;
@@ -576,6 +588,7 @@ public class AttendeesFragment extends BaseFragmentClass {
 
         protected final static String ATTENDEE_ID = "id";
         protected final static String ATTENDEE_NAME = "name";
+        protected final static String ATTENDEE_IAC_ID = "iac_id";
         private LayoutInflater mInflater;
 
         /**
@@ -622,7 +635,7 @@ public class AttendeesFragment extends BaseFragmentClass {
             TextView textViewName = (TextView) view.findViewById(R.id.list_item_attendee_name);
             TextView textViewId = (TextView) view.findViewById(R.id.list_item_attendee_id);
             textViewName.setText(attendee.get(ATTENDEE_NAME).getAsString());
-            textViewId.setText(attendee.get(ATTENDEE_ID).getAsString());
+            textViewId.setText(attendee.get(ATTENDEE_IAC_ID).getAsString());
             view.findViewById(R.id.list_item_attendee_delete_button).setTag(getItem(i));
             view.setTag(getItem(i));
             return view;

@@ -16,6 +16,7 @@
     <string name="string_fragment_attendees_new_input_hint">Ingrese IAC-ID</string>
     <string name="string_fragment_attendees_new_confirm">Agregar</string>
     <string name="string_fragment_attendees_new_cancel">Cancelar</string>
+    <string name="string_fragment_attendees_new_no_record">No se encontró al usuario</string>
 
     <string name="string_fragment_attendees_modify_save_success">Asistentes actualizados</string>
     <string name="string_fragment_attendees_modify_save_error">Error al actualizar</string>

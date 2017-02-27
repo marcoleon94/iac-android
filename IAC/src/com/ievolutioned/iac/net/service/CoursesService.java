@@ -172,7 +172,7 @@ public class CoursesService extends ServiceBase {
                     if (iac_id != null)
                         params.add("iac_id", iac_id);
                     if (attendeeIds != null)
-                        params.add("attendee_ids", attendeeIds.toString());
+                        params.add("attendee_ids", getAttendeeIds(attendeeIds.toString()));
 
 
                     //Get headers
@@ -205,6 +205,20 @@ public class CoursesService extends ServiceBase {
             }
         };
         task.execute();
+    }
+
+    /**
+     * Remove enclosure
+     *
+     * @param s a string with [ id , id, id]
+     * @return a string without []
+     */
+    private String getAttendeeIds(String s) {
+        try {
+            return s.replaceAll("\\[|\\]", "");
+        } catch (Exception e) {
+            return s;
+        }
     }
 
     /**
