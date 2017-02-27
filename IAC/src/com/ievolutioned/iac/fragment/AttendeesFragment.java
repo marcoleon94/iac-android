@@ -9,11 +9,11 @@ import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -53,6 +53,7 @@ public class AttendeesFragment extends BaseFragmentClass {
     private static final String ARGS_SAVED_COURSES = "ARGS_SAVED_COURSES";
     private Spinner mCoursesSpinner;
     private CoursesAdapter mCoursesSpinnerAdapter;
+    private boolean mTouchedSpinner = false;
     private JsonArray mCourses = new JsonArray();
 
     private ListView mAttendeeListView;
@@ -117,8 +118,14 @@ public class AttendeesFragment extends BaseFragmentClass {
         if (mCoursesSpinner != null) {
             mCoursesSpinnerAdapter = new CoursesAdapter(getActivity());
             mCoursesSpinner.setAdapter(mCoursesSpinnerAdapter);
-            mCoursesSpinner.setGravity(Gravity.END);
-            //mCoursesSpinner.setOnItemSelectedListener(courses_selected);
+            mCoursesSpinner.setOnItemSelectedListener(courses_selected);
+            mCoursesSpinner.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    mTouchedSpinner = true;
+                    return false;
+                }
+            });
         }
 
         mAttendeeListView = (ListView) root.findViewById(R.id.fragment_attendees_list);
@@ -169,7 +176,6 @@ public class AttendeesFragment extends BaseFragmentClass {
                             }
                         });
             }
-            mCoursesSpinner.setOnItemSelectedListener(courses_selected);
         }
     }
 
@@ -184,7 +190,6 @@ public class AttendeesFragment extends BaseFragmentClass {
                     mCoursesSpinnerAdapter.notifyDataSetChanged();
                     mCoursesSpinner.setSelection(args.getInt(ARGS_SAVED_COURSE_ITEM_POS));
                 }
-                mCoursesSpinner.setOnItemSelectedListener(courses_selected);
             }
             JsonElement jsonAttendees = new JsonParser().parse(args.getString(ARGS_SAVED_ATTENDEES));
             mAttendees = jsonAttendees.getAsJsonArray();
@@ -397,9 +402,10 @@ public class AttendeesFragment extends BaseFragmentClass {
      * Courses item selected listener. Each courses brings you a set of attendees
      */
     private AdapterView.OnItemSelectedListener courses_selected = new AdapterView.OnItemSelectedListener() {
+
         @Override
         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long itemId) {
-            if (itemId > 0) {
+            if (itemId > 0 && view != null && mTouchedSpinner) {
                 //Call attendees for the course
                 final Context c = getActivity();
                 String adminToken = AppPreferences.getAdminToken(c);
@@ -427,6 +433,7 @@ public class AttendeesFragment extends BaseFragmentClass {
 
             }
             showAttendeeElements(itemId);
+            mTouchedSpinner = false;
         }
 
         @Override
