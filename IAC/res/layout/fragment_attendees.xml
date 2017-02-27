@@ -50,6 +50,7 @@
     </RelativeLayout>
 
     <TextView
+        android:id="@+id/fragment_attendees_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
@@ -63,6 +64,7 @@
         android:textColor="@android:color/secondary_text_light" />
 
     <RelativeLayout
+        android:id="@+id/fragment_attendees_add_layout"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:background="@drawable/customswitch_switch_bg_holo_light">
@@ -106,6 +108,7 @@
     </RelativeLayout>
 
     <TextView
+        android:id="@+id/fragment_attendees_attendee_subtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="30dp"

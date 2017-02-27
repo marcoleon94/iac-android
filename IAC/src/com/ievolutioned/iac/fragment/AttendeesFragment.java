@@ -11,6 +11,9 @@ import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -24,6 +27,7 @@ import android.widget.TextView;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.ievolutioned.iac.MainActivity;
@@ -34,6 +38,7 @@ import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.util.LogUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 /**
@@ -43,6 +48,9 @@ import java.util.Locale;
 public class AttendeesFragment extends BaseFragmentClass {
 
     private static final String TAG = AttendeesFragment.class.getName();
+    private static final String ARGS_SAVED_COURSE_ITEM_POS = "ARGS_COURSE_ID";
+    private static final String ARGS_SAVED_ATTENDEES = "ARGS_SAVED_ATTENDEES";
+    private static final String ARGS_SAVED_COURSES = "ARGS_SAVED_COURSES";
     private Spinner mCoursesSpinner;
     private CoursesAdapter mCoursesSpinnerAdapter;
     private JsonArray mCourses = new JsonArray();
@@ -50,6 +58,8 @@ public class AttendeesFragment extends BaseFragmentClass {
     private ListView mAttendeeListView;
     private AttendeeAdapter mAttendeeAdapter;
     private JsonArray mAttendees = new JsonArray();
+
+    private Bundle mSavedInstanceState = null;
 
 
     @Override
@@ -59,6 +69,8 @@ public class AttendeesFragment extends BaseFragmentClass {
         setHasOptionsMenu(true);
         bindUI(root);
         setTitle(getString(R.string.string_fragment_attendees_title));
+        if (savedInstanceState != null)
+            mSavedInstanceState = new Bundle(savedInstanceState);
         return root;
     }
 
@@ -66,6 +78,35 @@ public class AttendeesFragment extends BaseFragmentClass {
     public void onResume() {
         super.onResume();
         bindData(getArguments());
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu items for use in the action bar
+        inflater.inflate(R.menu.fragment_forms_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_fragment_form_upload:
+                if (validateForm()) {
+                    saveAndUpload();
+                }
+                break;
+            default:
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(ARGS_SAVED_COURSE_ITEM_POS, mCoursesSpinner.getSelectedItemPosition());
+        outState.putString(ARGS_SAVED_COURSES, mCourses.toString());
+        outState.putString(ARGS_SAVED_ATTENDEES, mAttendees.toString());
+        super.onSaveInstanceState(outState);
     }
 
     private void bindUI(View root) {
@@ -77,7 +118,7 @@ public class AttendeesFragment extends BaseFragmentClass {
             mCoursesSpinnerAdapter = new CoursesAdapter(getActivity());
             mCoursesSpinner.setAdapter(mCoursesSpinnerAdapter);
             mCoursesSpinner.setGravity(Gravity.END);
-            mCoursesSpinner.setOnItemSelectedListener(courses_selected);
+            //mCoursesSpinner.setOnItemSelectedListener(courses_selected);
         }
 
         mAttendeeListView = (ListView) root.findViewById(R.id.fragment_attendees_list);
@@ -91,39 +132,66 @@ public class AttendeesFragment extends BaseFragmentClass {
     }
 
     private void bindData(Bundle args) {
-        Context c = getActivity();
-        //Fill courses if necessary
-        if ((mCourses == null || mCourses.size() <= 1) && c != null) {
-            String adminToken = AppPreferences.getAdminToken(c);
-            String iacId = AppPreferences.getIacId(c);
-            new CoursesService(AppConfig.getUUID(c), adminToken)
-                    .getActiveCourses(adminToken, iacId, new CoursesService.ServiceHandler() {
-                        @Override
-                        public void onSuccess(CoursesService.CoursesResponse response) {
-                            LogUtil.d(TAG, response.json.toString());
-                            try {
-                                //TODO: default value in resources
-                                if (mCourses == null)
-                                    mCourses = new JsonArray();
-                                mCourses.addAll(response.json.getAsJsonArray());
+        if (mSavedInstanceState != null && mSavedInstanceState.containsKey(ARGS_SAVED_COURSES))
+            restoreState(mSavedInstanceState);
+        else {
+            Context c = getActivity();
+            //Fill courses if necessary
+            if ((mCourses == null || mCourses.size() <= 1) && c != null) {
+                String adminToken = AppPreferences.getAdminToken(c);
+                String iacId = AppPreferences.getIacId(c);
+                new CoursesService(AppConfig.getUUID(c), adminToken)
+                        .getActiveCourses(adminToken, iacId, new CoursesService.ServiceHandler() {
+                            @Override
+                            public void onSuccess(CoursesService.CoursesResponse response) {
+                                LogUtil.d(TAG, response.json.toString());
+                                try {
+                                    //TODO: default value in resources
+                                    if (mCourses == null)
+                                        mCourses = new JsonArray();
+                                    mCourses.addAll(response.json.getAsJsonArray());
+                                    if (mCoursesSpinnerAdapter != null)
+                                        mCoursesSpinnerAdapter.notifyDataSetChanged();
+                                } catch (IllegalStateException ise) {
+                                    LogUtil.e(TAG, ise.getMessage(), ise);
+                                }
+                            }
+
+                            @Override
+                            public void onError(CoursesService.CoursesResponse response) {
                                 if (mCoursesSpinnerAdapter != null)
                                     mCoursesSpinnerAdapter.notifyDataSetChanged();
-                            } catch (IllegalStateException ise) {
-                                LogUtil.e(TAG, ise.getMessage(), ise);
                             }
-                        }
 
-                        @Override
-                        public void onError(CoursesService.CoursesResponse response) {
-                            if (mCoursesSpinnerAdapter != null)
-                                mCoursesSpinnerAdapter.notifyDataSetChanged();
-                        }
+                            @Override
+                            public void onCancel() {
+                                LogUtil.d(TAG, "binData: canceled courses");
+                            }
+                        });
+            }
+            mCoursesSpinner.setOnItemSelectedListener(courses_selected);
+        }
+    }
 
-                        @Override
-                        public void onCancel() {
-                            LogUtil.d(TAG, "binData: canceled courses");
-                        }
-                    });
+    private void restoreState(Bundle args) {
+        try {
+            JsonElement json = new JsonParser().parse(args.getString(ARGS_SAVED_COURSES));
+            mCourses = new JsonArray();
+            mCourses.addAll(json.getAsJsonArray());
+            if (mCoursesSpinner != null) {
+                mCoursesSpinner.setOnItemSelectedListener(null);
+                if (mCoursesSpinnerAdapter != null) {
+                    mCoursesSpinnerAdapter.notifyDataSetChanged();
+                    mCoursesSpinner.setSelection(args.getInt(ARGS_SAVED_COURSE_ITEM_POS));
+                }
+                mCoursesSpinner.setOnItemSelectedListener(courses_selected);
+            }
+            JsonElement jsonAttendees = new JsonParser().parse(args.getString(ARGS_SAVED_ATTENDEES));
+            mAttendees = jsonAttendees.getAsJsonArray();
+            if (mAttendeeAdapter != null)
+                mAttendeeAdapter.notifyDataSetChanged();
+        } catch (Exception e) {
+
         }
     }
 
@@ -260,6 +328,58 @@ public class AttendeesFragment extends BaseFragmentClass {
         IntentIntegrator.forSupportFragment(AttendeesFragment.this).initiateScan();
     }
 
+    private boolean validateForm() {
+        return mCoursesSpinner.getSelectedItemId() > 0;
+    }
+
+    private void saveAndUpload() {
+        final Context c = getActivity();
+        if (c != null) {
+            String adminToken = AppPreferences.getAdminToken(c);
+            String iacId = AppPreferences.getIacId(c);
+            int courseId = (int) mCoursesSpinner.getSelectedItemId();
+            ArrayList<Integer> attendees = getAttendeeList();
+            if (iacId != null && courseId > 0 && attendees != null)
+                new CoursesService(AppConfig.getUUID(getActivity()), adminToken)
+                        .modifyAttendees(adminToken, iacId, courseId, attendees,
+                                new CoursesService.ServiceHandler() {
+                                    @Override
+                                    public void onSuccess(CoursesService.CoursesResponse response) {
+                                        //LogUtil.d(TAG, response.json.toString());
+                                        ViewUtility.showMessage(c, ViewUtility.MSG_SUCCESS,
+                                                R.string.string_fragment_attendees_modify_save_success);
+                                    }
+
+                                    @Override
+                                    public void onError(CoursesService.CoursesResponse response) {
+                                        //LogUtil.e(TAG, response.msg, null);
+                                        ViewUtility.showMessage(c, ViewUtility.MSG_SUCCESS,
+                                                R.string.string_fragment_attendees_modify_save_success);
+                                    }
+
+                                    @Override
+                                    public void onCancel() {
+
+                                    }
+                                });
+        }
+    }
+
+    private ArrayList<Integer> getAttendeeList() {
+        if (mAttendees == null)
+            return null;
+        ArrayList<Integer> attendees = new ArrayList<>(mAttendees.size());
+        for (int i = 0; i < mAttendees.size(); i++)
+            try {
+                attendees.add(Integer.parseInt(mAttendees.get(i).getAsJsonObject()
+                        .get(AttendeeAdapter.ATTENDEE_ID).getAsString()));
+            } catch (Exception e) {
+                LogUtil.e(TAG, e.getMessage(), e);
+            }
+        return attendees;
+    }
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
@@ -273,6 +393,9 @@ public class AttendeesFragment extends BaseFragmentClass {
         }
     }
 
+    /**
+     * Courses item selected listener. Each courses brings you a set of attendees
+     */
     private AdapterView.OnItemSelectedListener courses_selected = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long itemId) {
@@ -303,13 +426,31 @@ public class AttendeesFragment extends BaseFragmentClass {
                 //Display hidden things
 
             }
+            showAttendeeElements(itemId);
         }
 
         @Override
         public void onNothingSelected(AdapterView<?> adapterView) {
-
+            showAttendeeElements(0);
         }
     };
+
+    /**
+     * Shows or hides the attendee layouts
+     *
+     * @param itemId if any course is selected, that means <code>itemId > 0</code>
+     */
+    private void showAttendeeElements(long itemId) {
+        int visibility = itemId > 0 ? View.VISIBLE : View.GONE;
+        try {
+            getView().findViewById(R.id.fragment_attendees_title).setVisibility(visibility);
+            getView().findViewById(R.id.fragment_attendees_add_layout).setVisibility(visibility);
+            getView().findViewById(R.id.fragment_attendees_attendee_subtitle).setVisibility(visibility);
+            getView().findViewById(R.id.fragment_attendees_list).setVisibility(visibility);
+        } catch (NullPointerException npe) {
+            LogUtil.e(TAG, npe.getMessage(), npe);
+        }
+    }
 
     class CoursesAdapter extends BaseAdapter {
         private static final String COURSE_ID = "id";

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="string_fragment_attendees_title">Cursos</string>
+    <string name="string_fragment_attendees_title">Asistencias</string>
     <string name="string_fragment_attendees_courses_title">POR FAVOR ELIJA EL CURSO</string>
     <string name="string_fragment_attendees_courses">Cursos</string>
     <string name="string_fragment_attendees_add_title">AGREGAR ASISTENTES AL CURSO</string>
@@ -12,10 +12,12 @@
     <string name="string_fragment_attendees_delete_confirm">Sí</string>
     <string name="string_fragment_attendees_delete_cancel">No</string>
 
-
     <string name="string_fragment_attendees_new_title">Agregar nuevo asistente</string>
     <string name="string_fragment_attendees_new_input_hint">Ingrese IAC-ID</string>
     <string name="string_fragment_attendees_new_confirm">Agregar</string>
     <string name="string_fragment_attendees_new_cancel">Cancelar</string>
+
+    <string name="string_fragment_attendees_modify_save_success">Asistentes actualizados</string>
+    <string name="string_fragment_attendees_modify_save_error">Error al actualizar</string>
 
 </resources>
