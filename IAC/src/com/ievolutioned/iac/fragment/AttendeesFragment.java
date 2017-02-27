@@ -568,7 +568,9 @@ public class AttendeesFragment extends BaseFragmentClass {
 
             JsonObject attendee = (JsonObject) getItem(i);
             TextView textViewName = (TextView) view.findViewById(R.id.list_item_attendee_name);
+            TextView textViewId = (TextView) view.findViewById(R.id.list_item_attendee_id);
             textViewName.setText(attendee.get(ATTENDEE_NAME).getAsString());
+            textViewId.setText(attendee.get(ATTENDEE_ID).getAsString());
             view.findViewById(R.id.list_item_attendee_delete_button).setTag(getItem(i));
             view.setTag(getItem(i));
             return view;
