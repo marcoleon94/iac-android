@@ -14,6 +14,7 @@ import com.crashlytics.android.Crashlytics;
 import com.ievolutioned.iac.entity.UserEntity;
 import com.ievolutioned.iac.net.NetUtil;
 import com.ievolutioned.iac.net.service.LoginService;
+import com.ievolutioned.iac.net.service.UtilService;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.util.LogUtil;
@@ -64,7 +65,7 @@ public class LoginActivity extends Activity {
 
         com.ievolutioned.pxform.database.FormsDataSet f = new FormsDataSet(LoginActivity.this);
         f.deleteAll();
-        //new UtilService(AppConfig.getUUID(this)).getUpdate(LoginActivity.this, getFragmentManager());
+        new UtilService(AppConfig.getUUID(this)).getUpdate(LoginActivity.this, getFragmentManager());
     }
 
     /**
