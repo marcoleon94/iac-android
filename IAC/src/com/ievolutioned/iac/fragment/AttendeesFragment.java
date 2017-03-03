@@ -250,7 +250,7 @@ public class AttendeesFragment extends BaseFragmentClass {
      */
     private void addNewAttendee(final String iacId) {
         //Verify if it exists
-        if (isAttendeeInList(iacId))
+        if (iacId == null || isAttendeeInList(iacId))
             return;
         //Search attendee by id
         final Context c = getActivity();
@@ -289,9 +289,14 @@ public class AttendeesFragment extends BaseFragmentClass {
 
                             }
                         });
-        //Add attendee to the local list
     }
 
+    /**
+     * Returns if an attendee is in a list
+     *
+     * @param iacId - String id
+     * @return true if the attendee id is in the list, false otherwise
+     */
     private boolean isAttendeeInList(String iacId) {
         ArrayList<Integer> attendeesIds = getAttendeeList();
         if (attendeesIds != null && attendeesIds.size() > 0)
@@ -439,13 +444,35 @@ public class AttendeesFragment extends BaseFragmentClass {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if (result != null || !TextUtils.isEmpty(result.getContents())) {
+        if (result != null && !TextUtils.isEmpty(result.getContents())) {
             ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS, result.getContents());
             addNewAttendee(result.getContents());
-        } else {
-            if (getActivity() != null)
-                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
-                        R.string.fragment_forms_error_barcode);
+            showBarCodeDecision();
+        }
+    }
+
+    /**
+     * Added a show bar code show question
+     */
+    private void showBarCodeDecision() {
+        if (getActivity() != null) {
+            final AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+            dialog.setTitle(R.string.string_fragment_attendees_barcode_add_title);
+            dialog.setMessage(R.string.string_fragment_attendees_barcode_add_body);
+            dialog.setPositiveButton(R.string.string_fragment_attendees_barcode_add_confirm, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    showBarcodeReader();
+                    dialogInterface.dismiss();
+                }
+            });
+            dialog.setNegativeButton(R.string.string_fragment_attendees_barcode_add_cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+            dialog.create().show();
         }
     }
 

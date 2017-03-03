@@ -21,4 +21,10 @@
     <string name="string_fragment_attendees_modify_save_success">Asistentes actualizados</string>
     <string name="string_fragment_attendees_modify_save_error">Error al actualizar</string>
 
+    <string name="string_fragment_attendees_barcode_add_title">Escanear</string>
+    <string name="string_fragment_attendees_barcode_add_body">¿Desea continuar escaneando?</string>
+    <string name="string_fragment_attendees_barcode_add_confirm">Sí</string>
+    <string name="string_fragment_attendees_barcode_add_cancel">No</string>
+
+
 </resources>
