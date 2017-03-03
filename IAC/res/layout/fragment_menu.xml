@@ -107,13 +107,13 @@
             android:paddingLeft="15dp"
             android:paddingStart="15dp"
             android:paddingTop="@dimen/menu_padding_item"
-            android:text="Organigrama"
+            android:text="@string/string_site_organization_chart"
             android:textAllCaps="true"
             android:textSize="17sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/fragment_menu_assists"
+            android:id="@+id/fragment_menu_attendees"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
@@ -121,7 +121,7 @@
             android:paddingLeft="15dp"
             android:paddingStart="15dp"
             android:paddingTop="@dimen/menu_padding_item"
-            android:text="Asistencias"
+            android:text="@string/nav_drawer_form_attendees"
             android:textAllCaps="true"
             android:textSize="17sp"
             android:textStyle="bold" />

@@ -18,6 +18,7 @@ import android.view.View;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.ievolutioned.iac.fragment.AttendeesFragment;
 import com.ievolutioned.iac.fragment.FormsFragment;
 import com.ievolutioned.iac.fragment.MyProfileFragment;
 import com.ievolutioned.iac.fragment.SitesFragment;
@@ -121,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
             FragmentManager fm = getSupportFragmentManager();
             Fragment fragment = fm.findFragmentById(R.id.activity_main_frame_container);
             if (fragment instanceof MyProfileFragment || fragment instanceof SitesFragment ||
-                    fragment instanceof TuobaFragment) {
+                    fragment instanceof TuobaFragment || fragment instanceof AttendeesFragment) {
                 //Open drawer
                 mDrawerLayout.openDrawer(GravityCompat.START);
             } else if (fragment instanceof FormsFragment) {
@@ -145,6 +146,17 @@ public class MainActivity extends AppCompatActivity {
         args.putString(SitesFragment.ARG_SITE_NAME, getString(R.string.string_site_home));
         mFragment.setArguments(args);
         replaceFragment(mFragment, null);
+        mDrawerLayout.closeDrawers();
+    }
+
+    /**
+     * Displays the courses for admin users
+     */
+    public void showAttendees() {
+        Fragment fragment = new AttendeesFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        replaceFragment(fragment, null);
         mDrawerLayout.closeDrawers();
     }
 
