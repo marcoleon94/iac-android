@@ -266,10 +266,14 @@ public class AttendeesFragment extends BaseFragmentClass {
                                 JsonElement attendeeInfo = response.json.getAsJsonObject()
                                         .get("info_attendee");
                                 if (attendeeInfo != null && !attendeeInfo.isJsonNull()) {
-                                    mAttendees.add(attendeeInfo.getAsJsonObject());
+                                    //I prefer to add it at the last place, but the client says at first
+                                    JsonArray newElementArray = new JsonArray();
+                                    newElementArray.add(attendeeInfo.getAsJsonObject());
+                                    newElementArray.addAll(mAttendees);
+                                    mAttendees = newElementArray;
                                     if (mAttendeeAdapter != null) {
                                         mAttendeeAdapter.notifyDataSetChanged();
-                                        mAttendeeListView.smoothScrollByOffset(mAttendeeAdapter.getCount() - 1);
+                                        mAttendeeListView.smoothScrollByOffset(0);
                                     }
                                 } else
                                     ViewUtility.showMessage(c, ViewUtility.MSG_ERROR, R.string.string_fragment_attendees_new_no_record);
