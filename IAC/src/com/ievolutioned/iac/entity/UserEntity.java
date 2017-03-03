@@ -38,6 +38,12 @@ public class UserEntity {
     @SerializedName("admin_rol")
     private String adminRol;
 
+    /**
+     * Professional group
+     */
+    @SerializedName("professional_group")
+    private String professionalGroup;
+
     public String getIacId() {
         return iacId;
     }
@@ -76,5 +82,13 @@ public class UserEntity {
 
     public void setAdminRol(String adminRol) {
         this.adminRol = adminRol;
+    }
+
+    public String getProfessionalGroup() {
+        return professionalGroup;
+    }
+
+    public void setProfessionalGroup(String professionalGroup) {
+        this.professionalGroup = professionalGroup;
     }
 }

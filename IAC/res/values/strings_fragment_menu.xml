@@ -7,6 +7,8 @@
     <string name="nav_drawer_form_contact">@string/string_site_contact</string>
     <string name="nav_drawer_form_head">@string/string_site_head</string>
     <string name="nav_drawer_form_video">@string/string_site_video</string>
+    <string name="nav_drawer_form_organization_chart">@string/string_site_organization_chart</string>
+    <string name="nav_drawer_form_attendees">Asistencias</string>
     <string name="nav_drawer_form_profile">Mi perfil</string>
     <string name="nav_drawer_form_logout">Cerrar sesión</string>
     <string name="nav_drawer_form_about">Acerca de</string>
@@ -25,5 +27,6 @@
         <item>@string/string_site_contact</item>
         <item>@string/string_site_head</item>
         <item>@string/string_site_video</item>
+        <item>@string/string_site_organization_chart</item>
     </string-array>
 </resources>

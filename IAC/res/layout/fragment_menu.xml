@@ -9,130 +9,140 @@
         android:id="@+id/fragment_menu_sites_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:divider="@drawable/menu_divider"
+        android:orientation="vertical"
+        android:showDividers="middle">
 
         <TextView
             android:id="@+id/fragment_menu_home"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
-            android:paddingBottom="8dp"
+            android:paddingBottom="@dimen/menu_padding_item"
             android:paddingLeft="15dp"
             android:paddingStart="15dp"
-            android:paddingTop="8dp"
+            android:paddingTop="@dimen/menu_padding_item"
             android:text="@string/nav_drawer_form_home"
             android:textAllCaps="true"
             android:textSize="17sp"
             android:textStyle="bold" />
 
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
 
         <TextView
             android:id="@+id/fragment_menu_asks"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
-            android:paddingBottom="8dp"
+            android:paddingBottom="@dimen/menu_padding_item"
             android:paddingLeft="15dp"
             android:paddingStart="15dp"
-            android:paddingTop="8dp"
+            android:paddingTop="@dimen/menu_padding_item"
             android:text="@string/nav_drawer_form_asks"
             android:textAllCaps="true"
             android:textSize="17sp"
             android:textStyle="bold" />
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
 
         <TextView
             android:id="@+id/fragment_menu_ppf"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
-            android:paddingBottom="8dp"
+            android:paddingBottom="@dimen/menu_padding_item"
             android:paddingLeft="15dp"
             android:paddingStart="15dp"
-            android:paddingTop="8dp"
+            android:paddingTop="@dimen/menu_padding_item"
             android:text="@string/nav_drawer_form_ppf"
             android:textAllCaps="true"
             android:textSize="17sp"
             android:textStyle="bold" />
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
 
         <TextView
             android:id="@+id/fragment_menu_contact"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
-            android:paddingBottom="8dp"
+            android:paddingBottom="@dimen/menu_padding_item"
             android:paddingLeft="15dp"
             android:paddingStart="15dp"
-            android:paddingTop="8dp"
+            android:paddingTop="@dimen/menu_padding_item"
             android:text="@string/nav_drawer_form_contact"
             android:textAllCaps="true"
             android:textSize="17sp"
             android:textStyle="bold" />
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
 
         <TextView
             android:id="@+id/fragment_menu_head"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
-            android:paddingBottom="8dp"
+            android:paddingBottom="@dimen/menu_padding_item"
             android:paddingLeft="15dp"
             android:paddingStart="15dp"
-            android:paddingTop="8dp"
+            android:paddingTop="@dimen/menu_padding_item"
             android:text="@string/nav_drawer_form_head"
             android:textAllCaps="true"
             android:textSize="17sp"
             android:textStyle="bold" />
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
 
         <TextView
             android:id="@+id/fragment_menu_video"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
-            android:paddingBottom="8dp"
+            android:paddingBottom="@dimen/menu_padding_item"
             android:paddingLeft="15dp"
             android:paddingStart="15dp"
-            android:paddingTop="8dp"
+            android:paddingTop="@dimen/menu_padding_item"
             android:text="@string/nav_drawer_form_video"
             android:textAllCaps="true"
             android:textSize="17sp"
             android:textStyle="bold" />
 
-        <View
+        <TextView
+            android:id="@+id/fragment_menu_organization_chart"
             android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingBottom="@dimen/menu_padding_item"
+            android:paddingLeft="15dp"
+            android:paddingStart="15dp"
+            android:paddingTop="@dimen/menu_padding_item"
+            android:text="@string/string_site_organization_chart"
+            android:textAllCaps="true"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/fragment_menu_attendees"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingBottom="@dimen/menu_padding_item"
+            android:paddingLeft="15dp"
+            android:paddingStart="15dp"
+            android:paddingTop="@dimen/menu_padding_item"
+            android:text="@string/nav_drawer_form_attendees"
+            android:textAllCaps="true"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
     </LinearLayout>
+
+
+    <View
+        android:id="@+id/fragment_menu_form_divider"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/fragment_menu_sites_layout"
+        android:background="@android:color/darker_gray" />
 
     <TextView
         android:id="@+id/fragment_menu_forms"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/fragment_menu_sites_layout"
+        android:layout_below="@+id/fragment_menu_form_divider"
         android:paddingLeft="15dp"
-        android:paddingTop="8dp"
+        android:paddingTop="@dimen/menu_padding_item"
         android:text="@string/nav_drawer_form_title"
         android:textAllCaps="true"
         android:textSize="17sp"
@@ -148,59 +158,50 @@
         android:divider="@android:color/darker_gray"
         android:dividerHeight="1dp" />
 
-
     <LinearLayout
         android:id="@+id/fragment_menu_bottom"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@color/background_gray_light"
-        android:orientation="vertical">
+        android:divider="@drawable/menu_divider"
+        android:orientation="vertical"
+        android:showDividers="middle">
 
         <TextView
             android:id="@+id/fragment_menu_profile"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
-            android:paddingBottom="8dp"
+            android:paddingBottom="@dimen/menu_padding_item"
             android:paddingLeft="15dp"
-            android:paddingTop="8dp"
+            android:paddingTop="@dimen/menu_padding_item"
             android:text="@string/nav_drawer_form_profile"
             android:textAllCaps="true"
             android:textSize="17sp"
             android:textStyle="bold" />
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
 
         <TextView
             android:id="@+id/fragment_menu_about"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
-            android:paddingBottom="8dp"
+            android:paddingBottom="@dimen/menu_padding_item"
             android:paddingLeft="15dp"
-            android:paddingTop="8dp"
+            android:paddingTop="@dimen/menu_padding_item"
             android:text="@string/nav_drawer_form_about"
             android:textAllCaps="true"
             android:textSize="17sp"
             android:textStyle="bold" />
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
 
         <TextView
             android:id="@+id/fragment_menu_singout"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
-            android:paddingBottom="8dp"
+            android:paddingBottom="@dimen/menu_padding_item"
             android:paddingLeft="15dp"
-            android:paddingTop="8dp"
+            android:paddingTop="@dimen/menu_padding_item"
             android:text="@string/nav_drawer_form_logout"
             android:textAllCaps="true"
             android:textSize="17sp"

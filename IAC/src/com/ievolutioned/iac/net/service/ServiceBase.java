@@ -33,6 +33,26 @@ public abstract class ServiceBase {
     protected static final String URL_PROFILE = "http://iacgroup.herokuapp.com/api/admin/";
 
     /**
+     * URL for All courses
+     */
+    protected static final String URL_COURSES_ACTIVE = "http://iacgroup.herokuapp.com/api/info_courses/";
+
+    /**
+     * URL for course attendees
+     */
+    protected static final String URL_COURSES_ATTENDEES = "http://iacgroup.herokuapp.com/api/info_courses/%d/get_course_attendees";
+
+    /**
+     * URL for modify courses
+     */
+    protected static final String URL_COURSES_MODIFY_ATTENDEES = "http://iacgroup.herokuapp.com/api/info_courses/%d";
+
+    /**
+     * URL for information of new attendee
+     */
+    protected static final String URL_COURSES_ATTENDEE_INFO = "http://iacgroup.herokuapp.com/api/info_courses/get_course_attendee_info";
+
+    /**
      * URL for Mobile Versions
      */
     protected static final String URL_MOBILE_VERSION = "http://iacgroup.herokuapp.com/api/services/mobile_versions";
@@ -73,6 +93,16 @@ public abstract class ServiceBase {
     protected static final String ACTION_MOBILE = "mobile_versions";
 
     /**
+     * Action for get course attendees
+     */
+    protected static final String ACTION_COURSE_ATTENDEE = "get_course_attendees";
+
+    /**
+     * Action for course attendee info
+     */
+    protected static final String ACTION_COURSE_ATTENDEE_INFO = "get_course_attendee_info";
+
+    /**
      * Controller constant for services
      */
     protected static final String CONTROLLER_SERVICES = "services";
@@ -92,6 +122,10 @@ public abstract class ServiceBase {
      * Controller constant for profile
      */
     protected static final String CONTROLLER_PROFILE = "admin";
+    /**
+     * Controller for courses
+     */
+    protected static final String CONTROLLER_COURSES = "info_courses";
 
 
     /**
