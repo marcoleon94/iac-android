@@ -24,6 +24,10 @@ public class NetUtil {
     private static final String METHOD_GET = "GET";
     private static final String METHOD_POST = "POST";
     private static final String METHOD_PUT = "PUT";
+    private static final String METHOD_PATCH = "PATCH";
+
+    private static final String CONTENT_TYPE_JSON = "application/json;";
+    private static final String CONTENT_TYPE_FORM_URLENCODED = "application/x-www-form-urlencoded;";
 
     /**
      * GET method, gets a simple response
@@ -36,7 +40,7 @@ public class NetUtil {
      */
     public static NetResponse get(String url, HttpGetParam params, HttpHeader headers)
             throws Exception {
-        return getContent(url, METHOD_GET, params, headers, null);
+        return getContent(url, METHOD_GET, params, headers, CONTENT_TYPE_JSON, null);
     }
 
     /**
@@ -52,7 +56,7 @@ public class NetUtil {
 
     public static NetResponse post(String url, HttpGetParam params,
                                    HttpHeader headers, String json) throws Exception {
-        return getContent(url, METHOD_POST, params, headers, json);
+        return getContent(url, METHOD_POST, params, headers, CONTENT_TYPE_JSON, json);
     }
 
     /**
@@ -67,7 +71,21 @@ public class NetUtil {
      */
     public static NetResponse put(String url, HttpGetParam params,
                                   HttpHeader headers, String json) throws Exception {
-        return getContent(url, METHOD_PUT, params, headers, json);
+        return getContent(url, METHOD_PUT, params, headers, CONTENT_TYPE_JSON, json);
+    }
+
+    /**
+     * PATCH method, patches a request
+     *
+     * @param url     - The full URL of the service
+     * @param params  - A set of GET parameters
+     * @param headers - A set of headers
+     * @return the response
+     * @throws Exception
+     */
+    public static NetResponse patch(String url, HttpGetParam params,
+                                    HttpHeader headers) throws Exception {
+        return getContent(url, METHOD_PATCH, params, headers, CONTENT_TYPE_FORM_URLENCODED, null);
     }
 
     /**
@@ -82,7 +100,7 @@ public class NetUtil {
      * @throws Exception
      */
     private static NetResponse getContent(String url, final String method, final HttpGetParam params,
-                                          final HttpHeader headers, final String json) throws Exception {
+                                          final HttpHeader headers, final String contentType, final String json) throws Exception {
         HttpURLConnection connection = null;
         if (params != null)
             url += "?" + params.toString();
@@ -99,7 +117,7 @@ public class NetUtil {
                 String postLength = String.valueOf(json.getBytes("UTF-8").length);
                 connection.setRequestProperty("Content-Length", postLength);
                 connection.setRequestProperty("Content-Type",
-                        "application/json; charset=UTF-8");
+                        contentType + " charset=UTF-8");
                 connection.setRequestProperty("Connection", "keep-alive");
                 connection.connect();
                 OutputStream os = connection.getOutputStream();
