@@ -19,6 +19,7 @@ import com.crashlytics.android.Crashlytics;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.ievolutioned.iac.fragment.AttendeesFragment;
+import com.ievolutioned.iac.fragment.DiningFragment;
 import com.ievolutioned.iac.fragment.FormsFragment;
 import com.ievolutioned.iac.fragment.MyProfileFragment;
 import com.ievolutioned.iac.fragment.SitesFragment;
@@ -154,6 +155,17 @@ public class MainActivity extends AppCompatActivity {
      */
     public void showAttendees() {
         Fragment fragment = new AttendeesFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        replaceFragment(fragment, null);
+        mDrawerLayout.closeDrawers();
+    }
+
+    /**
+     * Displays the dining entrance for users
+     */
+    public void showDining() {
+        Fragment fragment = new DiningFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         replaceFragment(fragment, null);
