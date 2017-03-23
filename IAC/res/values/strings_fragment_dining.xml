@@ -4,7 +4,7 @@
     <string name="string_fragment_dining_plant_title">SELECCIONE COMEDOR DE PLANTA</string>
     <string name="string_fragment_dining_plant">Planta</string>
     <string name="string_fragment_dining_add_title">AGREGAR COMENSAL</string>
-    <string name="string_fragment_dining_add_subtitle">Agregar Nuevo</string>
+    <string name="string_fragment_dining_add_subtitle">Agregar</string>
     <string name="string_fragment_dining_list_title">Comensales</string>
 
     <string name="string_fragment_dining_delete_title">Eliminar comensal</string>

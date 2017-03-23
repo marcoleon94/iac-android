@@ -137,6 +137,7 @@ public class DiningFragment extends BaseFragmentClass {
 
         root.findViewById(R.id.fragment_dining_barcode_button).setOnClickListener(button_click);
         root.findViewById(R.id.fragment_dining_iac_id_button).setOnClickListener(button_click);
+        root.findViewById(R.id.fragment_dining_guests_button).setOnClickListener(button_click);
     }
 
     /**
@@ -259,6 +260,9 @@ public class DiningFragment extends BaseFragmentClass {
         @Override
         public void onClick(View view) {
             switch (view.getId()) {
+                case R.id.fragment_dining_guests_button:
+                    showGuests();
+                    break;
                 case R.id.fragment_attendees_iac_id_button:
                     showIacIdDialog();
                     break;
@@ -270,6 +274,11 @@ public class DiningFragment extends BaseFragmentClass {
             }
         }
     };
+
+    private void showGuests() {
+        //TODO: Save instance
+        //TODO: Create the guests fragment and replace it
+    }
 
     /**
      * Shows iac id prompt dialog

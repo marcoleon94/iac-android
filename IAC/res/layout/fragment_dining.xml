@@ -84,14 +84,17 @@
             android:textColor="@android:color/black"
             android:textSize="16sp" />
 
-        <ImageButton
-            android:id="@+id/fragment_dining_barcode_button"
-            android:layout_width="50dp"
+        <Button
+            android:id="@+id/fragment_dining_guests_button"
+            android:layout_width="wrap_content"
             android:layout_height="60dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_barcode" />
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/fragment_dining_iac_id_button"
+            android:layout_toStartOf="@+id/fragment_dining_iac_id_button"
+            android:drawableRight="@android:drawable/ic_menu_myplaces"
+            android:text="Invitados" />
 
         <ImageButton
             android:id="@+id/fragment_dining_iac_id_button"
@@ -100,9 +103,18 @@
             android:layout_centerVertical="true"
             android:layout_marginEnd="10dp"
             android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@id/fragment_dining_barcode_button"
-            android:layout_toStartOf="@id/fragment_dining_barcode_button"
+            android:layout_toLeftOf="@+id/fragment_dining_barcode_button"
+            android:layout_toStartOf="@+id/fragment_dining_barcode_button"
             android:src="@drawable/ic_iac_id" />
+
+        <ImageButton
+            android:id="@+id/fragment_dining_barcode_button"
+            android:layout_width="50dp"
+            android:layout_height="60dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_barcode" />
 
 
     </RelativeLayout>
