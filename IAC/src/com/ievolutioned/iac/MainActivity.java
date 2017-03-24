@@ -354,6 +354,14 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
+    public void replaceFragmentWithAnimation(Fragment fragment, String tag){
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
+        transaction.replace(R.id.activity_main_frame_container, fragment);
+        transaction.addToBackStack(tag);
+        transaction.commit();
+    }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);

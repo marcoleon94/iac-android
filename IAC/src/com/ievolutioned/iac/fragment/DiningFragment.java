@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -38,7 +39,9 @@ import com.ievolutioned.iac.util.LogUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Attendees for dining fragment class. Allows to add and modify attendees for any plant dining room
@@ -271,7 +274,7 @@ public class DiningFragment extends BaseFragmentClass {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.fragment_dining_guests_button:
-                    showGuests();
+                    showGuests(null);
                     break;
                 case R.id.fragment_dining_iac_id_button:
                     showIacIdDialog();
@@ -285,9 +288,19 @@ public class DiningFragment extends BaseFragmentClass {
         }
     };
 
-    private void showGuests() {
-        //TODO: Save instance
+    private void showGuests(String host) {
+        saveInstance();
         //TODO: Create the guests fragment and replace it
+        Activity activity = getActivity();
+        if(activity != null && activity instanceof MainActivity) {
+            Fragment fragment = new DiningGuestsFragment();
+            if(host != null) {
+                Bundle args = new Bundle();
+                args.putString(DiningGuestsFragment.ARGS_HOST, host);
+                fragment.setArguments(args);
+            }
+            ((MainActivity) activity).replaceFragmentWithAnimation(fragment, null);
+        }
     }
 
     /**
@@ -360,6 +373,21 @@ public class DiningFragment extends BaseFragmentClass {
                 //TODO: Save
             }
 
+        }
+    }
+
+    private void saveInstance() {
+        if (getActivity() == null)
+            return;
+
+        if (mPlantsSpinner != null && mPlantsSpinner.getSelectedItem() != null)
+            AppPreferences.setDiningPlant(getActivity(), mPlantsSpinner.getSelectedItem().toString());
+
+        if (mAttendees != null) {
+            Set<String> attendeeSet = new HashSet<>(mAttendees.size());
+            for (int i = 0; i < mAttendees.size(); i++)
+                attendeeSet.add(mAttendees.get(i).toString());
+            AppPreferences.setDiningAttendees(getActivity(), attendeeSet);
         }
     }
 

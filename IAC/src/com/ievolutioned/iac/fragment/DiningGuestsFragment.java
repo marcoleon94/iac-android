@@ -42,6 +42,7 @@ import java.util.Locale;
 public class DiningGuestsFragment extends BaseFragmentClass {
 
     private static final String TAG = DiningGuestsFragment.class.getName();
+    public static final String ARGS_HOST = "ARGS_HOST";
 
     private ListView mAttendeeListView;
     private AttendeeAdapter mAttendeeAdapter;
