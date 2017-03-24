@@ -56,6 +56,8 @@ public class DiningGuestsFragment extends BaseFragmentClass {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+        if (getActivity() != null && getActivity() instanceof MainActivity)
+            ((MainActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true); //enable static back arrow
         View root = inflater.inflate(R.layout.fragment_dining_guests, container, false);
         setHasOptionsMenu(true);
         bindUI(root);

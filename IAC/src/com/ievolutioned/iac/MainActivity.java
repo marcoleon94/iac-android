@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.crashlytics.android.Crashlytics;
@@ -124,7 +125,8 @@ public class MainActivity extends AppCompatActivity {
             FragmentManager fm = getSupportFragmentManager();
             Fragment fragment = fm.findFragmentById(R.id.activity_main_frame_container);
             if (fragment instanceof MyProfileFragment || fragment instanceof SitesFragment ||
-                    fragment instanceof TuobaFragment || fragment instanceof AttendeesFragment) {
+                    fragment instanceof TuobaFragment || fragment instanceof AttendeesFragment ||
+                    fragment instanceof DiningFragment) {
                 //Open drawer
                 mDrawerLayout.openDrawer(GravityCompat.START);
             } else if (fragment instanceof FormsFragment) {
@@ -135,6 +137,8 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     onBackPressed();
                 }
+            } else if (fragment instanceof DiningGuestsFragment) {
+                onBackPressed();
             }
         }
     };
@@ -208,6 +212,14 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false); //disable static back arrow
         DrawerToggleSynchronizeState(); //refresh all menu state
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -354,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-    public void replaceFragmentWithAnimation(Fragment fragment, String tag){
+    public void replaceFragmentWithAnimation(Fragment fragment, String tag) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
         transaction.replace(R.id.activity_main_frame_container, fragment);

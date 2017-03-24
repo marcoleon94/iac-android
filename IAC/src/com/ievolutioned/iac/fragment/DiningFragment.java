@@ -288,13 +288,18 @@ public class DiningFragment extends BaseFragmentClass {
         }
     };
 
+    /**
+     * Shows the guests fragment for or not a host
+     *
+     * @param host
+     */
     private void showGuests(String host) {
         saveInstance();
         //TODO: Create the guests fragment and replace it
         Activity activity = getActivity();
-        if(activity != null && activity instanceof MainActivity) {
+        if (activity != null && activity instanceof MainActivity) {
             Fragment fragment = new DiningGuestsFragment();
-            if(host != null) {
+            if (host != null) {
                 Bundle args = new Bundle();
                 args.putString(DiningGuestsFragment.ARGS_HOST, host);
                 fragment.setArguments(args);
