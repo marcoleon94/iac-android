@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
      * Displays the dining entrance for users
      */
     public void showDining() {
-        Fragment fragment = new DiningGuestsFragment();
+        Fragment fragment = new DiningFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         replaceFragment(fragment, null);

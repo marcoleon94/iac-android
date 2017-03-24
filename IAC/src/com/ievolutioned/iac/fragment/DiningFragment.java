@@ -159,6 +159,10 @@ public class DiningFragment extends BaseFragmentClass {
             //TODO: Call service for plants
             mPlants = new JsonArray();
             JsonObject plant = new JsonObject();
+            plant.addProperty("id", 0);
+            plant.addProperty("name", "Seleccione");
+            mPlants.add(plant);
+            plant = new JsonObject();
             plant.addProperty("id", 1);
             plant.addProperty("name", "Monterrey");
             mPlants.add(plant);
@@ -236,6 +240,12 @@ public class DiningFragment extends BaseFragmentClass {
         //String iacId = AppPreferences.getIacId(c);
 
         //TODO: Add new attendee
+        JsonObject attendee = new JsonObject();
+        attendee.addProperty(AttendeeAdapter.ATTENDEE_ID, mAttendees.size());
+        attendee.addProperty(AttendeeAdapter.ATTENDEE_IAC_ID, iacId);
+        attendee.addProperty(AttendeeAdapter.ATTENDEE_NAME, "Demo");
+        mAttendees.add(attendee);
+        mAttendeeAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -263,10 +273,10 @@ public class DiningFragment extends BaseFragmentClass {
                 case R.id.fragment_dining_guests_button:
                     showGuests();
                     break;
-                case R.id.fragment_attendees_iac_id_button:
+                case R.id.fragment_dining_iac_id_button:
                     showIacIdDialog();
                     break;
-                case R.id.fragment_attendees_barcode_button:
+                case R.id.fragment_dining_barcode_button:
                     showBarcodeReader();
                     break;
                 default:
