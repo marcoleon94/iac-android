@@ -10,9 +10,6 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -43,12 +40,17 @@ public class DiningGuestsFragment extends BaseFragmentClass {
 
     private static final String TAG = DiningGuestsFragment.class.getName();
     public static final String ARGS_HOST = "ARGS_HOST";
+    private static final int EXTRA_HOST = 1;
+    private static final int EXTRA_GUEST = 2;
 
-    private ListView mAttendeeListView;
-    private AttendeeAdapter mAttendeeAdapter;
-    private JsonArray mAttendees = new JsonArray();
+    private ListView mGuestsListView;
+    private GuestsAdapter mGuestsAdapter;
+    private JsonArray mGuests = new JsonArray();
 
     private View mHostDetailsView;
+    private TextView mHostIacId;
+    private TextView mHostName;
+    private JsonObject mCurrentHost;
 
     private Bundle mSavedInstanceState = null;
 
@@ -59,7 +61,6 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         if (getActivity() != null && getActivity() instanceof MainActivity)
             ((MainActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true); //enable static back arrow
         View root = inflater.inflate(R.layout.fragment_dining_guests, container, false);
-        setHasOptionsMenu(true);
         bindUI(root);
         setTitle(getString(R.string.string_fragment_dining_guests_title));
         if (savedInstanceState != null)
@@ -71,26 +72,6 @@ public class DiningGuestsFragment extends BaseFragmentClass {
     public void onResume() {
         super.onResume();
         bindData(getArguments());
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // Inflate the menu items for use in the action bar
-        inflater.inflate(R.menu.fragment_forms_menu, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_fragment_form_upload:
-                if (validateForm())
-                    saveAndUpload();
-                break;
-            default:
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -108,11 +89,18 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         if (root == null)
             return;
 
-        mAttendeeListView = (ListView) root.findViewById(R.id.fragment_dining_guests_list);
-        if (mAttendeeListView != null) {
-            mAttendeeAdapter = new AttendeeAdapter(getActivity());
-            mAttendeeListView.setAdapter(mAttendeeAdapter);
+        mHostDetailsView = root.findViewById(R.id.fragment_dining_guests_host_details);
+        mHostIacId = (TextView) root.findViewById(R.id.fragment_dining_guests_host_iac_id);
+        mHostName = (TextView) root.findViewById(R.id.fragment_dining_guests_host_name);
+
+        mGuestsListView = (ListView) root.findViewById(R.id.fragment_dining_guests_list);
+        if (mGuestsListView != null) {
+            mGuestsAdapter = new GuestsAdapter(getActivity());
+            mGuestsListView.setAdapter(mGuestsAdapter);
         }
+
+        root.findViewById(R.id.fragment_dining_guests_host_iac_id_button).setOnClickListener(button_click);
+        root.findViewById(R.id.fragment_dining_guests_host_barcode_button).setOnClickListener(button_click);
 
         root.findViewById(R.id.fragment_dining_guests_barcode_button).setOnClickListener(button_click);
         root.findViewById(R.id.fragment_dining_guests_iac_id_button).setOnClickListener(button_click);
@@ -152,9 +140,9 @@ public class DiningGuestsFragment extends BaseFragmentClass {
                 }
             }
             JsonElement jsonAttendees = new JsonParser().parse(args.getString(ARGS_SAVED_ATTENDEES));
-            mAttendees = jsonAttendees.getAsJsonArray();
-            if (mAttendeeAdapter != null)
-                mAttendeeAdapter.notifyDataSetChanged();
+            mGuests = jsonAttendees.getAsJsonArray();
+            if (mGuestsAdapter != null)
+                mGuestsAdapter.notifyDataSetChanged();
         } catch (Exception e) {
 
         }
@@ -175,13 +163,13 @@ public class DiningGuestsFragment extends BaseFragmentClass {
     /**
      * Remove attendee from list of attendees
      *
-     * @param attendee - the attendee
+     * @param guest - the attendee
      */
-    private void removeAttendee(final JsonObject attendee) {
+    private void removeGuest(final JsonObject guest) {
         //TODO: Remove it
         try {
-            mAttendees.remove(attendee);
-            mAttendeeAdapter.notifyDataSetChanged();
+            mGuests.remove(guest);
+            mGuestsAdapter.notifyDataSetChanged();
         } catch (Exception e) {
             ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR, "Error");
         }
@@ -192,7 +180,25 @@ public class DiningGuestsFragment extends BaseFragmentClass {
      *
      * @param iacId
      */
-    private void addNewAttendee(final String iacId) {
+    private void addHost(final String iacId) {
+        //Search attendee by id
+        final Context c = getActivity();
+        String adminToken = AppPreferences.getAdminToken(c);
+        //String iacId = AppPreferences.getIacId(c);
+
+        //TODO: Add new host
+
+        mHostDetailsView.setVisibility(View.VISIBLE);
+        mHostIacId.setText(iacId);
+        mHostName.setText("Demo");
+
+        mCurrentHost = new JsonObject();
+        mCurrentHost.addProperty("id", 1);
+        mCurrentHost.addProperty("iac_id", iacId);
+        mCurrentHost.addProperty("name", "Demo host");
+    }
+
+    private void addGuest(final String iacId) {
         //Verify if it exists
         if (iacId == null || isAttendeeInList(iacId))
             return;
@@ -201,7 +207,20 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         String adminToken = AppPreferences.getAdminToken(c);
         //String iacId = AppPreferences.getIacId(c);
 
-        //TODO: Add new attendee
+        //TODO: Add new guest attendee
+        JsonObject guest = new JsonObject();
+        guest.addProperty(GuestsAdapter.GUEST_ID, mGuests.size() + 1);
+        guest.addProperty(GuestsAdapter.GUEST_IAC_ID, iacId);
+        guest.addProperty(GuestsAdapter.GUEST_NAME, "Demo Invitado");
+        if (mCurrentHost.has("id"))
+            guest.addProperty(GuestsAdapter.HOST_ID, mCurrentHost.get("id").getAsString());
+        if (mCurrentHost.has("iac_id"))
+            guest.addProperty(GuestsAdapter.HOST_IAC_ID, mCurrentHost.get("iac_id").getAsString());
+        if (mCurrentHost.has("name"))
+            guest.addProperty(GuestsAdapter.HOST_NAME, mCurrentHost.get("name").getAsString());
+
+        mGuests.add(guest);
+        mGuestsAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -228,16 +247,18 @@ public class DiningGuestsFragment extends BaseFragmentClass {
             switch (view.getId()) {
                 //Host
                 case R.id.fragment_dining_guests_host_iac_id_button:
+                    showIacIdDialog(EXTRA_HOST);
                     break;
                 case R.id.fragment_dining_guests_host_barcode_button:
+                    showBarcodeReader(EXTRA_HOST);
                     break;
                 //Guests
                 case R.id.fragment_dining_guests_manual_button:
                 case R.id.fragment_dining_guests_iac_id_button:
-                    showIacIdDialog();
+                    showIacIdDialog(EXTRA_GUEST);
                     break;
                 case R.id.fragment_dining_guests_barcode_button:
-                    showBarcodeReader();
+                    showBarcodeReader(EXTRA_GUEST);
                     break;
                 default:
                     break;
@@ -245,15 +266,10 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         }
     };
 
-    private void showGuests() {
-        //TODO: Save instance
-        //TODO: Create the guests fragment and replace it
-    }
-
     /**
      * Shows iac id prompt dialog
      */
-    private void showIacIdDialog() {
+    private void showIacIdDialog(final int extra) {
         try {
             final EditText editTextIacId = new EditText(getActivity());
             editTextIacId.setHint(R.string.string_fragment_dining_guests_new_input_hint);
@@ -263,7 +279,8 @@ public class DiningGuestsFragment extends BaseFragmentClass {
             editTextIacId.setRawInputType(InputType.TYPE_CLASS_NUMBER);
             editTextIacId.setKeyListener(DigitsKeyListener.getInstance("1234567890"));
             AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
-            dialog.setTitle(R.string.string_fragment_dining_guests_new_title);
+            dialog.setTitle(extra == 1 ? R.string.string_fragment_dining_guests_host_new_title :
+                    R.string.string_fragment_dining_guests_new_title);
             dialog.setView(editTextIacId);
 
             //Add
@@ -271,7 +288,10 @@ public class DiningGuestsFragment extends BaseFragmentClass {
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            addNewAttendee(editTextIacId.getText().toString());
+                            if (extra == 1)
+                                addHost(editTextIacId.getText().toString());
+                            else
+                                addGuest(editTextIacId.getText().toString());
                             dialogInterface.dismiss();
                         }
                     });
@@ -293,7 +313,8 @@ public class DiningGuestsFragment extends BaseFragmentClass {
     /**
      * Shows barcode reader for id card
      */
-    private void showBarcodeReader() {
+    private void showBarcodeReader(int extra) {
+        AppPreferences.setDiningBarcodeTemporal(getActivity(), extra);
         IntentIntegrator.forSupportFragment(DiningGuestsFragment.this).initiateScan();
     }
 
@@ -320,13 +341,13 @@ public class DiningGuestsFragment extends BaseFragmentClass {
      * @return an integer array list
      */
     private ArrayList<Integer> getAttendeeList() {
-        if (mAttendees == null)
+        if (mGuests == null)
             return null;
-        ArrayList<Integer> attendees = new ArrayList<>(mAttendees.size());
-        for (int i = 0; i < mAttendees.size(); i++)
+        ArrayList<Integer> attendees = new ArrayList<>(mGuests.size());
+        for (int i = 0; i < mGuests.size(); i++)
             try {
-                attendees.add(Integer.parseInt(mAttendees.get(i).getAsJsonObject()
-                        .get(AttendeeAdapter.ATTENDEE_ID).getAsString()));
+                attendees.add(Integer.parseInt(mGuests.get(i).getAsJsonObject()
+                        .get(GuestsAdapter.GUEST_ID).getAsString()));
             } catch (Exception e) {
                 LogUtil.e(TAG, e.getMessage(), e);
             }
@@ -339,8 +360,17 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null && !TextUtils.isEmpty(result.getContents())) {
             ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS, result.getContents());
-            addNewAttendee(result.getContents());
-            showBarCodeDecision();
+            int from = AppPreferences.getDiningBarcodeTemporal(getContext());
+            if (from == EXTRA_HOST) {
+                //For Host
+                addHost(result.getContents());
+            } else if (from == EXTRA_GUEST) {
+                //For Guests
+                addGuest(result.getContents().toString());
+                showBarCodeDecision();
+            } else
+                ViewUtility.showMessage(getContext(), ViewUtility.MSG_ERROR,
+                        R.string.string_fragment_dining_guests_general_error);
         }
     }
 
@@ -355,7 +385,7 @@ public class DiningGuestsFragment extends BaseFragmentClass {
             dialog.setPositiveButton(R.string.string_fragment_dining_guests_barcode_add_confirm, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    showBarcodeReader();
+                    showBarcodeReader(EXTRA_GUEST);
                     dialogInterface.dismiss();
                 }
             });
@@ -391,31 +421,37 @@ public class DiningGuestsFragment extends BaseFragmentClass {
     /**
      * Attendees list adapter. A list of attendees in the {@link ListView} element
      */
-    class AttendeeAdapter extends BaseAdapter implements View.OnClickListener {
+    class GuestsAdapter extends BaseAdapter implements View.OnClickListener {
 
-        protected final static String ATTENDEE_ID = "id";
-        protected final static String ATTENDEE_NAME = "name";
-        protected final static String ATTENDEE_IAC_ID = "iac_id";
+        protected final static String GUEST_ID = "id";
+        protected final static String GUEST_NAME = "name";
+        protected final static String GUEST_IAC_ID = "iac_id";
+
+        protected final static String HOST_ID = "host_id";
+        protected final static String HOST_NAME = "host_name";
+        protected final static String HOST_IAC_ID = "host_iac_id";
+
+
         private LayoutInflater mInflater;
 
         /**
-         * {@link AttendeeAdapter} initializer
+         * {@link GuestsAdapter} initializer
          *
          * @param c
          */
-        public AttendeeAdapter(Context c) {
+        public GuestsAdapter(Context c) {
             mInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         @Override
         public int getCount() {
-            return mAttendees == null ? 0 : mAttendees.size();
+            return mGuests == null ? 0 : mGuests.size();
         }
 
         @Override
         public Object getItem(int i) {
             try {
-                return mAttendees == null ? null : mAttendees.get(i).getAsJsonObject();
+                return mGuests == null ? null : mGuests.get(i).getAsJsonObject();
             } catch (Exception e) {
                 return null;
             }
@@ -424,8 +460,8 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         @Override
         public long getItemId(int i) {
             try {
-                return mAttendees == null ? 0L :
-                        Long.parseLong(mAttendees.get(i).getAsJsonObject().get(ATTENDEE_ID).getAsString());
+                return mGuests == null ? 0L :
+                        Long.parseLong(mGuests.get(i).getAsJsonObject().get(GUEST_ID).getAsString());
             } catch (Exception e) {
                 return 0L;
             }
@@ -434,18 +470,40 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             if (view == null) {
-                view = mInflater.inflate(R.layout.list_item_attendee, viewGroup, false);
-                view.findViewById(R.id.list_item_attendee_delete_button).setOnClickListener(this);
+                view = mInflater.inflate(R.layout.list_item_guest, viewGroup, false);
+                view.findViewById(R.id.list_item_guest_delete_button).setOnClickListener(this);
             }
 
-            JsonObject attendee = (JsonObject) getItem(i);
-            TextView textViewName = (TextView) view.findViewById(R.id.list_item_attendee_name);
-            TextView textViewId = (TextView) view.findViewById(R.id.list_item_attendee_id);
-            textViewName.setText(attendee.get(ATTENDEE_NAME).getAsString());
-            textViewId.setText(attendee.get(ATTENDEE_IAC_ID).getAsString());
-            view.findViewById(R.id.list_item_attendee_delete_button).setTag(getItem(i));
+            JsonObject guest = (JsonObject) getItem(i);
+            TextView textViewGuest = (TextView) view.findViewById(R.id.list_item_guest);
+            TextView textViewHost = (TextView) view.findViewById(R.id.list_item_guest_host);
+            textViewGuest.setText(getDetails(guest, EXTRA_GUEST));
+            textViewHost.setText(getDetails(guest, EXTRA_HOST));
+            view.findViewById(R.id.list_item_guest_delete_button).setTag(getItem(i));
             view.setTag(getItem(i));
             return view;
+        }
+
+        private String getDetails(JsonObject guest, final int extra) {
+            if (guest == null || guest.isJsonNull())
+                return "";
+            StringBuilder sb = new StringBuilder("");
+            if (extra == EXTRA_HOST) {
+                if (guest.has(GUEST_IAC_ID)) {
+                    sb.append(guest.get(GUEST_IAC_ID).getAsString());
+                    sb.append(" - ");
+                }
+                if (guest.has(GUEST_NAME))
+                    sb.append(guest.get(GUEST_NAME).getAsString());
+            } else {
+                if (guest.has(HOST_IAC_ID)) {
+                    sb.append(guest.get(HOST_IAC_ID).getAsString());
+                    sb.append(" - ");
+                }
+                if (guest.has(HOST_NAME))
+                    sb.append(guest.get(HOST_NAME).getAsString());
+            }
+            return sb.toString();
         }
 
         @Override
@@ -460,14 +518,14 @@ public class DiningGuestsFragment extends BaseFragmentClass {
                 alertDialog.setTitle(R.string.string_fragment_dining_guests_delete_title);
                 String body = String.format(Locale.getDefault(),
                         getString(R.string.string_fragment_dining_guests_delete_body),
-                        attendee.get(ATTENDEE_NAME).getAsString());
+                        attendee.get(GUEST_NAME).getAsString());
                 alertDialog.setMessage(body);
                 //Yes delete
                 alertDialog.setPositiveButton(R.string.string_fragment_dining_guests_delete_confirm,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                removeAttendee(attendee);
+                                removeGuest(attendee);
                                 dialogInterface.dismiss();
                             }
                         });

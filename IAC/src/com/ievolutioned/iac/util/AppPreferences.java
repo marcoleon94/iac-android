@@ -31,6 +31,8 @@ public class AppPreferences {
 
     private static final String KEY_DINING_PLANT = "KEY_DINING_PLANT";
 
+    private static final String KEY_DINING_BARCODE_TEMPORAL = "KEY_DINING_BARCODE_TEMPORAL";
+
     /**
      * Gets the SharedPreferences
      *
@@ -153,5 +155,13 @@ public class AppPreferences {
 
     public static String getDiningPlant(Context c) {
         return getPrefs(c).getString(KEY_DINING_PLANT, null);
+    }
+
+    public static void setDiningBarcodeTemporal(Context c, int value) {
+        getEditor(c).putInt(KEY_DINING_BARCODE_TEMPORAL, value).commit();
+    }
+
+    public static int getDiningBarcodeTemporal(Context c) {
+        return getPrefs(c).getInt(KEY_DINING_BARCODE_TEMPORAL, 0);
     }
 }
