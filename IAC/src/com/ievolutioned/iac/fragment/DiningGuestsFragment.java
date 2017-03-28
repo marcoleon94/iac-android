@@ -102,6 +102,7 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         root.findViewById(R.id.fragment_dining_guests_host_iac_id_button).setOnClickListener(button_click);
         root.findViewById(R.id.fragment_dining_guests_host_barcode_button).setOnClickListener(button_click);
 
+        root.findViewById(R.id.fragment_dining_guests_manual_button).setOnClickListener(button_click);
         root.findViewById(R.id.fragment_dining_guests_barcode_button).setOnClickListener(button_click);
         root.findViewById(R.id.fragment_dining_guests_iac_id_button).setOnClickListener(button_click);
     }
@@ -223,6 +224,31 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         mGuestsAdapter.notifyDataSetChanged();
     }
 
+    private void addManualGuest(final String input) {
+        if (input == null)
+            return;
+        //Search attendee by id
+        final Context c = getActivity();
+        String adminToken = AppPreferences.getAdminToken(c);
+        //String iacId = AppPreferences.getIacId(c);
+
+        //TODO: Add new guest manual
+        JsonObject guest = new JsonObject();
+        guest.addProperty(GuestsAdapter.GUEST_ID, 0);// How to set?
+        guest.addProperty(GuestsAdapter.GUEST_IAC_ID, "N/A");
+        guest.addProperty(GuestsAdapter.GUEST_NAME, input);
+        if (mCurrentHost.has("id"))
+            guest.addProperty(GuestsAdapter.HOST_ID, mCurrentHost.get("id").getAsString());
+        if (mCurrentHost.has("iac_id"))
+            guest.addProperty(GuestsAdapter.HOST_IAC_ID, mCurrentHost.get("iac_id").getAsString());
+        if (mCurrentHost.has("name"))
+            guest.addProperty(GuestsAdapter.HOST_NAME, mCurrentHost.get("name").getAsString());
+
+        mGuests.add(guest);
+        mGuestsAdapter.notifyDataSetChanged();
+    }
+
+
     /**
      * Returns if an attendee is in a list
      *
@@ -254,6 +280,8 @@ public class DiningGuestsFragment extends BaseFragmentClass {
                     break;
                 //Guests
                 case R.id.fragment_dining_guests_manual_button:
+                    showManualInput();
+                    break;
                 case R.id.fragment_dining_guests_iac_id_button:
                     showIacIdDialog(EXTRA_GUEST);
                     break;
@@ -293,6 +321,40 @@ public class DiningGuestsFragment extends BaseFragmentClass {
                             else
                                 addGuest(editTextIacId.getText().toString());
                             dialogInterface.dismiss();
+                        }
+                    });
+            //Cancel
+            dialog.setNegativeButton(R.string.string_fragment_dining_guests_new_cancel,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+
+            dialog.create().show();
+        } catch (Exception e) {
+            LogUtil.e(TAG, e.getMessage(), e);
+        }
+    }
+
+    private void showManualInput() {
+        try {
+            final EditText editText = new EditText(getActivity());
+            editText.setHint(R.string.string_fragment_dining_guests_new_manual_hint);
+            editText.setLayoutParams(new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+            AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+            dialog.setTitle(R.string.string_fragment_dining_guests_new_manual);
+            dialog.setView(editText);
+
+            //Add
+            dialog.setPositiveButton(R.string.string_fragment_dining_guests_new_confirm,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            addManualGuest(editText.getText().toString());
                         }
                     });
             //Cancel

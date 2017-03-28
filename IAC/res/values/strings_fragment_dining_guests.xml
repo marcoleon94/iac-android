@@ -20,6 +20,7 @@
     <string name="string_fragment_dining_guests_new_no_record">No se encontró al usuario</string>
 
     <string name="string_fragment_dining_guests_new_manual">Manual</string>
+    <string name="string_fragment_dining_guests_new_manual_hint">Ingrese el nombre del invitado</string>
 
     <string name="string_fragment_dining_guests_modify_save_success">Comensales actualizados</string>
     <string name="string_fragment_dining_guests_modify_save_error">Error al actualizar</string>
