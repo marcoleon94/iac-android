@@ -40,7 +40,7 @@ import java.util.Locale;
 
 public class DiningGuestsFragment extends BaseFragmentClass {
 
-    private static final String TAG = DiningGuestsFragment.class.getName();
+    public static final String TAG = DiningGuestsFragment.class.getName();
     public static final String ARGS_HOST = "ARGS_HOST";
     public static final String ARGS_GUESTS_SAVED = "ARGS_GUESTS_SAVED";
 
@@ -62,8 +62,6 @@ public class DiningGuestsFragment extends BaseFragmentClass {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        if (getActivity() != null && getActivity() instanceof MainActivity)
-            ((MainActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true); //enable static back arrow
         View root = inflater.inflate(R.layout.fragment_dining_guests, container, false);
         bindUI(root);
         setTitle(getString(R.string.string_fragment_dining_guests_title));
@@ -100,6 +98,9 @@ public class DiningGuestsFragment extends BaseFragmentClass {
     private void bindUI(View root) {
         if (root == null)
             return;
+
+        //Toolbar
+        setToolbarNavigationDisplayHomeAsUpEnabled(true);
 
         mHostDetailsView = root.findViewById(R.id.fragment_dining_guests_host_details);
         mHostIacId = (TextView) root.findViewById(R.id.fragment_dining_guests_host_iac_id);

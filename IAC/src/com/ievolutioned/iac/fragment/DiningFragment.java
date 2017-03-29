@@ -135,6 +135,9 @@ public class DiningFragment extends BaseFragmentClass {
     private void bindUI(View root) {
         if (root == null)
             return;
+
+        setToolbarNavigationDisplayHomeAsUpEnabled(false);
+
         mPlantsSpinner = (Spinner) root.findViewById(R.id.fragment_dining_plants_spinner);
 
         if (mPlantsSpinner != null) {
@@ -313,17 +316,12 @@ public class DiningFragment extends BaseFragmentClass {
      */
     private void showGuests(String host) {
         saveInstance();
-        //TODO: Create the guests fragment and replace it
-        Activity activity = getActivity();
-        if (activity != null && activity instanceof MainActivity) {
-            Fragment fragment = new DiningGuestsFragment();
-            if (host != null) {
-                Bundle args = new Bundle();
-                args.putString(DiningGuestsFragment.ARGS_HOST, host);
-                fragment.setArguments(args);
-            }
-            ((MainActivity) activity).replaceFragmentWithAnimation(fragment, null);
+        Fragment fragment = new DiningGuestsFragment();
+        if (host != null) {
+            Bundle args = new Bundle();
+            fragment.setArguments(args);
         }
+        setMainActivityReplaceFragment(fragment, DiningGuestsFragment.TAG, true);
     }
 
     /**

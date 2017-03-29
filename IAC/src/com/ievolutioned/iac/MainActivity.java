@@ -358,19 +358,24 @@ public class MainActivity extends AppCompatActivity {
      * Replaces the current fragment on the frame container.
      * <br>This can be call from the {@link FormsFragment fragments childs }
      */
-    public void replaceFragment(Fragment mFragment, String tag) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.activity_main_frame_container, mFragment, tag);
-        transaction.addToBackStack(null);
-        transaction.commit();
+    public void replaceFragment(Fragment fragment, String tag) {
+        replaceFragment(fragment, tag, false);
     }
 
-    public void replaceFragmentWithAnimation(Fragment fragment, String tag) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
-        transaction.replace(R.id.activity_main_frame_container, fragment);
-        transaction.addToBackStack(tag);
+    /**
+     * Replaces the fragment in the main activity frame
+     *
+     * @param fragment   - Fragment to be replaced
+     * @param tag        - TAG attribute
+     * @param isAnimated - Shows animation or not.
+     */
+    public void replaceFragment(Fragment fragment, String tag, boolean isAnimated) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        if (isAnimated)
+            transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
+        transaction.replace(R.id.activity_main_frame_container, fragment, tag);
+        transaction.addToBackStack(null);
         transaction.commit();
     }
 
@@ -491,4 +496,6 @@ public class MainActivity extends AppCompatActivity {
         replaceFragment(mFragment, null);
         mDrawerLayout.closeDrawers();
     }
+
+
 }
