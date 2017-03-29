@@ -52,6 +52,9 @@ import java.util.Set;
 public class DiningFragment extends BaseFragmentClass {
 
     private static final String TAG = DiningFragment.class.getName();
+    private static final String ARGS_PLANT_SELECTED = "ARGS_PLANT_SELECTED";
+    private static final String ARGS_PLANTS = "ARGS_PLANTS";
+    private static final String ARGS_ATTENDEES = "ARGS_ATTENDEES";
 
     private Spinner mPlantsSpinner;
     private PlantsAdapter mPlantsSpinnerAdapter;
@@ -106,6 +109,21 @@ public class DiningFragment extends BaseFragmentClass {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         //TODO: Save state
+        if (mPlantsSpinner != null && mPlantsSpinner.getSelectedItemPosition() > 0)
+            outState.putInt(ARGS_PLANT_SELECTED, mPlantsSpinner.getSelectedItemPosition());
+        if (mPlants != null) {
+            ArrayList<String> plants = new ArrayList<>(mPlants.size());
+            for (JsonElement j : mPlants)
+                plants.add(j.getAsJsonObject().toString());
+            outState.putStringArrayList(ARGS_PLANTS, plants);
+        }
+        if (mAttendees != null) {
+            ArrayList<String> attendees = new ArrayList<>(mAttendees.size());
+            for (JsonElement j : mAttendees)
+                attendees.add(j.getAsJsonObject().toString());
+            outState.putStringArrayList(ARGS_ATTENDEES, attendees);
+        }
+
         super.onSaveInstanceState(outState);
     }
 
@@ -150,27 +168,27 @@ public class DiningFragment extends BaseFragmentClass {
      */
     private void bindData(Bundle args) {
         //TODO: restore state
-        /*if (mSavedInstanceState != null && mSavedInstanceState.containsKey(ARGS_SAVED_COURSES))
+        if (mSavedInstanceState != null && mSavedInstanceState.containsKey(ARGS_ATTENDEES))
             restoreState(mSavedInstanceState);
-        else {*/
-        Context c = getActivity();
-        //Fill courses if necessary
-        if ((mPlants == null || mPlants.size() <= 1) && c != null) {
-            String adminToken = AppPreferences.getAdminToken(c);
-            String iacId = AppPreferences.getIacId(c);
+        else {
+            Context c = getActivity();
+            //Fill courses if necessary
+            if ((mPlants == null || mPlants.size() <= 1) && c != null) {
+                String adminToken = AppPreferences.getAdminToken(c);
+                String iacId = AppPreferences.getIacId(c);
 
-            //TODO: Call service for plants
-            mPlants = new JsonArray();
-            JsonObject plant = new JsonObject();
-            plant.addProperty("id", 0);
-            plant.addProperty("name", "Seleccione");
-            mPlants.add(plant);
-            plant = new JsonObject();
-            plant.addProperty("id", 1);
-            plant.addProperty("name", "Monterrey");
-            mPlants.add(plant);
+                //TODO: Call service for plants
+                mPlants = new JsonArray();
+                JsonObject plant = new JsonObject();
+                plant.addProperty("id", 0);
+                plant.addProperty("name", "Seleccione");
+                mPlants.add(plant);
+                plant = new JsonObject();
+                plant.addProperty("id", 1);
+                plant.addProperty("name", "Monterrey");
+                mPlants.add(plant);
+            }
         }
-        //}
     }
 
     /**
