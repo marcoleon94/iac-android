@@ -18,7 +18,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.ievolutioned.iac.MainActivity;
@@ -40,6 +42,8 @@ public class DiningGuestsFragment extends BaseFragmentClass {
 
     private static final String TAG = DiningGuestsFragment.class.getName();
     public static final String ARGS_HOST = "ARGS_HOST";
+    public static final String ARGS_GUESTS_SAVED = "ARGS_GUESTS_SAVED";
+
     private static final int EXTRA_HOST = 1;
     private static final int EXTRA_GUEST = 2;
 
@@ -77,6 +81,14 @@ public class DiningGuestsFragment extends BaseFragmentClass {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         //TODO: Save state
+        if (mCurrentHost != null)
+            outState.putString(ARGS_HOST, mCurrentHost.getAsJsonObject().toString());
+        if (mGuests != null) {
+            ArrayList<String> guests = new ArrayList<>(mGuests.size());
+            for (int i = 0; i < mGuests.size(); i++)
+                guests.add(mGuests.get(i).toString());
+            outState.putStringArrayList(ARGS_GUESTS_SAVED, guests);
+        }
         super.onSaveInstanceState(outState);
     }
 
@@ -114,11 +126,7 @@ public class DiningGuestsFragment extends BaseFragmentClass {
      */
     private void bindData(Bundle args) {
         //TODO: restore state
-        /*if (mSavedInstanceState != null && mSavedInstanceState.containsKey(ARGS_SAVED_COURSES))
-            restoreState(mSavedInstanceState);
-        else {*/
-        Context c = getActivity();
-        //}
+        restoreState(args != null && args.containsKey(ARGS_HOST) ? args : mSavedInstanceState);
     }
 
     /**
@@ -128,26 +136,33 @@ public class DiningGuestsFragment extends BaseFragmentClass {
      */
     private void restoreState(Bundle args) {
         //TODO: restore state
-        /*
+
         try {
-            JsonElement json = new JsonParser().parse(args.getString(ARGS_SAVED_COURSES));
-            mPlants = new JsonArray();
-            mPlants.addAll(json.getAsJsonArray());
-            if (mPlantsSpinner != null) {
-                mPlantsSpinner.setOnItemSelectedListener(null);
-                if (mPlantsSpinnerAdapter != null) {
-                    mPlantsSpinnerAdapter.notifyDataSetChanged();
-                    mPlantsSpinner.setSelection(args.getInt(ARGS_SAVED_COURSE_ITEM_POS));
+            if (args != null) {
+                //Get the host
+                if (args.containsKey(ARGS_HOST)) {
+                    JsonElement json = new JsonParser().parse(args.getString(ARGS_HOST));
+                    mCurrentHost = json.getAsJsonObject();
+                    if (mCurrentHost != null && !mCurrentHost.isJsonNull())
+                        showHost();
+                }
+
+                //Get the guests
+                if (args.containsKey(ARGS_GUESTS_SAVED)) {
+                    ArrayList<String> jsonGuests = args.getStringArrayList(ARGS_GUESTS_SAVED);
+                    mGuests = new JsonArray();
+                    if (jsonGuests != null)
+                        for (String g : jsonGuests) {
+                            mGuests.add(new JsonParser().parse(g));
+                        }
+                    if (mGuestsAdapter != null)
+                        mGuestsAdapter.notifyDataSetChanged();
                 }
             }
-            JsonElement jsonAttendees = new JsonParser().parse(args.getString(ARGS_SAVED_ATTENDEES));
-            mGuests = jsonAttendees.getAsJsonArray();
-            if (mGuestsAdapter != null)
-                mGuestsAdapter.notifyDataSetChanged();
         } catch (Exception e) {
-
+            LogUtil.e(TAG, e.getMessage(), e);
         }
-        */
+
     }
 
     /**
@@ -189,14 +204,22 @@ public class DiningGuestsFragment extends BaseFragmentClass {
 
         //TODO: Add new host
 
-        mHostDetailsView.setVisibility(View.VISIBLE);
-        mHostIacId.setText(iacId);
-        mHostName.setText("Demo");
 
         mCurrentHost = new JsonObject();
         mCurrentHost.addProperty("id", 1);
         mCurrentHost.addProperty("iac_id", iacId);
         mCurrentHost.addProperty("name", "Demo host");
+        showHost();
+    }
+
+    private void showHost() {
+        if (mCurrentHost != null && !mCurrentHost.isJsonNull() &&
+                mHostDetailsView != null && mHostIacId != null && mHostName != null) {
+            mHostDetailsView.setVisibility(View.VISIBLE);
+            mHostIacId.setText(mCurrentHost.get("iac_id").toString());
+            mHostName.setText(mCurrentHost.get("name").toString());
+        } else if (mHostDetailsView != null)
+            mHostDetailsView.setVisibility(View.GONE);
     }
 
     private void addGuest(final String iacId) {
