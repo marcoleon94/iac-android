@@ -36,6 +36,7 @@ import com.ievolutioned.iac.net.service.CoursesService;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.util.LogUtil;
+import com.ievolutioned.iac.util.ViewUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 
 import java.util.ArrayList;
@@ -201,26 +202,21 @@ public class DiningFragment extends BaseFragmentClass {
      */
     private void restoreState(Bundle args) {
         //TODO: restore state
-        /*
         try {
-            JsonElement json = new JsonParser().parse(args.getString(ARGS_SAVED_COURSES));
+            //TODO: Call service for plants
             mPlants = new JsonArray();
-            mPlants.addAll(json.getAsJsonArray());
-            if (mPlantsSpinner != null) {
-                mPlantsSpinner.setOnItemSelectedListener(null);
-                if (mPlantsSpinnerAdapter != null) {
-                    mPlantsSpinnerAdapter.notifyDataSetChanged();
-                    mPlantsSpinner.setSelection(args.getInt(ARGS_SAVED_COURSE_ITEM_POS));
-                }
-            }
-            JsonElement jsonAttendees = new JsonParser().parse(args.getString(ARGS_SAVED_ATTENDEES));
-            mAttendees = jsonAttendees.getAsJsonArray();
-            if (mAttendeeAdapter != null)
-                mAttendeeAdapter.notifyDataSetChanged();
+            JsonObject plant = new JsonObject();
+            plant.addProperty("id", 0);
+            plant.addProperty("name", "Seleccione");
+            mPlants.add(plant);
+            plant = new JsonObject();
+            plant.addProperty("id", 1);
+            plant.addProperty("name", "Monterrey");
+            mPlants.add(plant);
         } catch (Exception e) {
 
         }
-        */
+
     }
 
     /**
@@ -270,6 +266,8 @@ public class DiningFragment extends BaseFragmentClass {
         attendee.addProperty(AttendeeAdapter.ATTENDEE_NAME, "Demo");
         mAttendees.add(attendee);
         mAttendeeAdapter.notifyDataSetChanged();
+        LogUtil.d(TAG, mAttendees.toString());
+        ViewUtil.setListViewHeightBasedOnChildren(mAttendeeListView);
     }
 
     /**
