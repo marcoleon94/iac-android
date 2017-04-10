@@ -2,7 +2,8 @@
 <resources>
     <string name="string_fragment_dining_title">Comedor</string>
     <string name="string_fragment_dining_plant_title">SELECCIONE COMEDOR DE PLANTA</string>
-    <string name="string_fragment_dining_plant">Planta</string>
+    <string name="string_fragment_dining_plant">Comedor en Planta</string>
+    <string name="string_fragment_dining_plant_fetch_error">Error al cargar la planta</string>
     <string name="string_fragment_dining_add_title">AGREGAR COMENSAL</string>
     <string name="string_fragment_dining_add_subtitle">Agregar</string>
     <string name="string_fragment_dining_list_title">Comensales</string>

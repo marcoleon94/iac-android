@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -14,17 +14,14 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -32,7 +29,8 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
-import com.ievolutioned.iac.net.service.CoursesService;
+import com.ievolutioned.iac.entity.Site;
+import com.ievolutioned.iac.net.service.ProfileService;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.util.LogUtil;
@@ -40,9 +38,7 @@ import com.ievolutioned.iac.util.ViewUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 
 /**
  * Attendees for dining fragment class. Allows to add and modify attendees for any plant dining room
@@ -53,14 +49,11 @@ import java.util.Set;
 public class DiningFragment extends BaseFragmentClass {
 
     private static final String TAG = DiningFragment.class.getName();
-    private static final String ARGS_PLANT_SELECTED = "ARGS_PLANT_SELECTED";
-    private static final String ARGS_PLANTS = "ARGS_PLANTS";
+    private static final String ARGS_PLANT = "ARGS_PLANT";
     private static final String ARGS_ATTENDEES = "ARGS_ATTENDEES";
 
-    private Spinner mPlantsSpinner;
-    private PlantsAdapter mPlantsSpinnerAdapter;
-    private boolean mTouchedSpinner = false;
-    private JsonArray mPlants = new JsonArray();
+    private TextView mPlant;
+    private Site mSite;
 
     private ListView mAttendeeListView;
     private AttendeeAdapter mAttendeeAdapter;
@@ -76,15 +69,22 @@ public class DiningFragment extends BaseFragmentClass {
         setHasOptionsMenu(true);
         bindUI(root);
         setTitle(getString(R.string.string_fragment_dining_title));
+
+        return root;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null)
             mSavedInstanceState = new Bundle(savedInstanceState);
-        return root;
+        super.onCreate(savedInstanceState);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         bindData(getArguments());
+
     }
 
     @Override
@@ -110,13 +110,9 @@ public class DiningFragment extends BaseFragmentClass {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         //TODO: Save state
-        if (mPlantsSpinner != null && mPlantsSpinner.getSelectedItemPosition() > 0)
-            outState.putInt(ARGS_PLANT_SELECTED, mPlantsSpinner.getSelectedItemPosition());
-        if (mPlants != null) {
-            ArrayList<String> plants = new ArrayList<>(mPlants.size());
-            for (JsonElement j : mPlants)
-                plants.add(j.getAsJsonObject().toString());
-            outState.putStringArrayList(ARGS_PLANTS, plants);
+        if (mSite != null) {
+            String siteOut = new Gson().toJson(mSite, Site.class);
+            outState.putString(ARGS_PLANT, siteOut);
         }
         if (mAttendees != null) {
             ArrayList<String> attendees = new ArrayList<>(mAttendees.size());
@@ -139,20 +135,7 @@ public class DiningFragment extends BaseFragmentClass {
 
         setToolbarNavigationDisplayHomeAsUpEnabled(false);
 
-        mPlantsSpinner = (Spinner) root.findViewById(R.id.fragment_dining_plants_spinner);
-
-        if (mPlantsSpinner != null) {
-            mPlantsSpinnerAdapter = new PlantsAdapter(getActivity());
-            mPlantsSpinner.setAdapter(mPlantsSpinnerAdapter);
-            mPlantsSpinner.setOnItemSelectedListener(plants_selected);
-            mPlantsSpinner.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-                    mTouchedSpinner = true;
-                    return false;
-                }
-            });
-        }
+        mPlant = (TextView) root.findViewById(R.id.fragment_dining_plant);
 
         mAttendeeListView = (ListView) root.findViewById(R.id.fragment_dining_list);
         if (mAttendeeListView != null) {
@@ -162,7 +145,6 @@ public class DiningFragment extends BaseFragmentClass {
 
         root.findViewById(R.id.fragment_dining_barcode_button).setOnClickListener(button_click);
         root.findViewById(R.id.fragment_dining_iac_id_button).setOnClickListener(button_click);
-        root.findViewById(R.id.fragment_dining_guests_button).setOnClickListener(button_click);
     }
 
     /**
@@ -171,27 +153,49 @@ public class DiningFragment extends BaseFragmentClass {
      * @param args - {@link Bundle} arguments
      */
     private void bindData(Bundle args) {
-        //TODO: restore state
-        if (mSavedInstanceState != null && mSavedInstanceState.containsKey(ARGS_ATTENDEES))
-            restoreState(mSavedInstanceState);
-        else {
+        //TODO: restore state, add more things to load at first
+        if (!restoreState(mSavedInstanceState) && mSite == null) {
+            //Initial bind
             Context c = getActivity();
-            //Fill courses if necessary
-            if ((mPlants == null || mPlants.size() <= 1) && c != null) {
-                String adminToken = AppPreferences.getAdminToken(c);
-                String iacId = AppPreferences.getIacId(c);
+            String adminToken = AppPreferences.getAdminToken(c);
+            String deviceId = AppConfig.getUUID(c);
+            final android.app.AlertDialog loadingScreen = ViewUtility.getLoadingScreen(c);
+            loadingScreen.show();
+            //Call profile service
+            new ProfileService(deviceId, adminToken).getProfileInfo(new ProfileService.ProfileServiceHandler() {
+                @Override
+                public void onSuccess(ProfileService.ProfileResponse response) {
+                    mSite = response.profile.getSite();
+                    if (mSite != null && mSite.getName() != null && mSite.getName().length() > 0)
+                        mPlant.setText(mSite.getName());
+                    else
+                        ViewUtility.showMessage(getContext(), ViewUtility.MSG_ERROR,
+                                R.string.string_fragment_dining_plant_fetch_error);
+                    try {
+                        loadingScreen.dismiss();
+                    } catch (Exception e) {
 
-                //TODO: Call service for plants
-                mPlants = new JsonArray();
-                JsonObject plant = new JsonObject();
-                plant.addProperty("id", 0);
-                plant.addProperty("name", "Seleccione");
-                mPlants.add(plant);
-                plant = new JsonObject();
-                plant.addProperty("id", 1);
-                plant.addProperty("name", "Monterrey");
-                mPlants.add(plant);
-            }
+                    }
+                }
+
+                @Override
+                public void onError(ProfileService.ProfileResponse response) {
+                    try {
+                        loadingScreen.dismiss();
+                    } catch (Exception e) {
+
+                    }
+                }
+
+                @Override
+                public void onCancel() {
+                    try {
+                        loadingScreen.dismiss();
+                    } catch (Exception e) {
+
+                    }
+                }
+            });
         }
     }
 
@@ -199,22 +203,21 @@ public class DiningFragment extends BaseFragmentClass {
      * Restores the state of courses loaded
      *
      * @param args - previous state
+     * @return if state was restored
      */
-    private void restoreState(Bundle args) {
-        //TODO: restore state
+    private boolean restoreState(Bundle args) {
+        if (mSavedInstanceState == null || !mSavedInstanceState.containsKey(ARGS_ATTENDEES))
+            return false;
         try {
-            //TODO: Call service for plants
-            mPlants = new JsonArray();
-            JsonObject plant = new JsonObject();
-            plant.addProperty("id", 0);
-            plant.addProperty("name", "Seleccione");
-            mPlants.add(plant);
-            plant = new JsonObject();
-            plant.addProperty("id", 1);
-            plant.addProperty("name", "Monterrey");
-            mPlants.add(plant);
+            mSite = new Gson().fromJson(mSavedInstanceState.getString(ARGS_PLANT), Site.class);
+            if (mSite != null && mSite.getName() != null && mSite.getName().length() > 0)
+                mPlant.setText(mSite.getName());
+            else
+                ViewUtility.showMessage(getContext(), ViewUtility.MSG_ERROR,
+                        R.string.string_fragment_dining_plant_fetch_error);
+            return true;
         } catch (Exception e) {
-
+            return false;
         }
 
     }
@@ -292,9 +295,6 @@ public class DiningFragment extends BaseFragmentClass {
         @Override
         public void onClick(View view) {
             switch (view.getId()) {
-                case R.id.fragment_dining_guests_button:
-                    showGuests(null);
-                    break;
                 case R.id.fragment_dining_iac_id_button:
                     showIacIdDialog();
                     break;
@@ -307,20 +307,6 @@ public class DiningFragment extends BaseFragmentClass {
         }
     };
 
-    /**
-     * Shows the guests fragment for or not a host
-     *
-     * @param host
-     */
-    private void showGuests(String host) {
-        saveInstance();
-        Fragment fragment = new DiningGuestsFragment();
-        if (host != null) {
-            Bundle args = new Bundle();
-            fragment.setArguments(args);
-        }
-        setMainActivityReplaceFragment(fragment, DiningGuestsFragment.TAG, true);
-    }
 
     /**
      * Shows iac id prompt dialog
@@ -375,7 +361,7 @@ public class DiningFragment extends BaseFragmentClass {
      * @return true if is valid
      */
     private boolean validateForm() {
-        return mPlantsSpinner.getSelectedItemId() > 0;
+        return mSite != null;
     }
 
     /**
@@ -386,27 +372,12 @@ public class DiningFragment extends BaseFragmentClass {
         if (c != null) {
             String adminToken = AppPreferences.getAdminToken(c);
             String iacId = AppPreferences.getIacId(c);
-            int courseId = (int) mPlantsSpinner.getSelectedItemId();
+            long courseId = mSite.getId();
             ArrayList<Integer> attendees = getAttendeeList();
             if (iacId != null && courseId > 0 && attendees != null) {
                 //TODO: Save
             }
 
-        }
-    }
-
-    private void saveInstance() {
-        if (getActivity() == null)
-            return;
-
-        if (mPlantsSpinner != null && mPlantsSpinner.getSelectedItem() != null)
-            AppPreferences.setDiningPlant(getActivity(), mPlantsSpinner.getSelectedItem().toString());
-
-        if (mAttendees != null) {
-            Set<String> attendeeSet = new HashSet<>(mAttendees.size());
-            for (int i = 0; i < mAttendees.size(); i++)
-                attendeeSet.add(mAttendees.get(i).toString());
-            AppPreferences.setDiningAttendees(getActivity(), attendeeSet);
         }
     }
 
@@ -465,141 +436,6 @@ public class DiningFragment extends BaseFragmentClass {
         }
     }
 
-    /**
-     * Courses item selected listener. Each courses brings you a set of attendees
-     */
-    private AdapterView.OnItemSelectedListener plants_selected = new AdapterView.OnItemSelectedListener() {
-
-        @Override
-        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long itemId) {
-            if (itemId > 0 && view != null && mTouchedSpinner) {
-                //Call attendees for the course
-                final Context c = getActivity();
-                String adminToken = AppPreferences.getAdminToken(c);
-                String iacId = AppPreferences.getIacId(c);
-                new CoursesService(AppConfig.getUUID(c), adminToken)
-                        .getAttendees(adminToken, iacId, (int) itemId, new CoursesService.ServiceHandler() {
-                            @Override
-                            public void onSuccess(CoursesService.CoursesResponse response) {
-                                LogUtil.d(TAG, response.json.toString());
-                                if (response.json != null || !response.json.isJsonNull()) {
-                                    mAttendees = response.json.getAsJsonArray();
-                                    mAttendeeAdapter.notifyDataSetChanged();
-                                }
-                            }
-
-                            @Override
-                            public void onError(CoursesService.CoursesResponse response) {
-                                ViewUtility.showMessage(c, ViewUtility.MSG_ERROR, "Error");
-                            }
-
-                            @Override
-                            public void onCancel() {
-
-                            }
-                        });
-            }
-            showAttendeeElements(itemId);
-            mTouchedSpinner = false;
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> adapterView) {
-            showAttendeeElements(0);
-        }
-    };
-
-    /**
-     * Shows or hides the attendee layouts
-     *
-     * @param itemId if any course is selected, that means <code>itemId > 0</code>
-     */
-    private void showAttendeeElements(long itemId) {
-        int visibility = itemId > 0 ? View.VISIBLE : View.GONE;
-        try {
-            getView().findViewById(R.id.fragment_dining_title).setVisibility(visibility);
-            getView().findViewById(R.id.fragment_dining_add_layout).setVisibility(visibility);
-            getView().findViewById(R.id.fragment_dining_attendee_subtitle).setVisibility(visibility);
-            getView().findViewById(R.id.fragment_dining_list).setVisibility(visibility);
-        } catch (NullPointerException npe) {
-            LogUtil.e(TAG, npe.getMessage(), npe);
-        }
-    }
-
-    /**
-     * Courses spinner adapter. Shows a list of courses for {@link Spinner} view.
-     * Displays an empty item by default
-     */
-    class PlantsAdapter extends BaseAdapter {
-        private static final String PLANT_ID = "id";
-        private static final String PLANT_NAME = "name";
-        private LayoutInflater mInflater;
-        private JsonElement mDefaultValue = new JsonObject();
-
-        /**
-         * Initializes the courses adapter
-         *
-         * @param context
-         */
-        public PlantsAdapter(Context context) {
-            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            mDefaultValue.getAsJsonObject().addProperty(PLANT_ID, "0");
-            mDefaultValue.getAsJsonObject().addProperty(PLANT_NAME, "Seleccione");
-            if (mPlants == null)
-                mPlants = new JsonArray();
-            if (mPlants.size() == 0)
-                mPlants.add(mDefaultValue);
-        }
-
-        @Override
-        public int getCount() {
-            return mPlants == null ? 0 : mPlants.size();
-        }
-
-        @Override
-        public Object getItem(int i) {
-            return mPlants == null ? null : mPlants.get(i);
-        }
-
-        @Override
-        public long getItemId(int i) {
-            try {
-                return mPlants == null ? 0L :
-                        Long.parseLong(mPlants.get(i).getAsJsonObject().get(PLANT_ID).getAsString());
-            } catch (Exception e) {
-                return 0L;
-            }
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-            View v;
-            if (view == null)
-                v = mInflater.inflate(R.layout.list_item_right, viewGroup, false);
-            else
-                v = view;
-
-            JsonElement jsonElement = (JsonElement) getItem(i);
-            String name = jsonElement.getAsJsonObject().get(PLANT_NAME).getAsString();
-            TextView textView = (TextView) v.findViewById(R.id.list_item_right_text);
-            textView.setText(name);
-            return v;
-        }
-
-        @Override
-        public View getDropDownView(int position, View convertView, ViewGroup parent) {
-            View v;
-            if (convertView == null)
-                v = mInflater.inflate(R.layout.item_dropdown_right, parent, false);
-            else
-                v = convertView;
-            JsonElement jsonElement = (JsonElement) getItem(position);
-            String name = jsonElement.getAsJsonObject().get(PLANT_NAME).getAsString();
-            CheckedTextView textView = (CheckedTextView) v.findViewById(R.id.list_item_right_text);
-            textView.setText(getItemId(position) != 0 ? name : "");
-            return v;
-        }
-    }
 
     /**
      * Attendees list adapter. A list of attendees in the {@link ListView} element

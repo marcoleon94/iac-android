@@ -20,7 +20,8 @@
             android:paddingStart="30dp"
             android:paddingTop="30dp"
             android:text="@string/string_fragment_dining_plant_title"
-            android:textColor="@android:color/secondary_text_light" />
+            android:textColor="@android:color/secondary_text_light"
+            android:visibility="gone" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -40,16 +41,17 @@
                 android:textColor="@android:color/black"
                 android:textSize="16sp" />
 
-            <Spinner
-                android:id="@+id/fragment_dining_plants_spinner"
+            <TextView
+                android:id="@+id/fragment_dining_plant"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:gravity="end"
-                android:paddingLeft="60dp"
-                android:paddingStart="60dp" />
+                android:layout_toEndOf="@+id/fragment_dining_plants_spinner_title"
+                android:layout_toRightOf="@+id/fragment_dining_plants_spinner_title"
+                android:gravity="end|center_vertical"
+                android:text="Saltillo"
+                android:padding="10dp"
+                android:textSize="16sp" />
 
         </RelativeLayout>
 
@@ -88,18 +90,6 @@
                 android:textColor="@android:color/black"
                 android:textSize="16sp" />
 
-            <Button
-                android:id="@+id/fragment_dining_guests_button"
-                android:layout_width="wrap_content"
-                android:layout_height="60dp"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_toLeftOf="@+id/fragment_dining_iac_id_button"
-                android:layout_toStartOf="@+id/fragment_dining_iac_id_button"
-                android:drawableRight="@android:drawable/ic_menu_myplaces"
-                android:text="Invitados"
-                android:visibility="gone" />
 
             <ImageButton
                 android:id="@+id/fragment_dining_iac_id_button"
