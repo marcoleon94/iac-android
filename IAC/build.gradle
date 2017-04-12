@@ -36,6 +36,8 @@ dependencies {
     }
 
     compile 'com.cloudinary:cloudinary-android:1.1.2'
+
+    compile 'info.hoang8f:android-segmented:1.0.6'
 }
 
 android {

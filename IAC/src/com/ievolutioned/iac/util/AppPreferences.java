@@ -33,6 +33,8 @@ public class AppPreferences {
 
     private static final String KEY_DINING_BARCODE_TEMPORAL = "KEY_DINING_BARCODE_TEMPORAL";
 
+    private static final String KEY_DINING_ARGS_TYPE = "KEY_DINING_ARGS_TYPE";
+
     /**
      * Gets the SharedPreferences
      *
@@ -163,5 +165,13 @@ public class AppPreferences {
 
     public static int getDiningBarcodeTemporal(Context c) {
         return getPrefs(c).getInt(KEY_DINING_BARCODE_TEMPORAL, 0);
+    }
+
+    public static void setDiningArgsType(Context c, String args) {
+        getEditor(c).putString(KEY_DINING_ARGS_TYPE, args).commit();
+    }
+
+    public static String getDiningArgsType(Context c) {
+        return getPrefs(c).getString(KEY_DINING_ARGS_TYPE, null);
     }
 }

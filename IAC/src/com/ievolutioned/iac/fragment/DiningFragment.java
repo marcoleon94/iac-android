@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -40,6 +41,8 @@ import com.ievolutioned.iac.view.ViewUtility;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import info.hoang8f.android.segmented.SegmentedGroup;
+
 /**
  * Attendees for dining fragment class. Allows to add and modify attendees for any plant dining room
  * <p>
@@ -52,8 +55,22 @@ public class DiningFragment extends BaseFragmentClass {
     private static final String ARGS_PLANT = "ARGS_PLANT";
     private static final String ARGS_ATTENDEES = "ARGS_ATTENDEES";
 
+    public interface SupportCategory {
+        String NORMAL = "NORMAL";
+        String NO_SUPPORT = "SIN SUBSIDIO";
+        String EXTRA_TIME = "TIEMPO EXTRA";
+    }
+
+    public interface SupportType {
+        String FOOD = "COMIDA";
+        String BEVERAGE = "REFRESCO";
+        String WATER = "AGUA";
+    }
+
     private TextView mPlant;
     private Site mSite;
+
+    private SegmentedGroup mSegmentedSupportType;
 
     private ListView mAttendeeListView;
     private AttendeeAdapter mAttendeeAdapter;
@@ -137,14 +154,18 @@ public class DiningFragment extends BaseFragmentClass {
 
         mPlant = (TextView) root.findViewById(R.id.fragment_dining_plant);
 
+        mSegmentedSupportType = (SegmentedGroup) root.findViewById(R.id.fragment_dining_support_type_segmented);
+
         mAttendeeListView = (ListView) root.findViewById(R.id.fragment_dining_list);
         if (mAttendeeListView != null) {
             mAttendeeAdapter = new AttendeeAdapter(getActivity());
             mAttendeeListView.setAdapter(mAttendeeAdapter);
         }
 
-        root.findViewById(R.id.fragment_dining_barcode_button).setOnClickListener(button_click);
         root.findViewById(R.id.fragment_dining_iac_id_button).setOnClickListener(button_click);
+        root.findViewById(R.id.fragment_dining_barcode_normal_button).setOnClickListener(button_click);
+        root.findViewById(R.id.fragment_dining_barcode_extra_time_button).setOnClickListener(button_click);
+        root.findViewById(R.id.fragment_dining_barcode_no_support_button).setOnClickListener(button_click);
     }
 
     /**
@@ -253,7 +274,7 @@ public class DiningFragment extends BaseFragmentClass {
      *
      * @param iacId
      */
-    private void addNewAttendee(final String iacId) {
+    private void addNewAttendee(final String iacId, final String category, final String type) {
         //Verify if it exists
         if (iacId == null || isAttendeeInList(iacId))
             return;
@@ -267,6 +288,8 @@ public class DiningFragment extends BaseFragmentClass {
         attendee.addProperty(AttendeeAdapter.ATTENDEE_ID, mAttendees.size());
         attendee.addProperty(AttendeeAdapter.ATTENDEE_IAC_ID, iacId);
         attendee.addProperty(AttendeeAdapter.ATTENDEE_NAME, "Demo");
+        attendee.addProperty(AttendeeAdapter.ATTENDEE_SUPPORT_CATEGORY, category);
+        attendee.addProperty(AttendeeAdapter.ATTENDEE_SUPPORT_TYPE, type);
         mAttendees.add(attendee);
         mAttendeeAdapter.notifyDataSetChanged();
         LogUtil.d(TAG, mAttendees.toString());
@@ -298,8 +321,14 @@ public class DiningFragment extends BaseFragmentClass {
                 case R.id.fragment_dining_iac_id_button:
                     showIacIdDialog();
                     break;
-                case R.id.fragment_dining_barcode_button:
-                    showBarcodeReader();
+                case R.id.fragment_dining_barcode_normal_button:
+                    showBarcodeReader(SupportCategory.NORMAL);
+                    break;
+                case R.id.fragment_dining_barcode_no_support_button:
+                    showBarcodeReader(SupportCategory.NO_SUPPORT);
+                    break;
+                case R.id.fragment_dining_barcode_extra_time_button:
+                    showBarcodeReader(SupportCategory.EXTRA_TIME);
                     break;
                 default:
                     break;
@@ -329,7 +358,7 @@ public class DiningFragment extends BaseFragmentClass {
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            addNewAttendee(editTextIacId.getText().toString());
+                            //addNewAttendee(editTextIacId.getText().toString());
                             dialogInterface.dismiss();
                         }
                     });
@@ -350,8 +379,11 @@ public class DiningFragment extends BaseFragmentClass {
 
     /**
      * Shows barcode reader for id card
+     *
+     * @param args
      */
-    private void showBarcodeReader() {
+    private void showBarcodeReader(String args) {
+        AppPreferences.setDiningArgsType(getContext(), args);
         IntentIntegrator.forSupportFragment(DiningFragment.this).initiateScan();
     }
 
@@ -404,35 +436,60 @@ public class DiningFragment extends BaseFragmentClass {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if (result != null && !TextUtils.isEmpty(result.getContents())) {
-            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS, result.getContents());
-            addNewAttendee(result.getContents());
-            showBarCodeDecision();
-        }
+        if (result != null && !TextUtils.isEmpty(result.getContents()))
+            handleScanResult(result.getContents());
+        else
+            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR, "Error");
+
+
     }
 
-    /**
-     * Added a show bar code show question
-     */
-    private void showBarCodeDecision() {
-        if (getActivity() != null) {
-            final AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
-            dialog.setTitle(R.string.string_fragment_attendees_barcode_add_title);
-            dialog.setMessage(R.string.string_fragment_attendees_barcode_add_body);
-            dialog.setPositiveButton(R.string.string_fragment_attendees_barcode_add_confirm, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    showBarcodeReader();
-                    dialogInterface.dismiss();
-                }
-            });
-            dialog.setNegativeButton(R.string.string_fragment_attendees_barcode_add_cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.dismiss();
-                }
-            });
-            dialog.create().show();
+    private void handleScanResult(final String content) {
+        //TODO: CALL
+        callServiceFor(content);
+    }
+
+    private void callServiceFor(String iacId) {
+        //TODO: MAKE the call
+        //addNewAttendee();
+        if (mAttendees.size() < 2)
+            addNewAttendee(iacId, getSupportCategory(), getSupportType());
+        else
+            showAttendeeDialog(iacId);
+    }
+
+    private void showAttendeeDialog(String input) {
+        String support = getSupportType();
+        String desiredType = getSupportCategory();
+        Bundle args = new Bundle();
+        args.putString(DiningAttendeeDialogFragment.ARGS_INPUT, input);
+        args.putString(DiningAttendeeDialogFragment.ARGS_TYPE, desiredType);
+        args.putString(DiningAttendeeDialogFragment.ARGS_SUPPORT, support);
+
+        final DiningAttendeeDialogFragment attendeeDialogFragment = DiningAttendeeDialogFragment.newInstance(args);
+        attendeeDialogFragment.show(getFragmentManager(), DiningAttendeeDialogFragment.TAG);
+    }
+
+    private String getSupportCategory() {
+        if (getActivity() == null)
+            return SupportCategory.NORMAL;
+        String support = AppPreferences.getDiningArgsType(getActivity());
+        return support == null ? SupportCategory.NORMAL : support;
+    }
+
+    private String getSupportType() {
+        if (mSegmentedSupportType == null)
+            return SupportType.FOOD;
+        switch (mSegmentedSupportType.getCheckedRadioButtonId()) {
+            case R.id.fragment_dining_support_type_food:
+                return SupportType.FOOD;
+            case R.id.fragment_dining_support_type_beverage:
+                return SupportType.BEVERAGE;
+            case R.id.fragment_dining_support_type_water:
+                return SupportType.WATER;
+            default:
+                return SupportType.FOOD;
+
         }
     }
 
@@ -445,6 +502,8 @@ public class DiningFragment extends BaseFragmentClass {
         protected final static String ATTENDEE_ID = "id";
         protected final static String ATTENDEE_NAME = "name";
         protected final static String ATTENDEE_IAC_ID = "iac_id";
+        protected final static String ATTENDEE_SUPPORT_CATEGORY = "category";
+        protected final static String ATTENDEE_SUPPORT_TYPE = "type";
         private LayoutInflater mInflater;
 
         /**
@@ -490,11 +549,37 @@ public class DiningFragment extends BaseFragmentClass {
             JsonObject attendee = (JsonObject) getItem(i);
             TextView textViewName = (TextView) view.findViewById(R.id.list_item_attendee_name);
             TextView textViewId = (TextView) view.findViewById(R.id.list_item_attendee_id);
+            ImageView viewCategory = (ImageView) view.findViewById(R.id.list_item_attendee_support_category);
+            ImageView viewType = (ImageView) view.findViewById(R.id.list_item_attendee_support_type);
+
             textViewName.setText(attendee.get(ATTENDEE_NAME).getAsString());
             textViewId.setText(attendee.get(ATTENDEE_IAC_ID).getAsString());
+            viewCategory.setImageResource(getImageResource(attendee.get(ATTENDEE_SUPPORT_CATEGORY).getAsString()));
+            viewType.setImageResource(getImageResource(attendee.get(ATTENDEE_SUPPORT_TYPE).getAsString()));
             view.findViewById(R.id.list_item_attendee_delete_button).setTag(getItem(i));
             view.setTag(getItem(i));
             return view;
+        }
+
+        private int getImageResource(String s) {
+            if (s == null)
+                return R.drawable.ic_mapcross_dummy;
+            switch (s) {
+                case SupportCategory.NORMAL:
+                    return R.drawable.ic_normal;
+                case SupportCategory.NO_SUPPORT:
+                    return R.drawable.ic_no_support;
+                case SupportCategory.EXTRA_TIME:
+                    return R.drawable.ic_extra_time;
+                case SupportType.FOOD:
+                    return R.drawable.ic_food;
+                case SupportType.BEVERAGE:
+                    return R.drawable.ic_soda;
+                case SupportType.WATER:
+                    return R.drawable.ic_water;
+                default:
+                    return R.drawable.ic_mapcross_dummy;
+            }
         }
 
         @Override

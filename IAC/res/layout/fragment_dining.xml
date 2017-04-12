@@ -5,7 +5,7 @@
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/background_gray_light"
         android:orientation="vertical">
 
@@ -49,8 +49,8 @@
                 android:layout_toEndOf="@+id/fragment_dining_plants_spinner_title"
                 android:layout_toRightOf="@+id/fragment_dining_plants_spinner_title"
                 android:gravity="end|center_vertical"
-                android:text="Saltillo"
                 android:padding="10dp"
+                android:text="Saltillo"
                 android:textSize="16sp" />
 
         </RelativeLayout>
@@ -69,50 +69,45 @@
             android:text="@string/string_fragment_dining_add_title"
             android:textColor="@android:color/secondary_text_light" />
 
-        <RelativeLayout
-            android:id="@+id/fragment_dining_add_layout"
+        <info.hoang8f.android.segmented.SegmentedGroup xmlns:segmentedgroup="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/fragment_dining_support_type_segmented"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@drawable/customswitch_switch_bg_holo_light">
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:orientation="horizontal"
+            android:weightSum="3"
+            segmentedgroup:sc_border_width="2dp"
+            segmentedgroup:sc_corner_radius="10dp">
 
-            <TextView
-                android:id="@+id/textView"
+            <RadioButton
+                android:id="@+id/fragment_dining_support_type_food"
+                style="@style/RadioButton"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:paddingEnd="5dp"
-                android:paddingLeft="30dp"
-                android:paddingRight="5dp"
-                android:paddingStart="30dp"
-                android:text="@string/string_fragment_dining_add_subtitle"
-                android:textColor="@android:color/black"
-                android:textSize="16sp" />
-
-
-            <ImageButton
-                android:id="@+id/fragment_dining_iac_id_button"
-                android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_toLeftOf="@+id/fragment_dining_barcode_button"
-                android:layout_toStartOf="@+id/fragment_dining_barcode_button"
-                android:src="@drawable/ic_iac_id" />
+                android:layout_weight="1"
+                android:checked="true"
+                android:minLines="2"
+                android:text="Comida" />
 
-            <ImageButton
-                android:id="@+id/fragment_dining_barcode_button"
-                android:layout_width="50dp"
-                android:layout_height="60dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:src="@drawable/ic_barcode" />
+            <RadioButton
+                android:id="@+id/fragment_dining_support_type_beverage"
+                style="@style/RadioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:text="Bebida" />
 
+            <RadioButton
+                android:id="@+id/fragment_dining_support_type_water"
+                style="@style/RadioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:text="Agua" />
 
-        </RelativeLayout>
+        </info.hoang8f.android.segmented.SegmentedGroup>
+
+        <include layout="@layout/layout_dining_buttons" />
 
         <TextView
             android:id="@+id/fragment_dining_attendee_subtitle"
@@ -129,10 +124,12 @@
             android:layout_height="wrap_content"
             android:focusable="true" />
 
+        <!--
+        Add fragment for guests
         <fragment
             android:id="@+id/fragment_dining_guests"
             android:name="com.ievolutioned.iac.fragment.DiningGuestsFragment"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content" />-->
     </LinearLayout>
 </ScrollView>
