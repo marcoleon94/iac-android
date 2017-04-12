@@ -16,47 +16,22 @@ import java.util.Date;
 public abstract class ServiceBase {
 
     /**
-     * URL for user log in on server
-     */
-    protected static final String URL_LOGIN = "https://iacgroup.herokuapp.com/api/services/access";
-    /**
-     * URL for user responses
-     */
-    protected static final String URL_USER = "https://iacgroup.herokuapp.com/api/user_responses/";
-    /**
-     * URL for form or inquests on the server
-     */
-    protected static final String URL_FORM = "https://iacgroup.herokuapp.com/api/inquests/";
-    /**
-     * URL for Profile
-     */
-    protected static final String URL_PROFILE = "http://iacgroup.herokuapp.com/api/admin/";
+     * Protocols
+     **/
+    private static final String PROTOCOL = "http://";
+    private static final String PROTOCOL_SECURE = "https://";
 
     /**
-     * URL for All courses
-     */
-    protected static final String URL_COURSES_ACTIVE = "http://iacgroup.herokuapp.com/api/info_courses/";
+     * Domains
+     **/
+    private static final String DOMAIN = "herokuapp.com/";
+    private static final String SUBDOMAIN = AppConfig.DEBUG ? "iac-group-stage." : "iacgroup.";
 
     /**
-     * URL for course attendees
+     * URL prefixes
      */
-    protected static final String URL_COURSES_ATTENDEES = "http://iacgroup.herokuapp.com/api/info_courses/%d/get_course_attendees";
-
-    /**
-     * URL for modify courses
-     */
-    protected static final String URL_COURSES_MODIFY_ATTENDEES = "http://iacgroup.herokuapp.com/api/info_courses/%d";
-
-    /**
-     * URL for information of new attendee
-     */
-    protected static final String URL_COURSES_ATTENDEE_INFO = "http://iacgroup.herokuapp.com/api/info_courses/get_course_attendee_info";
-
-    /**
-     * URL for Mobile Versions
-     */
-    protected static final String URL_MOBILE_VERSION = "http://iacgroup.herokuapp.com/api/services/mobile_versions";
-
+    private static final String URL_PRE = PROTOCOL + SUBDOMAIN + DOMAIN;
+    private static final String URL_PRE_SECURE = PROTOCOL_SECURE + SUBDOMAIN + DOMAIN;
 
     /**
      * Action for login
@@ -103,6 +78,11 @@ public abstract class ServiceBase {
     protected static final String ACTION_COURSE_ATTENDEE_INFO = "get_course_attendee_info";
 
     /**
+     * Action for dinning validation
+     */
+    protected static final String ACTION_DINING_VALIDATE = "validate_dining_room";
+
+    /**
      * Controller constant for services
      */
     protected static final String CONTROLLER_SERVICES = "services";
@@ -126,6 +106,57 @@ public abstract class ServiceBase {
      * Controller for courses
      */
     protected static final String CONTROLLER_COURSES = "info_courses";
+    /**
+     * Controller for dining
+     */
+    protected static final String CONTROLLER_DINING_ROOM = "dining_room";
+
+    /**
+     * URL for user log in on server
+     */
+    protected static final String URL_LOGIN = URL_PRE_SECURE + "api/services/access";
+    /**
+     * URL for user responses
+     */
+    protected static final String URL_USER = URL_PRE_SECURE + "api/user_responses/";
+    /**
+     * URL for form or inquests on the server
+     */
+    protected static final String URL_FORM = URL_PRE_SECURE + "api/inquests/";
+    /**
+     * URL for Profile
+     */
+    protected static final String URL_PROFILE = URL_PRE + "api/admin/";
+
+    /**
+     * URL for All courses
+     */
+    protected static final String URL_COURSES_ACTIVE = URL_PRE + "api/info_courses/";
+
+    /**
+     * URL for course attendees
+     */
+    protected static final String URL_COURSES_ATTENDEES = URL_PRE + "api/info_courses/%d/get_course_attendees";
+
+    /**
+     * URL for modify courses
+     */
+    protected static final String URL_COURSES_MODIFY_ATTENDEES = URL_PRE + "api/info_courses/%d";
+
+    /**
+     * URL for information of new attendee
+     */
+    protected static final String URL_COURSES_ATTENDEE_INFO = URL_PRE + "api/info_courses/get_course_attendee_info";
+
+    /**
+     * URL for dining validation
+     */
+    protected static final String URL_DINING_VALIDATE = URL_PRE + "api/" + CONTROLLER_DINING_ROOM + "/" + ACTION_DINING_VALIDATE;
+
+    /**
+     * URL for Mobile Versions
+     */
+    protected static final String URL_MOBILE_VERSION = URL_PRE + "api/services/mobile_versions";
 
 
     /**

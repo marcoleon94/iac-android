@@ -31,6 +31,7 @@ import com.google.zxing.integration.android.IntentResult;
 import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.entity.Site;
+import com.ievolutioned.iac.net.service.DiningService;
 import com.ievolutioned.iac.net.service.ProfileService;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
@@ -274,7 +275,7 @@ public class DiningFragment extends BaseFragmentClass {
      *
      * @param iacId
      */
-    private void addNewAttendee(final String iacId, final String category, final String type) {
+    private void addNewAttendee(final String iacId, final String name, final String category, final String type) {
         //Verify if it exists
         if (iacId == null || isAttendeeInList(iacId))
             return;
@@ -287,7 +288,7 @@ public class DiningFragment extends BaseFragmentClass {
         JsonObject attendee = new JsonObject();
         attendee.addProperty(AttendeeAdapter.ATTENDEE_ID, mAttendees.size());
         attendee.addProperty(AttendeeAdapter.ATTENDEE_IAC_ID, iacId);
-        attendee.addProperty(AttendeeAdapter.ATTENDEE_NAME, "Demo");
+        attendee.addProperty(AttendeeAdapter.ATTENDEE_NAME, name);
         attendee.addProperty(AttendeeAdapter.ATTENDEE_SUPPORT_CATEGORY, category);
         attendee.addProperty(AttendeeAdapter.ATTENDEE_SUPPORT_TYPE, type);
         mAttendees.add(attendee);
@@ -444,18 +445,58 @@ public class DiningFragment extends BaseFragmentClass {
 
     }
 
-    private void handleScanResult(final String content) {
-        //TODO: CALL
-        callServiceFor(content);
+    private void handleScanResult(final String iacId) {
+        final String category = getSupportCategory();
+        final String type = getSupportType();
+        callServiceFor(iacId, category, type);
     }
 
-    private void callServiceFor(String iacId) {
+    private void callServiceFor(final String iacId, final String category, final String type) {
         //TODO: MAKE the call
         //addNewAttendee();
-        if (mAttendees.size() < 2)
-            addNewAttendee(iacId, getSupportCategory(), getSupportType());
-        else
-            showAttendeeDialog(iacId);
+        //showAttendeeDialog(iacId);
+        String adminToken = AppPreferences.getAdminToken(getActivity());
+        String deviceId = AppConfig.getUUID(getActivity());
+
+        new DiningService(deviceId, adminToken).getValidateDiningRoom(adminToken, iacId,
+                new DiningService.ServiceHandler() {
+                    @Override
+                    public void onSuccess(DiningService.DiningResponse response) {
+                        handleServiceCallResponse(response.json, category, type);
+                        LogUtil.d(TAG, response.msg);
+                    }
+
+                    @Override
+                    public void onError(DiningService.DiningResponse response) {
+
+                    }
+
+                    @Override
+                    public void onCancel() {
+
+                    }
+                });
+    }
+
+    private void handleServiceCallResponse(JsonElement response, final String category, final String type) {
+        try {
+            JsonObject responseObject = response.getAsJsonObject();
+            if (responseObject.has(DiningService.COMENSAL)) {
+                switch (responseObject.get(DiningService.ERROR_CODE).getAsInt()) {
+                    case DiningService.ErrorCodes.NO_ERROR:
+                        JsonObject comensal = responseObject.get(DiningService.COMENSAL).getAsJsonObject();
+                        String iacId = comensal.get("iac_id").getAsString();
+                        String name = comensal.get("name").getAsString();
+                        addNewAttendee(iacId, name, category, type);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } catch (Exception e) {
+            //Error
+            LogUtil.e(TAG, e.getMessage(), e);
+        }
     }
 
     private void showAttendeeDialog(String input) {
