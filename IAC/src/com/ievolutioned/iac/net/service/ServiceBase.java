@@ -78,6 +78,11 @@ public abstract class ServiceBase {
     protected static final String ACTION_COURSE_ATTENDEE_INFO = "get_course_attendee_info";
 
     /**
+     * Action for get 'commensals'
+     */
+    protected static final String ACTION_GET_COMMENSALS = "get_commensals";
+
+    /**
      * Action for dinning validation
      */
     protected static final String ACTION_DINING_VALIDATE = "validate_dining_room";
@@ -147,6 +152,11 @@ public abstract class ServiceBase {
      * URL for information of new attendee
      */
     protected static final String URL_COURSES_ATTENDEE_INFO = URL_PRE + "api/info_courses/get_course_attendee_info";
+
+    /**
+     * URL for get comensals
+     */
+    protected static final String URL_GET_COMMENSALS = URL_PRE + "api/" + CONTROLLER_DINING_ROOM + "/" + ACTION_GET_COMMENSALS;
 
     /**
      * URL for dining validation

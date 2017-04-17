@@ -123,13 +123,5 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusable="true" />
-
-        <!--
-        Add fragment for guests
-        <fragment
-            android:id="@+id/fragment_dining_guests"
-            android:name="com.ievolutioned.iac.fragment.DiningGuestsFragment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />-->
     </LinearLayout>
 </ScrollView>

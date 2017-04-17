@@ -23,6 +23,7 @@ public class DiningAttendeeDialogFragment extends DialogFragment {
     public static final String ARGS_TYPE = "ARGS_TYPE";
     public static final String ARGS_SUPPORT = "ARGS_SUPPORT";
     public static final String ARGS_EMPLOYEE = "ARGS_EMPLOYEE";
+    public static final String ARGS_IS_FROM_ERROR = "ARGS_IS_FROM_ERROR";
 
 
     private EditText mInputText;

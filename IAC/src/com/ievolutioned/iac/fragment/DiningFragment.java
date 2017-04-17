@@ -279,10 +279,6 @@ public class DiningFragment extends BaseFragmentClass {
         //Verify if it exists
         if (iacId == null || isAttendeeInList(iacId))
             return;
-        //Search attendee by id
-        final Context c = getActivity();
-        String adminToken = AppPreferences.getAdminToken(c);
-        //String iacId = AppPreferences.getIacId(c);
 
         //TODO: Add new attendee
         JsonObject attendee = new JsonObject();
@@ -446,9 +442,12 @@ public class DiningFragment extends BaseFragmentClass {
     }
 
     private void handleScanResult(final String iacId) {
-        final String category = getSupportCategory();
-        final String type = getSupportType();
-        callServiceFor(iacId, category, type);
+        if (!isAttendeeInList(iacId)) {
+            final String category = getSupportCategory();
+            final String type = getSupportType();
+            callServiceFor(iacId, category, type);
+        } else
+            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR, "Comensal previamente registrado");
     }
 
     private void callServiceFor(final String iacId, final String category, final String type) {
@@ -462,7 +461,7 @@ public class DiningFragment extends BaseFragmentClass {
                 new DiningService.ServiceHandler() {
                     @Override
                     public void onSuccess(DiningService.DiningResponse response) {
-                        handleServiceCallResponse(response.json, category, type);
+                        handleServiceCallResponse(iacId, response.json, category, type);
                         LogUtil.d(TAG, response.msg);
                     }
 
@@ -478,16 +477,23 @@ public class DiningFragment extends BaseFragmentClass {
                 });
     }
 
-    private void handleServiceCallResponse(JsonElement response, final String category, final String type) {
+    private void handleServiceCallResponse(final String iacId, JsonElement response,
+                                           final String category, final String type) {
         try {
             JsonObject responseObject = response.getAsJsonObject();
             if (responseObject.has(DiningService.COMENSAL)) {
                 switch (responseObject.get(DiningService.ERROR_CODE).getAsInt()) {
                     case DiningService.ErrorCodes.NO_ERROR:
                         JsonObject comensal = responseObject.get(DiningService.COMENSAL).getAsJsonObject();
-                        String iacId = comensal.get("iac_id").getAsString();
                         String name = comensal.get("name").getAsString();
                         addNewAttendee(iacId, name, category, type);
+                        break;
+                    case DiningService.ErrorCodes.NO_USER:
+                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                                R.string.string_fragment_dining_new_no_record);
+                        break;
+                    case DiningService.ErrorCodes.NO_ENTER:
+                        showAttendeeDialog(iacId, category, type, true);
                         break;
                     default:
                         break;
@@ -499,13 +505,13 @@ public class DiningFragment extends BaseFragmentClass {
         }
     }
 
-    private void showAttendeeDialog(String input) {
-        String support = getSupportType();
-        String desiredType = getSupportCategory();
+    private void showAttendeeDialog(final String input, final String category, final String type,
+                                    boolean isFromError) {
         Bundle args = new Bundle();
         args.putString(DiningAttendeeDialogFragment.ARGS_INPUT, input);
-        args.putString(DiningAttendeeDialogFragment.ARGS_TYPE, desiredType);
-        args.putString(DiningAttendeeDialogFragment.ARGS_SUPPORT, support);
+        args.putString(DiningAttendeeDialogFragment.ARGS_TYPE, category);
+        args.putString(DiningAttendeeDialogFragment.ARGS_SUPPORT, type);
+        args.putBoolean(DiningAttendeeDialogFragment.ARGS_IS_FROM_ERROR, isFromError);
 
         final DiningAttendeeDialogFragment attendeeDialogFragment = DiningAttendeeDialogFragment.newInstance(args);
         attendeeDialogFragment.show(getFragmentManager(), DiningAttendeeDialogFragment.TAG);

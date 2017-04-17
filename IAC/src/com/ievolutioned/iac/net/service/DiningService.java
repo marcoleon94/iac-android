@@ -17,6 +17,7 @@ import com.ievolutioned.iac.net.NetUtil;
 
 public class DiningService extends ServiceBase {
 
+    public static final String ALL_INFO_DINING_ROOM = "all_info_dining_room";
     public static final String COMENSAL = "comensal";
     public static final String MSG = "msg";
     public static final String ERROR_CODE = "error_code";
@@ -29,6 +30,58 @@ public class DiningService extends ServiceBase {
      */
     public DiningService(String deviceId, String adminToken) {
         super(deviceId, adminToken);
+    }
+
+
+    public void getComensals(final String siteId, final DiningService.ServiceHandler callback) {
+        task = new AsyncTask<Void, Void, ResponseBase>() {
+            @Override
+            protected DiningResponse doInBackground(Void... p) {
+                if (isCancelled())
+                    return null;
+                try {
+                    if (deviceId == null || adminToken == null) {
+                        callback.onError(new DiningResponse(null, "Params are null", null));
+                        this.cancel(true);
+                    }
+                    HttpGetParam params = new HttpGetParam();
+                    if (adminToken != null)
+                        params.add("admin-token", adminToken);
+                    if (siteId != null)
+                        params.add("site_id", siteId);
+
+                    //Get headers
+                    HttpHeader headers = getHeaders(ACTION_GET_COMMENSALS, CONTROLLER_DINING_ROOM);
+
+                    // Get response
+                    NetResponse response = NetUtil.get(URL_GET_COMMENSALS, params, headers);
+
+                    if (response != null) {
+                        JsonElement json = new JsonParser().parse(response.result);
+                        if (!json.isJsonNull())
+                            return new DiningResponse(
+                                    json.getAsJsonObject().get(ALL_INFO_DINING_ROOM).getAsJsonArray(),
+                                    response.result,
+                                    null);
+                    }
+                    return null;
+                } catch (Exception e) {
+                    return new DiningResponse(null, e.getMessage(), e);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(ResponseBase response) {
+                hanldeResult(callback, (DiningResponse) response);
+            }
+
+            @Override
+            protected void onCancelled() {
+                super.onCancelled();
+                callback.onCancel();
+            }
+        };
+        task.execute();
     }
 
     /**
