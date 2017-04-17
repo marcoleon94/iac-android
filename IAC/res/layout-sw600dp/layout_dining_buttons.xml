@@ -3,7 +3,8 @@
     android:id="@+id/fragment_dining_add_layout"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:background="@drawable/customswitch_switch_bg_holo_light"
+    android:layout_marginBottom="10dp"
+    android:background="@android:color/transparent"
     android:gravity="center_vertical"
     android:weightSum="4">
 
@@ -11,8 +12,10 @@
         android:id="@+id/fragment_dining_iac_id_button"
         android:layout_width="0dp"
         android:layout_height="60dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginStart="20dp"
         android:layout_weight="1"
         android:drawableRight="@drawable/ic_iac_id"
         android:text="Manual" />
@@ -21,6 +24,10 @@
         android:id="@+id/fragment_dining_barcode_normal_button"
         android:layout_width="0dp"
         android:layout_height="60dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginStart="20dp"
         android:layout_weight="1"
         android:drawableRight="@drawable/ic_barcode"
         android:text="Normal" />
@@ -29,6 +36,10 @@
         android:id="@+id/fragment_dining_barcode_no_support_button"
         android:layout_width="0dp"
         android:layout_height="60dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginStart="20dp"
         android:layout_weight="1"
         android:drawableRight="@drawable/ic_barcode"
         android:text="Sin Subsidio" />
@@ -37,6 +48,10 @@
         android:id="@+id/fragment_dining_barcode_extra_time_button"
         android:layout_width="0dp"
         android:layout_height="60dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginStart="20dp"
         android:layout_weight="1"
         android:drawableRight="@drawable/ic_barcode"
         android:text="Tiempo extra" />
