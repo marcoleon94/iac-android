@@ -41,7 +41,7 @@ public class DiningService extends ServiceBase {
      * @param siteId
      * @param callback
      */
-    public void getComensals(final String siteId, final DiningService.ServiceHandler callback) {
+    public void getComensals(final long siteId, final DiningService.ServiceHandler callback) {
         task = new AsyncTask<Void, Void, ResponseBase>() {
             @Override
             protected DiningResponse doInBackground(Void... p) {
@@ -55,8 +55,8 @@ public class DiningService extends ServiceBase {
                     HttpGetParam params = new HttpGetParam();
                     if (adminToken != null)
                         params.add("admin-token", adminToken);
-                    if (siteId != null)
-                        params.add("site_id", siteId);
+                    if (siteId > 0)
+                        params.add("site_id", String.valueOf(siteId));
 
                     //Get headers
                     HttpHeader headers = getHeaders(ACTION_GET_COMMENSALS, CONTROLLER_DINING_ROOM);
@@ -223,7 +223,7 @@ public class DiningService extends ServiceBase {
         JsonObject commensal = new JsonObject();
 
         register.addProperty("site_id", siteId);
-        register.addProperty("support_id", Support.Type.getSupportType(type));
+        register.addProperty("support_id", Support.Type.getSupportTypeId(type));
         register.addProperty("clasification_id", Support.Category.getSupportCategoryId(category));
 
         employee.getAsJsonObject().addProperty("commensal_type", "empleado");

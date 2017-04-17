@@ -167,7 +167,7 @@ public class DiningFragment extends BaseFragmentClass {
         //TODO: restore state, add more things to load at first
         if (!restoreState(mSavedInstanceState) && mSite == null) {
             //Initial bind
-            Context c = getActivity();
+            final Context c = getActivity();
             String adminToken = AppPreferences.getAdminToken(c);
             String deviceId = AppConfig.getUUID(c);
             final android.app.AlertDialog loadingScreen = ViewUtility.getLoadingScreen(c);
@@ -177,15 +177,16 @@ public class DiningFragment extends BaseFragmentClass {
                 @Override
                 public void onSuccess(ProfileService.ProfileResponse response) {
                     mSite = response.profile.getSite();
-                    if (mSite != null && mSite.getName() != null && mSite.getName().length() > 0)
+                    if (mSite != null && mSite.getName() != null && mSite.getName().length() > 0) {
                         mPlant.setText(mSite.getName());
-                    else
+                        loadDiningList(c, mSite.getId());
+                    } else
                         ViewUtility.showMessage(getContext(), ViewUtility.MSG_ERROR,
                                 R.string.string_fragment_dining_plant_fetch_error);
                     try {
                         loadingScreen.dismiss();
                     } catch (Exception e) {
-
+                        LogUtil.e(TAG, e.getMessage(), e);
                     }
                 }
 
@@ -208,6 +209,50 @@ public class DiningFragment extends BaseFragmentClass {
                 }
             });
         }
+    }
+
+    private void loadDiningList(Context c, long siteId) {
+        new DiningService(AppConfig.getUUID(c), AppPreferences.getAdminToken(c))
+                .getComensals(siteId, new DiningService.ServiceHandler() {
+                    @Override
+                    public void onSuccess(DiningService.DiningResponse response) {
+                        try {
+                            JsonArray array = response.json.getAsJsonArray();
+                            if (array == null || array.size() == 0)
+                                return;
+                            for (JsonElement j : array) {
+                                JsonObject commensal = j.getAsJsonObject().get("commensals").getAsJsonArray().get(0).getAsJsonObject();
+                                JsonObject info = j.getAsJsonObject().get("info_dining_room").getAsJsonObject();
+
+                                String category = Support.Category.getSupportCategory(info.get("clasification").getAsString());
+                                String type = Support.Type.getSupportType(info.get("support").getAsString());
+
+                                JsonObject attendee = new JsonObject();
+                                attendee.addProperty(AttendeeAdapter.ATTENDEE_ID, mAttendees.size());
+                                attendee.addProperty(AttendeeAdapter.ATTENDEE_IAC_ID, commensal.get("iac_id").getAsString());
+                                attendee.addProperty(AttendeeAdapter.ATTENDEE_NAME, commensal.get("name").getAsString());
+                                attendee.addProperty(AttendeeAdapter.ATTENDEE_SUPPORT_CATEGORY, category);
+                                attendee.addProperty(AttendeeAdapter.ATTENDEE_SUPPORT_TYPE, type);
+                                mAttendees.add(attendee);
+                            }
+                            if (mAttendeeAdapter != null)
+                                mAttendeeAdapter.notifyDataSetChanged();
+                        } catch (Exception e) {
+                            LogUtil.e(TAG, e.getMessage(), e);
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(DiningService.DiningResponse response) {
+
+                    }
+
+                    @Override
+                    public void onCancel() {
+
+                    }
+                });
     }
 
     /**
@@ -280,8 +325,16 @@ public class DiningFragment extends BaseFragmentClass {
         mAttendeeAdapter.notifyDataSetChanged();
         LogUtil.d(TAG, mAttendees.toString());
         ViewUtil.setListViewHeightBasedOnChildren(mAttendeeListView);
+        registerNewAttendee(attendee, category, type);
     }
 
+    /**
+     * Call service for register new attendee
+     *
+     * @param employee
+     * @param category
+     * @param type
+     */
     private void registerNewAttendee(final JsonObject employee, final String category, final String type) {
         final Context context = getActivity();
         if (context != null && mSite != null && type != null && category != null && employee != null) {
