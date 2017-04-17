@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 
 import com.ievolutioned.iac.R;
+import com.ievolutioned.iac.entity.Support;
 
 /**
  * Created by Daniel on 11/04/2017.
@@ -80,17 +81,17 @@ public class DiningAttendeeDialogFragment extends DialogFragment {
             if (args.containsKey(ARGS_TYPE) && args.getString(ARGS_TYPE, null) != null) {
                 String type = args.getString(ARGS_TYPE, null);
                 switch (type) {
-                    case DiningFragment.SupportCategory.NORMAL:
+                    case Support.Category.NORMAL:
                         if (mNormal.isShown()) {
                             mNormal.setChecked(true);
                         }
                         break;
-                    case DiningFragment.SupportCategory.NO_SUPPORT:
+                    case Support.Category.NO_SUPPORT:
                         if (mNoSupport.isShown()) {
                             mNoSupport.setChecked(true);
                         }
                         break;
-                    case DiningFragment.SupportCategory.EXTRA_TIME:
+                    case Support.Category.EXTRA_TIME:
                         if (mExtraTime.isShown()) {
                             mExtraTime.setChecked(true);
                         }
@@ -104,17 +105,17 @@ public class DiningAttendeeDialogFragment extends DialogFragment {
             if (args.containsKey(ARGS_SUPPORT) && args.getString(ARGS_SUPPORT, null) != null) {
                 String support = args.getString(ARGS_SUPPORT, null);
                 switch (support) {
-                    case DiningFragment.SupportType.FOOD:
+                    case Support.Type.FOOD:
                         if (mFood.isShown()) {
                             mFood.setChecked(true);
                         }
                         break;
-                    case DiningFragment.SupportType.BEVERAGE:
+                    case Support.Type.BEVERAGE:
                         if (mBeverage.isShown()) {
                             mBeverage.setChecked(true);
                         }
                         break;
-                    case DiningFragment.SupportType.WATER:
+                    case Support.Type.WATER:
                         if (mWater.isShown()) {
                             mWater.setChecked(true);
                         }

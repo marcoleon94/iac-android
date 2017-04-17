@@ -3,7 +3,9 @@ package com.ievolutioned.iac.net.service;
 import android.os.AsyncTask;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.ievolutioned.iac.entity.Support;
 import com.ievolutioned.iac.net.HttpGetParam;
 import com.ievolutioned.iac.net.HttpHeader;
 import com.ievolutioned.iac.net.NetResponse;
@@ -33,6 +35,12 @@ public class DiningService extends ServiceBase {
     }
 
 
+    /**
+     * Gets all attendees for a dining room
+     *
+     * @param siteId
+     * @param callback
+     */
     public void getComensals(final String siteId, final DiningService.ServiceHandler callback) {
         task = new AsyncTask<Void, Void, ResponseBase>() {
             @Override
@@ -85,11 +93,12 @@ public class DiningService extends ServiceBase {
     }
 
     /**
-     * @param token
-     * @param iacId
-     * @param callback - ServiceHandler callback
+     * Validates if a user can go in a dining room
+     *
+     * @param restricted
+     * @param callback   - ServiceHandler callback
      */
-    public void getValidateDiningRoom(final String token, final String iacId, final ServiceHandler callback) {
+    public void getValidateDiningRoom(final String iacId, final boolean restricted, final ServiceHandler callback) {
         task = new AsyncTask<Void, Void, ResponseBase>() {
             @Override
             protected DiningResponse doInBackground(Void... p) {
@@ -101,10 +110,12 @@ public class DiningService extends ServiceBase {
                         this.cancel(true);
                     }
                     HttpGetParam params = new HttpGetParam();
-                    if (token != null)
-                        params.add("admin-token", token);
+                    if (adminToken != null)
+                        params.add("admin-token", adminToken);
                     if (iacId != null)
                         params.add("iac_id", iacId);
+                    //Restricted or not
+                    params.add("restricted", String.valueOf(restricted));
 
                     //Get headers
                     HttpHeader headers = getHeaders(ACTION_DINING_VALIDATE, CONTROLLER_DINING_ROOM);
@@ -137,6 +148,86 @@ public class DiningService extends ServiceBase {
         };
         task.execute();
     }
+
+    /**
+     * Register a new commensal for a dining room
+     *
+     * @param body
+     * @param callback
+     */
+    public void registerNewCommensal(final String body, final DiningService.ServiceHandler callback) {
+        task = new AsyncTask<Void, Void, ResponseBase>() {
+            @Override
+            protected DiningResponse doInBackground(Void... p) {
+                if (isCancelled())
+                    return null;
+                try {
+                    if (deviceId == null || adminToken == null || body == null) {
+                        callback.onError(new DiningResponse(null, "Params are null", null));
+                        this.cancel(true);
+                    }
+                    HttpGetParam params = new HttpGetParam();
+                    params.add("admin-token", adminToken);
+
+                    //Get headers
+                    HttpHeader headers = getHeaders(ACTION_CREATE, CONTROLLER_DINING_ROOM);
+
+                    // Get response
+                    NetResponse response = NetUtil.post(URL_DINING_REGISTER, params, headers, body);
+
+                    if (response != null) {
+                        JsonElement json = new JsonParser().parse(response.result);
+                        if (!json.isJsonNull()) {
+                            if (json.getAsJsonObject().get("status").getAsString().contentEquals("success"))
+                                return new DiningResponse(json.getAsJsonObject(),
+                                        response.result, null);
+                        }
+                        return null;
+                    }
+                    return null;
+                } catch (Exception e) {
+                    return new DiningResponse(null, e.getMessage(), e);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(ResponseBase response) {
+                hanldeResult(callback, (DiningResponse) response);
+            }
+
+            @Override
+            protected void onCancelled() {
+                super.onCancelled();
+                callback.onCancel();
+            }
+        }
+
+        ;
+        task.execute();
+    }
+
+    public static String getDiningRegisterBody(final String siteId, final String type, final String category,
+                                               final JsonElement employee, final JsonElement guests) {
+        JsonObject root = new JsonObject();
+        JsonObject register = new JsonObject();
+        JsonObject commensal = new JsonObject();
+
+        register.addProperty("site_id", siteId);
+        register.addProperty("support_id", Support.Type.getSupportType(type));
+        register.addProperty("clasification_id", Support.Category.getSupportCategoryId(category));
+
+        employee.getAsJsonObject().addProperty("commensal_type", "empleado");
+        commensal.add("0", employee);
+        register.add("commensals_attributes", commensal);
+
+        if (guests != null) {
+            //TODO: Add guests? how?
+        }
+
+        root.add("dining_register", register);
+        return root.toString();
+    }
+
 
     /**
      * Handles the result on callback

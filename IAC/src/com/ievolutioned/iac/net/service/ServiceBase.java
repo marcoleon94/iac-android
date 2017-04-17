@@ -164,6 +164,11 @@ public abstract class ServiceBase {
     protected static final String URL_DINING_VALIDATE = URL_PRE + "api/" + CONTROLLER_DINING_ROOM + "/" + ACTION_DINING_VALIDATE;
 
     /**
+     * URL for dining register
+     */
+    protected static final String URL_DINING_REGISTER = URL_PRE + "api/" + CONTROLLER_DINING_ROOM;
+
+    /**
      * URL for Mobile Versions
      */
     protected static final String URL_MOBILE_VERSION = URL_PRE + "api/services/mobile_versions";

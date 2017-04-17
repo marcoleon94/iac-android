@@ -31,6 +31,7 @@ import com.google.zxing.integration.android.IntentResult;
 import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.entity.Site;
+import com.ievolutioned.iac.entity.Support;
 import com.ievolutioned.iac.net.service.DiningService;
 import com.ievolutioned.iac.net.service.ProfileService;
 import com.ievolutioned.iac.util.AppConfig;
@@ -55,18 +56,6 @@ public class DiningFragment extends BaseFragmentClass {
     private static final String TAG = DiningFragment.class.getName();
     private static final String ARGS_PLANT = "ARGS_PLANT";
     private static final String ARGS_ATTENDEES = "ARGS_ATTENDEES";
-
-    public interface SupportCategory {
-        String NORMAL = "NORMAL";
-        String NO_SUPPORT = "SIN SUBSIDIO";
-        String EXTRA_TIME = "TIEMPO EXTRA";
-    }
-
-    public interface SupportType {
-        String FOOD = "COMIDA";
-        String BEVERAGE = "REFRESCO";
-        String WATER = "AGUA";
-    }
 
     private TextView mPlant;
     private Site mSite;
@@ -319,13 +308,13 @@ public class DiningFragment extends BaseFragmentClass {
                     showIacIdDialog();
                     break;
                 case R.id.fragment_dining_barcode_normal_button:
-                    showBarcodeReader(SupportCategory.NORMAL);
+                    showBarcodeReader(Support.Category.NORMAL);
                     break;
                 case R.id.fragment_dining_barcode_no_support_button:
-                    showBarcodeReader(SupportCategory.NO_SUPPORT);
+                    showBarcodeReader(Support.Category.NO_SUPPORT);
                     break;
                 case R.id.fragment_dining_barcode_extra_time_button:
-                    showBarcodeReader(SupportCategory.EXTRA_TIME);
+                    showBarcodeReader(Support.Category.EXTRA_TIME);
                     break;
                 default:
                     break;
@@ -456,8 +445,9 @@ public class DiningFragment extends BaseFragmentClass {
         //showAttendeeDialog(iacId);
         String adminToken = AppPreferences.getAdminToken(getActivity());
         String deviceId = AppConfig.getUUID(getActivity());
+        boolean restricted = false;
 
-        new DiningService(deviceId, adminToken).getValidateDiningRoom(adminToken, iacId,
+        new DiningService(deviceId, adminToken).getValidateDiningRoom(iacId, restricted,
                 new DiningService.ServiceHandler() {
                     @Override
                     public void onSuccess(DiningService.DiningResponse response) {
@@ -519,23 +509,23 @@ public class DiningFragment extends BaseFragmentClass {
 
     private String getSupportCategory() {
         if (getActivity() == null)
-            return SupportCategory.NORMAL;
+            return Support.Category.NORMAL;
         String support = AppPreferences.getDiningArgsType(getActivity());
-        return support == null ? SupportCategory.NORMAL : support;
+        return support == null ? Support.Category.NORMAL : support;
     }
 
     private String getSupportType() {
         if (mSegmentedSupportType == null)
-            return SupportType.FOOD;
+            return Support.Type.FOOD;
         switch (mSegmentedSupportType.getCheckedRadioButtonId()) {
             case R.id.fragment_dining_support_type_food:
-                return SupportType.FOOD;
+                return Support.Type.FOOD;
             case R.id.fragment_dining_support_type_beverage:
-                return SupportType.BEVERAGE;
+                return Support.Type.BEVERAGE;
             case R.id.fragment_dining_support_type_water:
-                return SupportType.WATER;
+                return Support.Type.WATER;
             default:
-                return SupportType.FOOD;
+                return Support.Type.FOOD;
 
         }
     }
@@ -612,17 +602,17 @@ public class DiningFragment extends BaseFragmentClass {
             if (s == null)
                 return R.drawable.ic_mapcross_dummy;
             switch (s) {
-                case SupportCategory.NORMAL:
+                case Support.Category.NORMAL:
                     return R.drawable.ic_normal;
-                case SupportCategory.NO_SUPPORT:
+                case Support.Category.NO_SUPPORT:
                     return R.drawable.ic_no_support;
-                case SupportCategory.EXTRA_TIME:
+                case Support.Category.EXTRA_TIME:
                     return R.drawable.ic_extra_time;
-                case SupportType.FOOD:
+                case Support.Type.FOOD:
                     return R.drawable.ic_food;
-                case SupportType.BEVERAGE:
+                case Support.Type.BEVERAGE:
                     return R.drawable.ic_soda;
-                case SupportType.WATER:
+                case Support.Type.WATER:
                     return R.drawable.ic_water;
                 default:
                     return R.drawable.ic_mapcross_dummy;
