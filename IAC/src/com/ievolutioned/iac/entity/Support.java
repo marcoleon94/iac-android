@@ -9,6 +9,7 @@ public class Support {
         public final static String NORMAL = "NORMAL";
         public final static String NO_SUPPORT = "SIN SUBSIDIO";
         public final static String EXTRA_TIME = "TIEMPO EXTRA";
+        public final static String GUEST = "INVITADO";
 
         public static String getSupportCategoryId(final String category) {
             switch (category) {
@@ -18,6 +19,8 @@ public class Support {
                     return "no_support";
                 case EXTRA_TIME:
                     return "extra_time";
+                case GUEST:
+                    return "guest";
                 default:
                     return "no_support";
             }

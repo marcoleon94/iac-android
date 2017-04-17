@@ -206,7 +206,17 @@ public class DiningService extends ServiceBase {
         task.execute();
     }
 
-    public static String getDiningRegisterBody(final String siteId, final String type, final String category,
+    /**
+     * Create a Dining register string body for service call #registerNewCommensal
+     *
+     * @param siteId
+     * @param type
+     * @param category
+     * @param employee
+     * @param guests
+     * @return
+     */
+    public static String getDiningRegisterBody(final long siteId, final String type, final String category,
                                                final JsonElement employee, final JsonElement guests) {
         JsonObject root = new JsonObject();
         JsonObject register = new JsonObject();

@@ -282,6 +282,33 @@ public class DiningFragment extends BaseFragmentClass {
         ViewUtil.setListViewHeightBasedOnChildren(mAttendeeListView);
     }
 
+    private void registerNewAttendee(final JsonObject employee, final String category, final String type) {
+        final Context context = getActivity();
+        if (context != null && mSite != null && type != null && category != null && employee != null) {
+            String register = DiningService.getDiningRegisterBody(mSite.getId(), type, category,
+                    employee, null);
+            LogUtil.d(TAG, register);
+
+            new DiningService(AppConfig.getUUID(context), AppPreferences.getAdminToken(context))
+                    .registerNewCommensal(register, new DiningService.ServiceHandler() {
+                        @Override
+                        public void onSuccess(DiningService.DiningResponse response) {
+                            LogUtil.d(TAG, response.msg);
+                        }
+
+                        @Override
+                        public void onError(DiningService.DiningResponse response) {
+                            LogUtil.d(TAG, response.msg);
+                        }
+
+                        @Override
+                        public void onCancel() {
+
+                        }
+                    });
+        }
+    }
+
     /**
      * Returns if an attendee is in a list
      *
