@@ -8,26 +8,38 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.TextView;
 
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.entity.Support;
+import com.ievolutioned.iac.util.LogUtil;
+
+import info.hoang8f.android.segmented.SegmentedGroup;
 
 /**
  * Created by Daniel on 11/04/2017.
  */
 
-public class DiningAttendeeDialogFragment extends DialogFragment {
+public class DiningAttendeeDialogFragment extends DialogFragment implements View.OnClickListener {
 
     public static final String TAG = DiningAttendeeDialogFragment.class.getName();
 
     public static final String ARGS_INPUT = "ARGS_INPUT";
+    public static final String ARGS_CATEGORY = "ARGS_CATEGORY";
     public static final String ARGS_TYPE = "ARGS_TYPE";
-    public static final String ARGS_SUPPORT = "ARGS_SUPPORT";
     public static final String ARGS_EMPLOYEE = "ARGS_EMPLOYEE";
-    public static final String ARGS_IS_FROM_ERROR = "ARGS_IS_FROM_ERROR";
+    public static final String ARGS_ERROR_CODE = "ARGS_ERROR_CODE";
+
+    public static final int NO_ERROR = 0;
+    public static final int ERROR_NOT_FOUND = 1;
+    public static final int ERROR_RESTRICTED = 2;
 
 
     private EditText mInputText;
+    private TextView mErrorMsg;
+
+    private SegmentedGroup mSegmentedCategory;
+    private SegmentedGroup mSegmentedType;
 
     //Radio buttons
     private RadioButton mNormal;
@@ -36,6 +48,8 @@ public class DiningAttendeeDialogFragment extends DialogFragment {
     private RadioButton mFood;
     private RadioButton mBeverage;
     private RadioButton mWater;
+
+    private IDiningManual iDiningManualCallback;
 
 
     static DiningAttendeeDialogFragment newInstance(final Bundle args) {
@@ -53,6 +67,7 @@ public class DiningAttendeeDialogFragment extends DialogFragment {
 
     private View bindUI(View view) {
         mInputText = (EditText) view.findViewById(R.id.dialog_fragment_dining_attendee_input);
+        mErrorMsg = (TextView) view.findViewById(R.id.dialog_fragment_dining_attendee_error);
         mNormal = (RadioButton) view.findViewById(R.id.dialog_fragment_dining_attendee_radio_normal);
         mNoSupport = (RadioButton) view.findViewById(R.id.dialog_fragment_dining_attendee_radio_no_support);
         mExtraTime = (RadioButton) view.findViewById(R.id.dialog_fragment_dining_attendee_radio_extra_time);
@@ -60,7 +75,25 @@ public class DiningAttendeeDialogFragment extends DialogFragment {
         mFood = (RadioButton) view.findViewById(R.id.dialog_fragment_dining_attendee_support_type_food);
         mBeverage = (RadioButton) view.findViewById(R.id.dialog_fragment_dining_attendee_support_type_beverage);
         mWater = (RadioButton) view.findViewById(R.id.dialog_fragment_dining_attendee_support_type_water);
+
+        mSegmentedCategory = (SegmentedGroup) view.findViewById(R.id.dialog_fragment_dining_attendee_category_segmented);
+        mSegmentedType = (SegmentedGroup) view.findViewById(R.id.dialog_fragment_dining_attendee_support_type_segmented);
+
+        view.findViewById(R.id.dialog_fragment_dining_attendee_accept).setOnClickListener(this);
+        view.findViewById(R.id.dialog_fragment_dining_attendee_cancel).setOnClickListener(this);
+
         return view;
+    }
+
+    private int getErrorResourceId(int errorCode) {
+        switch (errorCode) {
+            case ERROR_NOT_FOUND:
+                return R.string.strings_dining_attende_dialog_fragment_error_not_found;
+            case ERROR_RESTRICTED:
+                return R.string.strings_dining_attende_dialog_fragment_error_restricted;
+            default:
+                return R.string.strings_dining_attende_dialog_fragment_no_error;
+        }
     }
 
     @Override
@@ -70,61 +103,115 @@ public class DiningAttendeeDialogFragment extends DialogFragment {
     }
 
     private void bindData() {
+        //Enable and disable
         Bundle args = getArguments();
         if (args != null) {
-            //Input text
-            if (args.containsKey(ARGS_INPUT) && args.getString(ARGS_INPUT, null) != null) {
-                String input = args.getString(ARGS_INPUT, null);
-                mInputText.setText(input);
-            }
-            //Type
-            if (args.containsKey(ARGS_TYPE) && args.getString(ARGS_TYPE, null) != null) {
-                String type = args.getString(ARGS_TYPE, null);
-                switch (type) {
+            //mInputText.setEnabled(!args.containsKey(ARGS_INPUT));
+            mInputText.setText(args.containsKey(ARGS_INPUT) ? args.getString(ARGS_INPUT) : "");
+
+            boolean hasError = args.containsKey(ARGS_ERROR_CODE) && args.getInt(ARGS_ERROR_CODE) != NO_ERROR;
+            mErrorMsg.setVisibility(hasError ? View.VISIBLE : View.GONE);
+            mErrorMsg.setText(getErrorResourceId(args.getInt(ARGS_ERROR_CODE)));
+
+            mNormal.setEnabled(args.containsKey(ARGS_ERROR_CODE) && args.getInt(ARGS_ERROR_CODE) != ERROR_RESTRICTED);
+
+            final String category = args.containsKey(ARGS_CATEGORY) ? args.getString(ARGS_CATEGORY) : null;
+            final String type = args.containsKey(ARGS_TYPE) ? args.getString(ARGS_TYPE) : null;
+
+            if (category != null)
+                switch (category) {
                     case Support.Category.NORMAL:
-                        if (mNormal.isShown()) {
+                        if (mNormal.isEnabled())
                             mNormal.setChecked(true);
-                        }
-                        break;
-                    case Support.Category.NO_SUPPORT:
-                        if (mNoSupport.isShown()) {
+                        else {
+                            mNormal.setChecked(false);
                             mNoSupport.setChecked(true);
                         }
                         break;
                     case Support.Category.EXTRA_TIME:
-                        if (mExtraTime.isShown()) {
-                            mExtraTime.setChecked(true);
-                        }
+                        mExtraTime.setChecked(true);
+                        break;
+                    case Support.Category.NO_SUPPORT:
+                        mNoSupport.setChecked(true);
                         break;
                     default:
                         break;
-
                 }
-            }
-            //Support
-            if (args.containsKey(ARGS_SUPPORT) && args.getString(ARGS_SUPPORT, null) != null) {
-                String support = args.getString(ARGS_SUPPORT, null);
-                switch (support) {
+            if (type != null) {
+                switch (type) {
                     case Support.Type.FOOD:
-                        if (mFood.isShown()) {
-                            mFood.setChecked(true);
-                        }
+                        mFood.setChecked(true);
                         break;
                     case Support.Type.BEVERAGE:
-                        if (mBeverage.isShown()) {
-                            mBeverage.setChecked(true);
-                        }
+                        mBeverage.setChecked(true);
                         break;
                     case Support.Type.WATER:
-                        if (mWater.isShown()) {
-                            mWater.setChecked(true);
-                        }
+                        mWater.setChecked(true);
                         break;
                     default:
                         break;
-
                 }
             }
+
         }
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.dialog_fragment_dining_attendee_accept:
+                try {
+                    if (validate() && this.iDiningManualCallback != null) {
+                        String category = getCategory();
+                        String type = getType();
+                        String input = mInputText.getText().toString();
+                        this.iDiningManualCallback.onAccept(input, category, type);
+                        dismiss();
+                    }
+                } catch (Exception e) {
+                    LogUtil.e(TAG, e.getMessage(), e);
+                }
+                break;
+            case R.id.dialog_fragment_dining_attendee_cancel:
+                dismiss();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private boolean validate() {
+        String category = getCategory();
+        String type = getType();
+        String input = mInputText.getText().toString();
+        return category != null && type != null && input.length() > 0;
+    }
+
+    private String getCategory() {
+        if (mNormal.isChecked())
+            return Support.Category.NORMAL;
+        if (mNoSupport.isChecked())
+            return Support.Category.NO_SUPPORT;
+        if (mExtraTime.isChecked())
+            return Support.Category.EXTRA_TIME;
+        return null;
+    }
+
+    private String getType() {
+        if (mFood.isChecked())
+            return Support.Type.FOOD;
+        if (mBeverage.isChecked())
+            return Support.Type.BEVERAGE;
+        if (mWater.isChecked())
+            return Support.Type.WATER;
+        return null;
+    }
+
+    public void setDiningManualCallback(IDiningManual iDiningManualCallback) {
+        this.iDiningManualCallback = iDiningManualCallback;
+    }
+
+    interface IDiningManual {
+        void onAccept(final String input, final String category, final String type);
     }
 }

@@ -12,7 +12,7 @@ public class Support {
         public final static String GUEST = "INVITADO";
 
         private final static String NORMAL_ID = "normal";
-        private final static String NO_SUPPORT_ID = "no_support";
+        private final static String NO_SUPPORT_ID = "subsidy";
         private final static String EXTRA_TIME_ID = "extra_time";
         private final static String GUEST_ID = "guest";
 
@@ -39,6 +39,8 @@ public class Support {
                     return NO_SUPPORT;
                 case EXTRA_TIME_ID:
                     return EXTRA_TIME;
+                case GUEST_ID:
+                    return GUEST;
                 default:
                     return NO_SUPPORT;
             }

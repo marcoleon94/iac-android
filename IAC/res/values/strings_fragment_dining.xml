@@ -20,7 +20,7 @@
     <string name="string_fragment_dining_new_no_record">No se encontró al usuario</string>
 
     <string name="string_fragment_dining_modify_save_success">Comensales actualizados</string>
-    <string name="string_fragment_dining_modify_save_error">Error al actualizar</string>
+    <string name="string_fragment_dining_modify_save_error">Error al añadir al comensal</string>
 
     <string name="string_fragment_dining_barcode_add_title">Escanear</string>
     <string name="string_fragment_dining_barcode_add_body">¿Desea continuar escaneando?</string>

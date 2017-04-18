@@ -40,7 +40,10 @@ import com.ievolutioned.iac.util.LogUtil;
 import com.ievolutioned.iac.util.ViewUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
 
 import info.hoang8f.android.segmented.SegmentedGroup;
@@ -104,8 +107,7 @@ public class DiningFragment extends BaseFragmentClass {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_fragment_form_upload:
-                if (validateForm())
-                    saveAndUpload();
+                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS, R.string.string_fragment_dining_modify_save_success);
                 break;
             default:
                 break;
@@ -228,11 +230,14 @@ public class DiningFragment extends BaseFragmentClass {
                                 String type = Support.Type.getSupportType(info.get("support").getAsString());
 
                                 JsonObject attendee = new JsonObject();
-                                attendee.addProperty(AttendeeAdapter.ATTENDEE_ID, mAttendees.size());
+                                attendee.addProperty(AttendeeAdapter.ATTENDEE_ID, commensal.get("id").getAsLong());
                                 attendee.addProperty(AttendeeAdapter.ATTENDEE_IAC_ID, commensal.get("iac_id").getAsString());
                                 attendee.addProperty(AttendeeAdapter.ATTENDEE_NAME, commensal.get("name").getAsString());
                                 attendee.addProperty(AttendeeAdapter.ATTENDEE_SUPPORT_CATEGORY, category);
                                 attendee.addProperty(AttendeeAdapter.ATTENDEE_SUPPORT_TYPE, type);
+                                String date = parseDate(info.get("created_at").getAsString());
+                                attendee.addProperty(AttendeeAdapter.ATTENDEE_DATE, date);
+
                                 mAttendees.add(attendee);
                             }
                             if (mAttendeeAdapter != null)
@@ -241,6 +246,7 @@ public class DiningFragment extends BaseFragmentClass {
                             LogUtil.e(TAG, e.getMessage(), e);
                         }
 
+                        ViewUtil.setListViewHeightBasedOnChildren(mAttendeeListView);
                     }
 
                     @Override
@@ -254,6 +260,31 @@ public class DiningFragment extends BaseFragmentClass {
                     }
                 });
     }
+
+    private String parseDate(String s) {
+        try {
+            String format = "yyyy-MM-dd'T'HH:mm:ss.sssZZZZ";
+            SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.US);
+            Date date;
+            date = sdf.parse(s);
+            String newFormatString = "dd/MM'-'HH:mm";
+            SimpleDateFormat newFormatter = new SimpleDateFormat(newFormatString, Locale.getDefault());
+            return newFormatter.format(date);
+        } catch (ParseException e) {
+            return "";
+        }
+    }
+
+    private String parseDate(Date date) {
+        try {
+            String newFormatString = "dd/MM'-'HH:mm";
+            SimpleDateFormat newFormatter = new SimpleDateFormat(newFormatString, Locale.getDefault());
+            return newFormatter.format(date);
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
 
     /**
      * Restores the state of courses loaded
@@ -309,23 +340,28 @@ public class DiningFragment extends BaseFragmentClass {
      *
      * @param iacId
      */
-    private void addNewAttendee(final String iacId, final String name, final String category, final String type) {
+    private void addNewAttendee(final long id, final String iacId, final String name,
+                                final String category, final String type, final Date date) {
         //Verify if it exists
         if (iacId == null || isAttendeeInList(iacId))
             return;
 
-        //TODO: Add new attendee
         JsonObject attendee = new JsonObject();
-        attendee.addProperty(AttendeeAdapter.ATTENDEE_ID, mAttendees.size());
+        attendee.addProperty(AttendeeAdapter.ATTENDEE_ID, id);
         attendee.addProperty(AttendeeAdapter.ATTENDEE_IAC_ID, iacId);
         attendee.addProperty(AttendeeAdapter.ATTENDEE_NAME, name);
         attendee.addProperty(AttendeeAdapter.ATTENDEE_SUPPORT_CATEGORY, category);
         attendee.addProperty(AttendeeAdapter.ATTENDEE_SUPPORT_TYPE, type);
-        mAttendees.add(attendee);
+        attendee.addProperty(AttendeeAdapter.ATTENDEE_DATE, parseDate(date));
+
+        JsonArray newAttendees = new JsonArray();
+        newAttendees.add(attendee);
+        newAttendees.addAll(mAttendees);
+        mAttendees = newAttendees;
+
         mAttendeeAdapter.notifyDataSetChanged();
         LogUtil.d(TAG, mAttendees.toString());
         ViewUtil.setListViewHeightBasedOnChildren(mAttendeeListView);
-        registerNewAttendee(attendee, category, type);
     }
 
     /**
@@ -335,7 +371,12 @@ public class DiningFragment extends BaseFragmentClass {
      * @param category
      * @param type
      */
-    private void registerNewAttendee(final JsonObject employee, final String category, final String type) {
+    private void registerNewAttendee(final JsonObject employee, final String iacId,
+                                     final String category, final String type) {
+        //Verify if it exists
+        if (iacId == null || isAttendeeInList(iacId))
+            return;
+
         final Context context = getActivity();
         if (context != null && mSite != null && type != null && category != null && employee != null) {
             String register = DiningService.getDiningRegisterBody(mSite.getId(), type, category,
@@ -347,11 +388,18 @@ public class DiningFragment extends BaseFragmentClass {
                         @Override
                         public void onSuccess(DiningService.DiningResponse response) {
                             LogUtil.d(TAG, response.msg);
+                            ViewUtility.showMessage(context, ViewUtility.MSG_SUCCESS,
+                                    R.string.string_fragment_dining_modify_save_success);
+
+                            addNewAttendee(employee.get("id").getAsLong(), iacId,
+                                    employee.get("name").getAsString(), category, type, new Date());
                         }
 
                         @Override
                         public void onError(DiningService.DiningResponse response) {
                             LogUtil.d(TAG, response.msg);
+                            ViewUtility.showMessage(context, ViewUtility.MSG_ERROR,
+                                    R.string.string_fragment_dining_modify_save_error);
                         }
 
                         @Override
@@ -369,10 +417,10 @@ public class DiningFragment extends BaseFragmentClass {
      * @return true if the attendee id is in the list, false otherwise
      */
     private boolean isAttendeeInList(String iacId) {
-        ArrayList<Integer> attendeesIds = getAttendeeList();
+        ArrayList<String> attendeesIds = getAttendeeList();
         if (attendeesIds != null && attendeesIds.size() > 0)
-            for (Integer i : attendeesIds)
-                if (iacId.contentEquals(i.toString()))
+            for (String i : attendeesIds)
+                if (iacId.contentEquals(i))
                     return true;
         return false;
     }
@@ -385,7 +433,8 @@ public class DiningFragment extends BaseFragmentClass {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.fragment_dining_iac_id_button:
-                    showIacIdDialog();
+                    showAttendeeDialog(null, Support.Category.NORMAL, Support.Type.FOOD,
+                            DiningAttendeeDialogFragment.NO_ERROR);
                     break;
                 case R.id.fragment_dining_barcode_normal_button:
                     showBarcodeReader(Support.Category.NORMAL);
@@ -406,6 +455,7 @@ public class DiningFragment extends BaseFragmentClass {
     /**
      * Shows iac id prompt dialog
      */
+    @Deprecated
     private void showIacIdDialog() {
         try {
             final EditText editTextIacId = new EditText(getActivity());
@@ -453,45 +503,20 @@ public class DiningFragment extends BaseFragmentClass {
         IntentIntegrator.forSupportFragment(DiningFragment.this).initiateScan();
     }
 
-    /**
-     * Validates the form before to being sent
-     *
-     * @return true if is valid
-     */
-    private boolean validateForm() {
-        return mSite != null;
-    }
-
-    /**
-     * Saves the attendees for the group
-     */
-    private void saveAndUpload() {
-        final Context c = getActivity();
-        if (c != null) {
-            String adminToken = AppPreferences.getAdminToken(c);
-            String iacId = AppPreferences.getIacId(c);
-            long courseId = mSite.getId();
-            ArrayList<Integer> attendees = getAttendeeList();
-            if (iacId != null && courseId > 0 && attendees != null) {
-                //TODO: Save
-            }
-
-        }
-    }
 
     /**
      * Gets the attendee list to be submitted
      *
-     * @return an integer array list
+     * @return an array list
      */
-    private ArrayList<Integer> getAttendeeList() {
+    private ArrayList<String> getAttendeeList() {
         if (mAttendees == null)
             return null;
-        ArrayList<Integer> attendees = new ArrayList<>(mAttendees.size());
+        ArrayList<String> attendees = new ArrayList<>(mAttendees.size());
         for (int i = 0; i < mAttendees.size(); i++)
             try {
-                attendees.add(Integer.parseInt(mAttendees.get(i).getAsJsonObject()
-                        .get(AttendeeAdapter.ATTENDEE_ID).getAsString()));
+                attendees.add(mAttendees.get(i).getAsJsonObject()
+                        .get(AttendeeAdapter.ATTENDEE_IAC_ID).getAsString());
             } catch (Exception e) {
                 LogUtil.e(TAG, e.getMessage(), e);
             }
@@ -551,23 +576,24 @@ public class DiningFragment extends BaseFragmentClass {
                                            final String category, final String type) {
         try {
             JsonObject responseObject = response.getAsJsonObject();
-            if (responseObject.has(DiningService.COMENSAL)) {
+            if (responseObject.has(DiningService.COMENSAL) && !responseObject.get(DiningService.COMENSAL).isJsonNull()) {
                 switch (responseObject.get(DiningService.ERROR_CODE).getAsInt()) {
                     case DiningService.ErrorCodes.NO_ERROR:
                         JsonObject comensal = responseObject.get(DiningService.COMENSAL).getAsJsonObject();
-                        String name = comensal.get("name").getAsString();
-                        addNewAttendee(iacId, name, category, type);
+                        registerNewAttendee(comensal, iacId, category, type);
                         break;
                     case DiningService.ErrorCodes.NO_USER:
                         ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
                                 R.string.string_fragment_dining_new_no_record);
                         break;
                     case DiningService.ErrorCodes.NO_ENTER:
-                        showAttendeeDialog(iacId, category, type, true);
+                        showAttendeeDialog(iacId, category, type, DiningAttendeeDialogFragment.ERROR_RESTRICTED);
                         break;
                     default:
                         break;
                 }
+            } else {
+                showAttendeeDialog(iacId, category, type, DiningAttendeeDialogFragment.ERROR_NOT_FOUND);
             }
         } catch (Exception e) {
             //Error
@@ -576,14 +602,21 @@ public class DiningFragment extends BaseFragmentClass {
     }
 
     private void showAttendeeDialog(final String input, final String category, final String type,
-                                    boolean isFromError) {
+                                    final int errorCode) {
         Bundle args = new Bundle();
-        args.putString(DiningAttendeeDialogFragment.ARGS_INPUT, input);
-        args.putString(DiningAttendeeDialogFragment.ARGS_TYPE, category);
-        args.putString(DiningAttendeeDialogFragment.ARGS_SUPPORT, type);
-        args.putBoolean(DiningAttendeeDialogFragment.ARGS_IS_FROM_ERROR, isFromError);
+        if (input != null)
+            args.putString(DiningAttendeeDialogFragment.ARGS_INPUT, input);
+        args.putString(DiningAttendeeDialogFragment.ARGS_CATEGORY, category);
+        args.putString(DiningAttendeeDialogFragment.ARGS_TYPE, type);
+        args.putInt(DiningAttendeeDialogFragment.ARGS_ERROR_CODE, errorCode);
 
         final DiningAttendeeDialogFragment attendeeDialogFragment = DiningAttendeeDialogFragment.newInstance(args);
+        attendeeDialogFragment.setDiningManualCallback(new DiningAttendeeDialogFragment.IDiningManual() {
+            @Override
+            public void onAccept(String input, String category, String type) {
+                callServiceFor(input, category, type);
+            }
+        });
         attendeeDialogFragment.show(getFragmentManager(), DiningAttendeeDialogFragment.TAG);
     }
 
@@ -621,6 +654,8 @@ public class DiningFragment extends BaseFragmentClass {
         protected final static String ATTENDEE_IAC_ID = "iac_id";
         protected final static String ATTENDEE_SUPPORT_CATEGORY = "category";
         protected final static String ATTENDEE_SUPPORT_TYPE = "type";
+        protected final static String ATTENDEE_DATE = "date";
+
         private LayoutInflater mInflater;
 
         /**
@@ -666,11 +701,13 @@ public class DiningFragment extends BaseFragmentClass {
             JsonObject attendee = (JsonObject) getItem(i);
             TextView textViewName = (TextView) view.findViewById(R.id.list_item_attendee_name);
             TextView textViewId = (TextView) view.findViewById(R.id.list_item_attendee_id);
+            TextView textViewDate = (TextView) view.findViewById(R.id.list_item_attendee_date);
             ImageView viewCategory = (ImageView) view.findViewById(R.id.list_item_attendee_support_category);
             ImageView viewType = (ImageView) view.findViewById(R.id.list_item_attendee_support_type);
 
             textViewName.setText(attendee.get(ATTENDEE_NAME).getAsString());
             textViewId.setText(attendee.get(ATTENDEE_IAC_ID).getAsString());
+            textViewDate.setText(attendee.get(ATTENDEE_DATE).getAsString());
             viewCategory.setImageResource(getImageResource(attendee.get(ATTENDEE_SUPPORT_CATEGORY).getAsString()));
             viewType.setImageResource(getImageResource(attendee.get(ATTENDEE_SUPPORT_TYPE).getAsString()));
             view.findViewById(R.id.list_item_attendee_delete_button).setTag(getItem(i));
