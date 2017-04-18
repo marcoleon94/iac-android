@@ -206,6 +206,56 @@ public class DiningService extends ServiceBase {
         task.execute();
     }
 
+    public void deleteComensal(final long commensalId, final DiningService.ServiceHandler callback) {
+        task = new AsyncTask<Void, Void, ResponseBase>() {
+            @Override
+            protected DiningResponse doInBackground(Void... p) {
+                if (isCancelled())
+                    return null;
+                try {
+                    if (deviceId == null || adminToken == null) {
+                        callback.onError(new DiningResponse(null, "Params are null", null));
+                        this.cancel(true);
+                    }
+                    HttpGetParam params = new HttpGetParam();
+                    params.add("admin-token", adminToken);
+                    params.add("commensal_id", String.valueOf(commensalId));
+
+                    //Get headers
+                    HttpHeader headers = getHeaders(ACTION_DINING_DELETE_COMMENSAL, CONTROLLER_DINING_ROOM);
+
+                    // Get response
+                    NetResponse response = NetUtil.get(URL_DINING_DELETE, params, headers);
+
+                    if (response != null) {
+                        JsonElement json = new JsonParser().parse(response.result);
+                        if (!json.isJsonNull()) {
+                            if (json.getAsJsonObject().get("status").getAsString().contentEquals("success"))
+                                return new DiningResponse(json.getAsJsonObject(),
+                                        response.result, null);
+                        }
+                        return null;
+                    }
+                    return null;
+                } catch (Exception e) {
+                    return new DiningResponse(null, e.getMessage(), e);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(ResponseBase response) {
+                hanldeResult(callback, (DiningResponse) response);
+            }
+
+            @Override
+            protected void onCancelled() {
+                super.onCancelled();
+                callback.onCancel();
+            }
+        };
+        task.execute();
+    }
+
     /**
      * Create a Dining register string body for service call #registerNewCommensal
      *

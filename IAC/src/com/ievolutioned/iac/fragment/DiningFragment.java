@@ -326,10 +326,32 @@ public class DiningFragment extends BaseFragmentClass {
      * @param attendee - the attendee
      */
     private void removeAttendee(final JsonObject attendee) {
-        //TODO: Remove it
         try {
-            mAttendees.remove(attendee);
-            mAttendeeAdapter.notifyDataSetChanged();
+            final Context c = getActivity();
+            String deviceId = AppConfig.getUUID(c);
+            String adminToken = AppPreferences.getAdminToken(c);
+            long commensalId = attendee.get(AttendeeAdapter.ATTENDEE_ID).getAsLong();
+            new DiningService(deviceId, adminToken).deleteComensal(commensalId,
+                    new DiningService.ServiceHandler() {
+                        @Override
+                        public void onSuccess(DiningService.DiningResponse response) {
+                            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS, R.string.string_fragment_dining_delete_success);
+                            mAttendees.remove(attendee);
+                            if (mAttendeeAdapter != null) {
+                                mAttendeeAdapter.notifyDataSetChanged();
+                            }
+                        }
+
+                        @Override
+                        public void onError(DiningService.DiningResponse response) {
+                            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR, R.string.string_fragment_dining_delete_error);
+                        }
+
+                        @Override
+                        public void onCancel() {
+
+                        }
+                    });
         } catch (Exception e) {
             ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR, "Error");
         }
@@ -694,7 +716,7 @@ public class DiningFragment extends BaseFragmentClass {
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             if (view == null) {
-                view = mInflater.inflate(R.layout.list_item_attendee, viewGroup, false);
+                view = mInflater.inflate(R.layout.list_item_attendee_dinner, viewGroup, false);
                 view.findViewById(R.id.list_item_attendee_delete_button).setOnClickListener(this);
             }
 
@@ -710,6 +732,7 @@ public class DiningFragment extends BaseFragmentClass {
             textViewDate.setText(attendee.get(ATTENDEE_DATE).getAsString());
             viewCategory.setImageResource(getImageResource(attendee.get(ATTENDEE_SUPPORT_CATEGORY).getAsString()));
             viewType.setImageResource(getImageResource(attendee.get(ATTENDEE_SUPPORT_TYPE).getAsString()));
+            view.findViewById(R.id.list_item_attendee_delete_button).setOnClickListener(this);
             view.findViewById(R.id.list_item_attendee_delete_button).setTag(getItem(i));
             view.setTag(getItem(i));
             return view;
@@ -745,13 +768,13 @@ public class DiningFragment extends BaseFragmentClass {
                 if (attendee == null)
                     return;
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(view.getContext());
-                alertDialog.setTitle(R.string.string_fragment_attendees_delete_title);
+                alertDialog.setTitle(R.string.string_fragment_dining_delete_title);
                 String body = String.format(Locale.getDefault(),
-                        getString(R.string.string_fragment_attendees_delete_body),
+                        getString(R.string.string_fragment_dining_delete_body),
                         attendee.get(ATTENDEE_NAME).getAsString());
                 alertDialog.setMessage(body);
                 //Yes delete
-                alertDialog.setPositiveButton(R.string.string_fragment_attendees_delete_confirm,
+                alertDialog.setPositiveButton(R.string.string_fragment_dining_delete_confirm,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -760,7 +783,7 @@ public class DiningFragment extends BaseFragmentClass {
                             }
                         });
                 //No delete
-                alertDialog.setNegativeButton(R.string.string_fragment_attendees_delete_cancel,
+                alertDialog.setNegativeButton(R.string.string_fragment_dining_delete_cancel,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {

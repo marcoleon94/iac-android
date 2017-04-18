@@ -88,6 +88,11 @@ public abstract class ServiceBase {
     protected static final String ACTION_DINING_VALIDATE = "validate_dining_room";
 
     /**
+     * Action for deleting
+     */
+    protected static final String ACTION_DINING_DELETE_COMMENSAL = "delete_commensal";
+
+    /**
      * Controller constant for services
      */
     protected static final String CONTROLLER_SERVICES = "services";
@@ -167,6 +172,11 @@ public abstract class ServiceBase {
      * URL for dining register
      */
     protected static final String URL_DINING_REGISTER = URL_PRE + "api/" + CONTROLLER_DINING_ROOM;
+
+    /**
+     * URL for dining delete commensal
+     */
+    protected static final String URL_DINING_DELETE = URL_PRE + "api/" + CONTROLLER_DINING_ROOM + "/" + ACTION_DINING_DELETE_COMMENSAL;
 
     /**
      * URL for Mobile Versions

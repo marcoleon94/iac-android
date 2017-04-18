@@ -22,6 +22,9 @@
     <string name="string_fragment_dining_modify_save_success">Comensales actualizados</string>
     <string name="string_fragment_dining_modify_save_error">Error al añadir al comensal</string>
 
+    <string name="string_fragment_dining_delete_success">Comensal removido</string>
+    <string name="string_fragment_dining_delete_error">Error al eliminar comensal</string>
+
     <string name="string_fragment_dining_barcode_add_title">Escanear</string>
     <string name="string_fragment_dining_barcode_add_body">¿Desea continuar escaneando?</string>
     <string name="string_fragment_dining_barcode_add_confirm">Sí</string>
