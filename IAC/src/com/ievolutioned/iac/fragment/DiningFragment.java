@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -36,12 +37,11 @@ import com.ievolutioned.iac.net.service.DiningService;
 import com.ievolutioned.iac.net.service.ProfileService;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
+import com.ievolutioned.iac.util.FormatUtil;
 import com.ievolutioned.iac.util.LogUtil;
 import com.ievolutioned.iac.util.ViewUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
@@ -57,7 +57,7 @@ import info.hoang8f.android.segmented.SegmentedGroup;
 public class DiningFragment extends BaseFragmentClass {
 
     private static final String TAG = DiningFragment.class.getName();
-    private static final String ARGS_PLANT = "ARGS_PLANT";
+    public static final String ARGS_PLANT = "ARGS_PLANT";
     private static final String ARGS_ATTENDEES = "ARGS_ATTENDEES";
 
     private TextView mPlant;
@@ -66,7 +66,7 @@ public class DiningFragment extends BaseFragmentClass {
     private SegmentedGroup mSegmentedSupportType;
 
     private ListView mAttendeeListView;
-    private AttendeeAdapter mAttendeeAdapter;
+    private DiningAttendeeAdapter mDiningAttendeeAdapter;
     private JsonArray mAttendees = new JsonArray();
 
     private Bundle mSavedInstanceState = null;
@@ -133,6 +133,14 @@ public class DiningFragment extends BaseFragmentClass {
         super.onSaveInstanceState(outState);
     }
 
+    private String getPlantString() {
+        if (mSite != null) {
+            String siteOut = new Gson().toJson(mSite, Site.class);
+            return siteOut;
+        }
+        return null;
+    }
+
     /**
      * Binds the UI elements
      *
@@ -150,14 +158,16 @@ public class DiningFragment extends BaseFragmentClass {
 
         mAttendeeListView = (ListView) root.findViewById(R.id.fragment_dining_list);
         if (mAttendeeListView != null) {
-            mAttendeeAdapter = new AttendeeAdapter(getActivity());
-            mAttendeeListView.setAdapter(mAttendeeAdapter);
+            mDiningAttendeeAdapter = new DiningAttendeeAdapter(getActivity());
+            mAttendeeListView.setAdapter(mDiningAttendeeAdapter);
         }
 
         root.findViewById(R.id.fragment_dining_iac_id_button).setOnClickListener(button_click);
         root.findViewById(R.id.fragment_dining_barcode_normal_button).setOnClickListener(button_click);
         root.findViewById(R.id.fragment_dining_barcode_extra_time_button).setOnClickListener(button_click);
         root.findViewById(R.id.fragment_dining_barcode_no_support_button).setOnClickListener(button_click);
+        if (root.findViewById(R.id.fragment_dining_guests_show) != null)
+            root.findViewById(R.id.fragment_dining_guests_show).setOnClickListener(button_click);
     }
 
     /**
@@ -223,6 +233,7 @@ public class DiningFragment extends BaseFragmentClass {
                             if (array == null || array.size() == 0)
                                 return;
                             for (JsonElement j : array) {
+                                //TODO: check commensals
                                 if (j.getAsJsonObject().get("commensals").getAsJsonArray().size() > 0) {
                                     JsonObject commensal = j.getAsJsonObject().get("commensals").getAsJsonArray().get(0).getAsJsonObject();
                                     JsonObject info = j.getAsJsonObject().get("info_dining_room").getAsJsonObject();
@@ -231,18 +242,18 @@ public class DiningFragment extends BaseFragmentClass {
                                     String type = Support.Type.getSupportType(info.get("support").getAsString());
 
                                     JsonObject attendee = new JsonObject();
-                                    attendee.addProperty(AttendeeAdapter.ATTENDEE_ID, commensal.get("id").getAsLong());
-                                    attendee.addProperty(AttendeeAdapter.ATTENDEE_IAC_ID, commensal.get("iac_id").getAsString());
-                                    attendee.addProperty(AttendeeAdapter.ATTENDEE_NAME, commensal.get("name").getAsString());
-                                    attendee.addProperty(AttendeeAdapter.ATTENDEE_SUPPORT_CATEGORY, category);
-                                    attendee.addProperty(AttendeeAdapter.ATTENDEE_SUPPORT_TYPE, type);
-                                    String date = parseDate(info.get("created_at").getAsString());
-                                    attendee.addProperty(AttendeeAdapter.ATTENDEE_DATE, date);
+                                    attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_ID, commensal.get("id").getAsLong());
+                                    attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_IAC_ID, commensal.get("iac_id").getAsString());
+                                    attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_NAME, commensal.get("name").getAsString());
+                                    attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_SUPPORT_CATEGORY, category);
+                                    attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_SUPPORT_TYPE, type);
+                                    String date = FormatUtil.parseDate(info.get("created_at").getAsString());
+                                    attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_DATE, date);
 
                                     mAttendees.add(attendee);
                                 }
-                                if (mAttendeeAdapter != null)
-                                    mAttendeeAdapter.notifyDataSetChanged();
+                                if (mDiningAttendeeAdapter != null)
+                                    mDiningAttendeeAdapter.notifyDataSetChanged();
                             }
                         } catch (Exception e) {
                             LogUtil.e(TAG, e.getMessage(), e);
@@ -261,30 +272,6 @@ public class DiningFragment extends BaseFragmentClass {
 
                     }
                 });
-    }
-
-    private String parseDate(String s) {
-        try {
-            String format = "yyyy-MM-dd'T'HH:mm:ss.sssZZZZ";
-            SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.US);
-            Date date;
-            date = sdf.parse(s);
-            String newFormatString = "dd/MM'-'HH:mm";
-            SimpleDateFormat newFormatter = new SimpleDateFormat(newFormatString, Locale.getDefault());
-            return newFormatter.format(date);
-        } catch (ParseException e) {
-            return "";
-        }
-    }
-
-    private String parseDate(Date date) {
-        try {
-            String newFormatString = "dd/MM'-'HH:mm";
-            SimpleDateFormat newFormatter = new SimpleDateFormat(newFormatString, Locale.getDefault());
-            return newFormatter.format(date);
-        } catch (Exception e) {
-            return "";
-        }
     }
 
 
@@ -332,15 +319,15 @@ public class DiningFragment extends BaseFragmentClass {
             final Context c = getActivity();
             String deviceId = AppConfig.getUUID(c);
             String adminToken = AppPreferences.getAdminToken(c);
-            long commensalId = attendee.get(AttendeeAdapter.ATTENDEE_ID).getAsLong();
+            long commensalId = attendee.get(DiningAttendeeAdapter.ATTENDEE_ID).getAsLong();
             new DiningService(deviceId, adminToken).deleteComensal(commensalId,
                     new DiningService.ServiceHandler() {
                         @Override
                         public void onSuccess(DiningService.DiningResponse response) {
                             ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS, R.string.string_fragment_dining_delete_success);
                             mAttendees.remove(attendee);
-                            if (mAttendeeAdapter != null) {
-                                mAttendeeAdapter.notifyDataSetChanged();
+                            if (mDiningAttendeeAdapter != null) {
+                                mDiningAttendeeAdapter.notifyDataSetChanged();
                                 ViewUtil.setListViewHeightBasedOnChildren(mAttendeeListView);
                             }
                         }
@@ -372,19 +359,19 @@ public class DiningFragment extends BaseFragmentClass {
             return;
 
         JsonObject attendee = new JsonObject();
-        attendee.addProperty(AttendeeAdapter.ATTENDEE_ID, id);
-        attendee.addProperty(AttendeeAdapter.ATTENDEE_IAC_ID, iacId);
-        attendee.addProperty(AttendeeAdapter.ATTENDEE_NAME, name);
-        attendee.addProperty(AttendeeAdapter.ATTENDEE_SUPPORT_CATEGORY, category);
-        attendee.addProperty(AttendeeAdapter.ATTENDEE_SUPPORT_TYPE, type);
-        attendee.addProperty(AttendeeAdapter.ATTENDEE_DATE, parseDate(date));
+        attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_ID, id);
+        attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_IAC_ID, iacId);
+        attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_NAME, name);
+        attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_SUPPORT_CATEGORY, category);
+        attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_SUPPORT_TYPE, type);
+        attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_DATE, FormatUtil.parseDate(date));
 
         JsonArray newAttendees = new JsonArray();
         newAttendees.add(attendee);
         newAttendees.addAll(mAttendees);
         mAttendees = newAttendees;
 
-        mAttendeeAdapter.notifyDataSetChanged();
+        mDiningAttendeeAdapter.notifyDataSetChanged();
         LogUtil.d(TAG, mAttendees.toString());
         ViewUtil.setListViewHeightBasedOnChildren(mAttendeeListView);
     }
@@ -470,11 +457,23 @@ public class DiningFragment extends BaseFragmentClass {
                 case R.id.fragment_dining_barcode_extra_time_button:
                     showBarcodeReader(Support.Category.EXTRA_TIME);
                     break;
+                case R.id.fragment_dining_guests_show:
+                    String plant = getPlantString();
+                    if (plant != null) {
+                        Bundle args = new Bundle();
+                        args.putString(ARGS_PLANT, getPlantString());
+                        showGuestsFragment(args);
+                    }
                 default:
                     break;
             }
         }
     };
+
+    private void showGuestsFragment(Bundle args) {
+        Fragment fragment = DiningGuestsFragment.newInstance(args);
+        setMainActivityReplaceFragment(fragment, DiningGuestsFragment.TAG, true);
+    }
 
 
     /**
@@ -541,7 +540,7 @@ public class DiningFragment extends BaseFragmentClass {
         for (int i = 0; i < mAttendees.size(); i++)
             try {
                 attendees.add(mAttendees.get(i).getAsJsonObject()
-                        .get(AttendeeAdapter.ATTENDEE_IAC_ID).getAsString());
+                        .get(DiningAttendeeAdapter.ATTENDEE_IAC_ID).getAsString());
             } catch (Exception e) {
                 LogUtil.e(TAG, e.getMessage(), e);
             }
@@ -570,12 +569,9 @@ public class DiningFragment extends BaseFragmentClass {
     }
 
     private void callServiceFor(final String iacId, final String category, final String type) {
-        //TODO: MAKE the call
-        //addNewAttendee();
-        //showAttendeeDialog(iacId);
         String adminToken = AppPreferences.getAdminToken(getActivity());
         String deviceId = AppConfig.getUUID(getActivity());
-        boolean restricted = false;
+        boolean restricted = category != null && category.contentEquals(Support.Category.NORMAL);
 
         new DiningService(deviceId, adminToken).getValidateDiningRoom(iacId, restricted,
                 new DiningService.ServiceHandler() {
@@ -587,7 +583,8 @@ public class DiningFragment extends BaseFragmentClass {
 
                     @Override
                     public void onError(DiningService.DiningResponse response) {
-
+                        ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                                R.string.string_fragment_dining_guests_general_error);
                     }
 
                     @Override
@@ -672,7 +669,7 @@ public class DiningFragment extends BaseFragmentClass {
     /**
      * Attendees list adapter. A list of attendees in the {@link ListView} element
      */
-    class AttendeeAdapter extends BaseAdapter implements View.OnClickListener {
+    public class DiningAttendeeAdapter extends BaseAdapter implements View.OnClickListener {
 
         protected final static String ATTENDEE_ID = "id";
         protected final static String ATTENDEE_NAME = "name";
@@ -684,11 +681,11 @@ public class DiningFragment extends BaseFragmentClass {
         private LayoutInflater mInflater;
 
         /**
-         * {@link AttendeeAdapter} initializer
+         * {@link DiningAttendeeAdapter} initializer
          *
          * @param c
          */
-        public AttendeeAdapter(Context c) {
+        public DiningAttendeeAdapter(Context c) {
             mInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
@@ -751,6 +748,8 @@ public class DiningFragment extends BaseFragmentClass {
                     return R.drawable.ic_no_support;
                 case Support.Category.EXTRA_TIME:
                     return R.drawable.ic_extra_time;
+                case Support.Category.GUEST:
+                    return android.R.drawable.ic_menu_myplaces;
                 case Support.Type.FOOD:
                     return R.drawable.ic_food;
                 case Support.Type.BEVERAGE:

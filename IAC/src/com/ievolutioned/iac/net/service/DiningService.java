@@ -278,11 +278,26 @@ public class DiningService extends ServiceBase {
 
         employee.getAsJsonObject().addProperty("commensal_type", "empleado");
         commensal.add("0", employee);
-        register.add("commensals_attributes", commensal);
 
         if (guests != null) {
-            //TODO: Add guests? how?
+            int guestId = 1;
+            for (JsonElement g : guests.getAsJsonArray()) {
+                JsonObject guest = g.getAsJsonObject();
+                if(guest.has("id"))
+                    guest.remove("id");
+                if(guest.has("category"))
+                    guest.remove("category");
+                if(guest.has("type"))
+                    guest.remove("type");
+                if(guest.has("date"))
+                    guest.remove("date");
+                guest.addProperty("commensal_type", "invitado");
+                commensal.add(String.valueOf(guestId), guest);
+                guestId++;
+            }
         }
+
+        register.add("commensals_attributes", commensal);
 
         root.add("dining_register", register);
         return root.toString();

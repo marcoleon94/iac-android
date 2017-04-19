@@ -16,6 +16,9 @@ public class Support {
         private final static String EXTRA_TIME_ID = "extra_time";
         private final static String GUEST_ID = "guest";
 
+        public final static long GUEST_ID_DEFAULT = 0;
+        public final static String GUEST_DEFAULT_IAC_ID = "";
+
         public static String getSupportCategoryId(final String category) {
             switch (category) {
                 case NORMAL:

@@ -2,7 +2,7 @@
 <resources>
     <string name="string_fragment_dining_guests_title">Invitados al Comedor</string>
     <string name="string_fragment_dining_guests_hosts_title">ANFITRIÓN</string>
-    <string name="string_fragment_dining_guests_host">Añadir</string>
+    <string name="string_fragment_dining_guests_host">Anfitrión</string>
     <string name="string_fragment_dining_guests_add_title">INVITADOS</string>
     <string name="string_fragment_dining_guests_add_subtitle">Agregar</string>
     <string name="string_fragment_dining_guests_list_title">Comensales invitados</string>
@@ -24,6 +24,8 @@
 
     <string name="string_fragment_dining_guests_modify_save_success">Comensales actualizados</string>
     <string name="string_fragment_dining_guests_modify_save_error">Error al actualizar</string>
+
+    <string name="string_fragment_dining_guests_save_error_validation">No es posible guardar, añada el anfitrion y al menos un invitado</string>
 
     <string name="string_fragment_dining_guests_barcode_add_title">Escanear</string>
     <string name="string_fragment_dining_guests_barcode_add_body">¿Desea continuar escaneando?</string>

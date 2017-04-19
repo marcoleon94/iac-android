@@ -14,6 +14,7 @@
     <string name="nav_drawer_form_logout">Cerrar sesión</string>
     <string name="nav_drawer_form_about">Acerca de</string>
     <string name="menu_action_upload">Enviar</string>
+    <string name="menu_action_save">Guardar</string>
     <string-array name="nav_drawer_form_items">
         <!--
         TODO: Removed temporally
