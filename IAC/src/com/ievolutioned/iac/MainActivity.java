@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -29,6 +30,7 @@ import com.ievolutioned.iac.fragment.TuobaFragment;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.FileUtil;
 import com.ievolutioned.iac.util.LogUtil;
+import com.ievolutioned.iac.util.ViewUtil;
 import com.ievolutioned.iac.view.MenuDrawerItem;
 import com.ievolutioned.iac.view.ViewUtility;
 import com.ievolutioned.pxform.database.FormsDataSet;
@@ -74,6 +76,11 @@ public class MainActivity extends AppCompatActivity {
      */
     private AlertDialog mLoading;
 
+    /**
+     * For internet check message
+     */
+    private View mInternetConnection;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +101,13 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.activity_main_drawer);
         mToolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
         mLoading = ViewUtility.getLoadingScreen(this);
+        mInternetConnection = findViewById(R.id.activity_main_internet_msg);
+        mInternetConnection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ViewUtility.displayNetworkPreferences(MainActivity.this);
+            }
+        });
         showLoading(true);
         setDrawer();
     }
@@ -109,6 +123,38 @@ public class MainActivity extends AppCompatActivity {
                 showHome();
             }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkInternetConnection();
+    }
+
+    @Override
+    protected void onPause() {
+        if (mHandler != null && mRunnable != null)
+            mHandler.removeCallbacks(mRunnable);
+        super.onPause();
+    }
+
+    private Handler mHandler = new Handler();
+    private Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (mHandler != null) {
+                checkInternetConnection();
+            }
+        }
+    };
+
+    /**
+     * Checks for internet connection
+     */
+    private void checkInternetConnection() {
+        ViewUtil.internetConnectionView(mInternetConnection);
+        if (mHandler != null)
+            mHandler.postDelayed(mRunnable, 3000);
     }
 
     /**
