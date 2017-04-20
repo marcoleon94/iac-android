@@ -18,6 +18,7 @@ import com.ievolutioned.iac.net.service.UtilService;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.util.LogUtil;
+import com.ievolutioned.iac.util.ViewUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 import com.ievolutioned.pxform.database.FormsDataSet;
 
@@ -50,6 +51,11 @@ public class LoginActivity extends Activity {
      */
     private AlertDialog mLoading;
 
+    /**
+     * Internet connection
+     */
+    private View mInternetConnection;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +74,16 @@ public class LoginActivity extends Activity {
         new UtilService(AppConfig.getUUID(this)).getUpdate(LoginActivity.this, getFragmentManager());
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkInternetConnection();
+    }
+
+    private void checkInternetConnection() {
+        ViewUtil.internetConnectionView(mInternetConnection);
+    }
+
     /**
      * Binds the user interface to control
      */
@@ -77,6 +93,8 @@ public class LoginActivity extends Activity {
         mPassword = (EditText) findViewById(R.id.activity_login_editPassword);
         mButtonSingIn = (Button) findViewById(R.id.activity_login_btnLogIn);
         mLoading = ViewUtility.getLoadingScreen(this);
+
+        mInternetConnection = findViewById(R.id.activity_login_internet_msg);
 
         //On click listeners
         mButtonSingIn.setOnClickListener(button_click);
