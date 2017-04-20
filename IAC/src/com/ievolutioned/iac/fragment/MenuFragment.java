@@ -226,13 +226,16 @@ public class MenuFragment extends Fragment {
     private void loadStaticMenuItems() {
         if (mActivity == null)
             return;
+        //User role and professional group
+        String typeIac = AppPreferences.getTypeIac(mActivity);
+        String role = AppPreferences.getRole(mActivity);
+        String pGroup = AppPreferences.getProfessionalGroup(mActivity);
+
+
         // static menu items
         menuFormTitles = getResources().getStringArray(R.array.nav_drawer_form_items);
         menuSitesTitles = getResources().getStringArray(R.array.nav_drawer_sites_items);
 
-        //User role and professional group
-        String role = AppPreferences.getRole(mActivity);
-        String pGroup = AppPreferences.getProfessionalGroup(mActivity);
 
         //TODO: how to determine static forms for users
         if (!role.contentEquals(UserRole.USER)
@@ -258,8 +261,44 @@ public class MenuFragment extends Fragment {
             if (mActivity.findViewById(R.id.fragment_menu_attendees) != null)
                 mActivity.findViewById(R.id.fragment_menu_attendees).setVisibility(View.GONE);
         }
-        LogUtil.d(TAG, "Form Titles:" + menuFormTitles.toString());
-        LogUtil.d(TAG, "Form Sites:" + menuSitesTitles.toString());
+        
+        //Only for Dining
+        if(typeIac != null && typeIac.contentEquals(AppPreferences.TYPE_IAC_DINING)){
+            if(mActivity.findViewById(R.id.fragment_menu_home) != null)
+                mActivity.findViewById(R.id.fragment_menu_home).setVisibility(View.GONE);
+
+            if(mActivity.findViewById(R.id.fragment_menu_asks) != null)
+                mActivity.findViewById(R.id.fragment_menu_asks).setVisibility(View.GONE);
+
+            if(mActivity.findViewById(R.id.fragment_menu_ppf) != null)
+                mActivity.findViewById(R.id.fragment_menu_ppf).setVisibility(View.GONE);
+
+            if(mActivity.findViewById(R.id.fragment_menu_contact) != null)
+                mActivity.findViewById(R.id.fragment_menu_contact).setVisibility(View.GONE);
+
+            if(mActivity.findViewById(R.id.fragment_menu_head) != null)
+                mActivity.findViewById(R.id.fragment_menu_head).setVisibility(View.GONE);
+
+            if(mActivity.findViewById(R.id.fragment_menu_video) != null)
+                mActivity.findViewById(R.id.fragment_menu_video).setVisibility(View.GONE);
+
+            if(mActivity.findViewById(R.id.fragment_menu_organization_chart) != null)
+                mActivity.findViewById(R.id.fragment_menu_organization_chart).setVisibility(View.GONE);
+
+            if(mActivity.findViewById(R.id.fragment_menu_attendees) != null)
+                mActivity.findViewById(R.id.fragment_menu_attendees).setVisibility(View.GONE);
+
+            if(mActivity.findViewById(R.id.fragment_menu_forms) != null)
+                mActivity.findViewById(R.id.fragment_menu_forms).setVisibility(View.GONE);
+
+            if(mActivity.findViewById(R.id.fragment_menu_form_list) != null)
+                mActivity.findViewById(R.id.fragment_menu_form_list).setVisibility(View.GONE);
+
+            if(mActivity.findViewById(R.id.fragment_menu_profile) != null)
+                mActivity.findViewById(R.id.fragment_menu_profile).setVisibility(View.GONE);
+
+
+        }
     }
 
     /**

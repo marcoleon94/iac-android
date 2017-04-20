@@ -66,8 +66,8 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_login);
         bindUI();
         if (AppConfig.DEBUG) {
-            mEmail.setText("123456789");
-            mPassword.setText("123456789");
+            mEmail.setText("99000097");
+            mPassword.setText("99000097");
         }
 
         com.ievolutioned.pxform.database.FormsDataSet f = new FormsDataSet(LoginActivity.this);

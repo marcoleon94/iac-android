@@ -28,6 +28,7 @@ import com.ievolutioned.iac.fragment.MyProfileFragment;
 import com.ievolutioned.iac.fragment.SitesFragment;
 import com.ievolutioned.iac.fragment.TuobaFragment;
 import com.ievolutioned.iac.util.AppConfig;
+import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.util.FileUtil;
 import com.ievolutioned.iac.util.LogUtil;
 import com.ievolutioned.iac.util.ViewUtil;
@@ -120,7 +121,11 @@ public class MainActivity extends AppCompatActivity {
         if (args != null && !args.isEmpty()) {
             if (args.getString(ARGS_DEFAULT_HOME, null) != null) {
                 getIntent().removeExtra(ARGS_DEFAULT_HOME);
-                showHome();
+                String typeIac = AppPreferences.getTypeIac(this);
+                if (typeIac != null && typeIac.contentEquals(AppPreferences.TYPE_IAC_DINING))
+                    showDining();
+                else
+                    showHome();
             }
         }
     }

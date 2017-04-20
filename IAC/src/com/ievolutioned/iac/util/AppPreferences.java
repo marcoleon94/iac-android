@@ -34,6 +34,8 @@ public class AppPreferences {
 
     private static final String KEY_DINING_ARGS_TYPE = "KEY_DINING_ARGS_TYPE";
 
+    public static final String TYPE_IAC_DINING = "comedor";
+
     /**
      * Gets the SharedPreferences
      *
