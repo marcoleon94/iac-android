@@ -179,47 +179,7 @@ public class DiningFragment extends BaseFragmentClass {
         //TODO: restore state, add more things to load at first
         if (!restoreState(mSavedInstanceState) && mSite == null) {
             //Initial bind
-            final Context c = getActivity();
-            String adminToken = AppPreferences.getAdminToken(c);
-            String deviceId = AppConfig.getUUID(c);
-            final android.app.AlertDialog loadingScreen = ViewUtility.getLoadingScreen(c);
-            loadingScreen.show();
-            //Call profile service
-            new ProfileService(deviceId, adminToken).getProfileInfo(new ProfileService.ProfileServiceHandler() {
-                @Override
-                public void onSuccess(ProfileService.ProfileResponse response) {
-                    mSite = response.profile.getSite();
-                    if (mSite != null && mSite.getName() != null && mSite.getName().length() > 0) {
-                        mPlant.setText(mSite.getName());
-                        loadDiningList(c, mSite.getId());
-                    } else
-                        ViewUtility.showMessage(getContext(), ViewUtility.MSG_ERROR,
-                                R.string.string_fragment_dining_plant_fetch_error);
-                    try {
-                        loadingScreen.dismiss();
-                    } catch (Exception e) {
-                        LogUtil.e(TAG, e.getMessage(), e);
-                    }
-                }
-
-                @Override
-                public void onError(ProfileService.ProfileResponse response) {
-                    try {
-                        loadingScreen.dismiss();
-                    } catch (Exception e) {
-
-                    }
-                }
-
-                @Override
-                public void onCancel() {
-                    try {
-                        loadingScreen.dismiss();
-                    } catch (Exception e) {
-
-                    }
-                }
-            });
+            loadSite();
         }
     }
 
@@ -233,7 +193,6 @@ public class DiningFragment extends BaseFragmentClass {
                             if (array == null || array.size() == 0)
                                 return;
                             for (JsonElement j : array) {
-                                //TODO: check commensals
                                 if (j.getAsJsonObject().get("commensals").getAsJsonArray().size() > 0) {
                                     for (JsonElement c : j.getAsJsonObject().get("commensals").getAsJsonArray()) {
                                         JsonObject commensal = c.getAsJsonObject();
@@ -301,15 +260,59 @@ public class DiningFragment extends BaseFragmentClass {
             return false;
         try {
             mSite = new Gson().fromJson(mSavedInstanceState.getString(ARGS_PLANT), Site.class);
-            if (mSite != null && mSite.getName() != null && mSite.getName().length() > 0)
+            if (mSite != null && mSite.getName() != null && mSite.getName().length() > 0) {
                 mPlant.setText(mSite.getName());
-            else
-                ViewUtility.showMessage(getContext(), ViewUtility.MSG_ERROR,
-                        R.string.string_fragment_dining_plant_fetch_error);
-            return true;
+                loadDiningList(getActivity(), mSite.getId());
+            } else
+                return false;
         } catch (Exception e) {
             return false;
         }
+        return true;
+    }
+
+    private void loadSite() {
+        final Context c = getActivity();
+        String adminToken = AppPreferences.getAdminToken(c);
+        String deviceId = AppConfig.getUUID(c);
+        final android.app.AlertDialog loadingScreen = ViewUtility.getLoadingScreen(c);
+        loadingScreen.show();
+        //Call profile service
+        new ProfileService(deviceId, adminToken).getProfileInfo(new ProfileService.ProfileServiceHandler() {
+            @Override
+            public void onSuccess(ProfileService.ProfileResponse response) {
+                mSite = response.profile.getSite();
+                if (mSite != null && mSite.getName() != null && mSite.getName().length() > 0) {
+                    mPlant.setText(mSite.getName());
+                    loadDiningList(c, mSite.getId());
+                } else
+                    ViewUtility.showMessage(getContext(), ViewUtility.MSG_ERROR,
+                            R.string.string_fragment_dining_plant_fetch_error);
+                try {
+                    loadingScreen.dismiss();
+                } catch (Exception e) {
+                    LogUtil.e(TAG, e.getMessage(), e);
+                }
+            }
+
+            @Override
+            public void onError(ProfileService.ProfileResponse response) {
+                try {
+                    loadingScreen.dismiss();
+                } catch (Exception e) {
+
+                }
+            }
+
+            @Override
+            public void onCancel() {
+                try {
+                    loadingScreen.dismiss();
+                } catch (Exception e) {
+
+                }
+            }
+        });
 
     }
 
