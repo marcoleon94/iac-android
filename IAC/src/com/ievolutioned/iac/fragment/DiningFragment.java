@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -21,6 +24,7 @@ import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -168,6 +172,30 @@ public class DiningFragment extends BaseFragmentClass {
         root.findViewById(R.id.fragment_dining_barcode_no_support_button).setOnClickListener(button_click);
         if (root.findViewById(R.id.fragment_dining_guests_show) != null)
             root.findViewById(R.id.fragment_dining_guests_show).setOnClickListener(button_click);
+
+        setDrawablesRadioButtons(root);
+    }
+
+    /**
+     * Sets drawables for {@link RadioButton}
+     *
+     * @param root find view
+     */
+    private void setDrawablesRadioButtons(View root) {
+        Rect bounds = new Rect(0, 0, 40, 50);
+
+        Drawable food = ContextCompat.getDrawable(getActivity(), R.drawable.ic_food);
+        food.setBounds(bounds);
+        ((RadioButton) root.findViewById(R.id.fragment_dining_support_type_food)).setCompoundDrawables(null, null, food, null);
+
+        Drawable beverage = ContextCompat.getDrawable(getActivity(), R.drawable.ic_soda);
+        beverage.setBounds(bounds);
+        ((RadioButton) root.findViewById(R.id.fragment_dining_support_type_beverage)).setCompoundDrawables(null, null, beverage, null);
+
+        Drawable water = ContextCompat.getDrawable(getActivity(), R.drawable.ic_water);
+        water.setBounds(bounds);
+        ((RadioButton) root.findViewById(R.id.fragment_dining_support_type_water)).setCompoundDrawables(null, null, water, null);
+
     }
 
     /**
