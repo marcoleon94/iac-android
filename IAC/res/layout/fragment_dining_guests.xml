@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_gray_light"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:paddingBottom="10dp"
+        android:paddingEnd="5dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="5dp"
+        android:paddingStart="30dp"
+        android:paddingTop="10dp"
+        android:text="@string/string_fragment_dining_guests_hosts_title"
+        android:textColor="@android:color/secondary_text_light" />
+
+    <LinearLayout
+        android:id="@+id/fragment_dining_guests_host_input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background_gray_light"
+        android:orientation="vertical">
+
+        <info.hoang8f.android.segmented.SegmentedGroup xmlns:segmentedgroup="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/fragment_dining_guests_host_support_type_segmented"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:weightSum="3"
+            segmentedgroup:sc_border_width="2dp"
+            segmentedgroup:sc_corner_radius="10dp">
+
+            <RadioButton
+                android:id="@+id/fragment_dining_support_type_food"
+                style="@style/RadioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:checked="true"
+                android:minLines="2"
+                android:text="Comida" />
+
+            <RadioButton
+                android:id="@+id/fragment_dining_support_type_beverage"
+                style="@style/RadioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:text="Bebida" />
+
+            <RadioButton
+                android:id="@+id/fragment_dining_support_type_water"
+                style="@style/RadioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:text="Agua" />
+
+        </info.hoang8f.android.segmented.SegmentedGroup>
+
+        <include layout="@layout/layout_dining_guests_buttons" />
+
+    </LinearLayout>
+
+    <include
+        android:id="@+id/fragment_dining_guests_host_details"
+        layout="@layout/list_item_attendee_dinner"
+        android:visibility="gone" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/primary_gray" />
+
+    <TextView
+        android:id="@+id/fragment_dining_guests_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:paddingBottom="10dp"
+        android:paddingEnd="5dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="5dp"
+        android:paddingStart="30dp"
+        android:paddingTop="10dp"
+        android:text="@string/string_fragment_dining_guests_add_title"
+        android:textColor="@android:color/secondary_text_light" />
+
+    <RelativeLayout
+        android:id="@+id/fragment_dining_guests_add_layout"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@drawable/customswitch_switch_bg_holo_light">
+
+        <TextView
+            android:id="@+id/fragment_dining_guests_add_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:paddingEnd="5dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="5dp"
+            android:paddingStart="30dp"
+            android:text="@string/string_fragment_dining_guests_add_subtitle"
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@+id/fragment_dining_guests_add_title"
+            android:layout_toRightOf="@+id/fragment_dining_guests_add_title"
+            android:gravity="top"
+            android:orientation="horizontal">
+
+
+            <Button
+                android:id="@+id/fragment_dining_guests_manual_button"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:text="@string/string_fragment_dining_guests_new_manual"
+                android:textColor="@color/secondary_gray" />
+
+            <Button
+                android:id="@+id/fragment_dining_guests_iac_id_button"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:drawableEnd="@drawable/ic_iac_id"
+                android:drawableRight="@drawable/ic_iac_id" />
+
+            <Button
+                android:id="@+id/fragment_dining_guests_barcode_button"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:drawableEnd="@drawable/ic_barcode"
+                android:drawableRight="@drawable/ic_barcode" />
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/fragment_dining_guests_attendee_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="30dp"
+        android:paddingStart="30dp"
+        android:text="@string/string_fragment_dining_guests_list_title"
+        android:textSize="14sp" />
+
+    <ListView
+        android:id="@+id/fragment_dining_guests_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true" />
+
+
+</LinearLayout>

@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 
 import com.ievolutioned.iac.entity.UserRole;
 
+import java.util.Set;
+
 /**
  * Shared preferences class. Manages the shared preferences for the App.
  * <p/>
@@ -24,6 +26,14 @@ public class AppPreferences {
     private static final String KEY_ROLE = "KEY_ROLE";
 
     private static final String KEY_PROFESSIONAL_GROUP = "KEY_PROFESSIONAL_GROUP";
+
+    private static final String KEY_DINING_ATTENDEES = "KEY_DINING_ATTENDEES";
+
+    private static final String KEY_DINING_PLANT = "KEY_DINING_PLANT";
+
+    private static final String KEY_DINING_BARCODE_TEMPORAL = "KEY_DINING_BARCODE_TEMPORAL";
+
+    private static final String KEY_DINING_ARGS_TYPE = "KEY_DINING_ARGS_TYPE";
 
     /**
      * Gets the SharedPreferences
@@ -125,5 +135,43 @@ public class AppPreferences {
      */
     public static String getProfessionalGroup(Context c) {
         return getPrefs(c).getString(KEY_PROFESSIONAL_GROUP, null);
+    }
+
+    /**
+     * Sets the dinning attendees employees
+     *
+     * @param c         - the context
+     * @param attendees - a set of attendees
+     */
+    public static void setDiningAttendees(Context c, Set<String> attendees) {
+        getEditor(c).putStringSet(KEY_DINING_ATTENDEES, attendees).commit();
+    }
+
+    public static Set<String> getDinningAttendees(Context c) {
+        return getPrefs(c).getStringSet(KEY_DINING_ATTENDEES, null);
+    }
+
+    public static void setDiningPlant(Context c, String value) {
+        getEditor(c).putString(KEY_DINING_PLANT, value).commit();
+    }
+
+    public static String getDiningPlant(Context c) {
+        return getPrefs(c).getString(KEY_DINING_PLANT, null);
+    }
+
+    public static void setDiningBarcodeTemporal(Context c, int value) {
+        getEditor(c).putInt(KEY_DINING_BARCODE_TEMPORAL, value).commit();
+    }
+
+    public static int getDiningBarcodeTemporal(Context c) {
+        return getPrefs(c).getInt(KEY_DINING_BARCODE_TEMPORAL, 0);
+    }
+
+    public static void setDiningArgsType(Context c, String args) {
+        getEditor(c).putString(KEY_DINING_ARGS_TYPE, args).commit();
+    }
+
+    public static String getDiningArgsType(Context c) {
+        return getPrefs(c).getString(KEY_DINING_ARGS_TYPE, null);
     }
 }

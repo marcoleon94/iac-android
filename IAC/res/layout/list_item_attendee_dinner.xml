@@ -44,8 +44,47 @@
         android:layout_marginRight="5dp"
         android:layout_marginStart="5dp"
         android:layout_toEndOf="@+id/list_item_attendee_id"
+        android:layout_toLeftOf="@+id/list_item_attendee_date"
         android:layout_toRightOf="@+id/list_item_attendee_id"
+        android:layout_toStartOf="@+id/list_item_attendee_date"
         android:textAllCaps="true"
         android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/list_item_attendee_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_toLeftOf="@+id/list_item_attendee_support_category"
+        android:layout_toStartOf="@+id/list_item_attendee_support_category"
+        android:minWidth="50dp"
+        android:textAllCaps="true"
+        android:textSize="16sp" />
+
+    <ImageView
+        android:id="@+id/list_item_attendee_support_category"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/list_item_attendee_support_type"
+        android:layout_toStartOf="@+id/list_item_attendee_support_type"
+        android:contentDescription="@string/app_name"
+        android:padding="3dp"
+        android:src="@drawable/ic_normal" />
+
+    <ImageView
+        android:id="@+id/list_item_attendee_support_type"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/app_name"
+        android:padding="3dp"
+        android:src="@drawable/ic_food" />
 
 </RelativeLayout>

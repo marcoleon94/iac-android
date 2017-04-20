@@ -53,6 +53,7 @@ public class ProfileEntity {
     private DepartmentEntity department;
     @SerializedName("employee_type_id")
     private long employeeTypeId;
+    private Site site;
 
     public long getId() {
         return id;
@@ -268,5 +269,13 @@ public class ProfileEntity {
 
     public void setEmployeeTypeId(long employeeTypeId) {
         this.employeeTypeId = employeeTypeId;
+    }
+
+    public Site getSite() {
+        return site;
+    }
+
+    public void setSite(Site site) {
+        this.site = site;
     }
 }

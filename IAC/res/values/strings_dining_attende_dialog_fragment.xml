@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="strings_dining_attende_dialog_fragment_no_error"> </string>
+    <string name="strings_dining_attende_dialog_fragment_error_not_found">Empleado no encontrado</string>
+    <string name="strings_dining_attende_dialog_fragment_error_restricted">Este usuario no puede entrar NORMAL, seleccione otra opción</string>
+</resources>
