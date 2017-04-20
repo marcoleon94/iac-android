@@ -12,11 +12,15 @@ import android.widget.TextView;
 
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.entity.Support;
+import com.ievolutioned.iac.net.NetUtil;
 import com.ievolutioned.iac.util.LogUtil;
+import com.ievolutioned.iac.view.ViewUtility;
 
 import info.hoang8f.android.segmented.SegmentedGroup;
 
 /**
+ * Dining attendee dialog fragment, allows to define any attendee for dining room
+ * <p>
  * Created by Daniel on 11/04/2017.
  */
 
@@ -158,6 +162,10 @@ public class DiningAttendeeDialogFragment extends DialogFragment implements View
 
     @Override
     public void onClick(View view) {
+        if (!NetUtil.hasNetworkConnection(getActivity())) {
+            ViewUtility.displayNetworkPreferences(getActivity());
+            return;
+        }
         switch (view.getId()) {
             case R.id.dialog_fragment_dining_attendee_accept:
                 try {

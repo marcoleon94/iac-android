@@ -37,6 +37,7 @@ import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.entity.Site;
 import com.ievolutioned.iac.entity.Support;
+import com.ievolutioned.iac.net.NetUtil;
 import com.ievolutioned.iac.net.service.DiningService;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
@@ -119,6 +120,10 @@ public class DiningGuestsFragment extends BaseFragmentClass {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_fragment_dining_guests:
+                if (!NetUtil.hasNetworkConnection(getActivity())) {
+                    ViewUtility.displayNetworkPreferences(getActivity());
+                    break;
+                }
                 if (validateForm())
                     saveAndUpload();
                 else
@@ -401,6 +406,11 @@ public class DiningGuestsFragment extends BaseFragmentClass {
     private View.OnClickListener button_click = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            if (!NetUtil.hasNetworkConnection(getActivity())) {
+                ViewUtility.displayNetworkPreferences(getActivity());
+                return;
+            }
+
             switch (view.getId()) {
                 //HOST
                 case R.id.list_item_attendee_delete_button:

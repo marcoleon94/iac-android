@@ -11,9 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.text.InputType;
 import android.text.TextUtils;
-import android.text.method.DigitsKeyListener;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,7 +19,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -37,6 +34,7 @@ import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.entity.Site;
 import com.ievolutioned.iac.entity.Support;
+import com.ievolutioned.iac.net.NetUtil;
 import com.ievolutioned.iac.net.service.DiningService;
 import com.ievolutioned.iac.net.service.ProfileService;
 import com.ievolutioned.iac.util.AppConfig;
@@ -122,7 +120,6 @@ public class DiningFragment extends BaseFragmentClass {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        //TODO: Save state
         if (mSite != null) {
             String siteOut = new Gson().toJson(mSite, Site.class);
             outState.putString(ARGS_PLANT, siteOut);
@@ -137,10 +134,14 @@ public class DiningFragment extends BaseFragmentClass {
         super.onSaveInstanceState(outState);
     }
 
+    /**
+     * Gets plant string
+     *
+     * @return site from json
+     */
     private String getPlantString() {
         if (mSite != null) {
-            String siteOut = new Gson().toJson(mSite, Site.class);
-            return siteOut;
+            return new Gson().toJson(mSite, Site.class);
         }
         return null;
     }
@@ -204,7 +205,6 @@ public class DiningFragment extends BaseFragmentClass {
      * @param args - {@link Bundle} arguments
      */
     private void bindData(Bundle args) {
-        //TODO: restore state, add more things to load at first
         if (!restoreState(mSavedInstanceState)) {
             //Initial bind
             loadSite();
@@ -329,7 +329,7 @@ public class DiningFragment extends BaseFragmentClass {
                 try {
                     loadingScreen.dismiss();
                 } catch (Exception e) {
-
+                    LogUtil.e(TAG, e.getMessage(), e);
                 }
             }
 
@@ -338,7 +338,7 @@ public class DiningFragment extends BaseFragmentClass {
                 try {
                     loadingScreen.dismiss();
                 } catch (Exception e) {
-
+                    LogUtil.e(TAG, e.getMessage(), e);
                 }
             }
         });
@@ -490,6 +490,11 @@ public class DiningFragment extends BaseFragmentClass {
     private View.OnClickListener button_click = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            if (!NetUtil.hasNetworkConnection(getActivity())) {
+                ViewUtility.displayNetworkPreferences(getActivity());
+                return;
+            }
+
             switch (view.getId()) {
                 case R.id.fragment_dining_iac_id_button:
                     showAttendeeDialog(null, Support.Category.NORMAL, Support.Type.FOOD,
@@ -522,47 +527,6 @@ public class DiningFragment extends BaseFragmentClass {
         setMainActivityReplaceFragment(fragment, DiningGuestsFragment.TAG, true);
     }
 
-
-    /**
-     * Shows iac id prompt dialog
-     */
-    @Deprecated
-    private void showIacIdDialog() {
-        try {
-            final EditText editTextIacId = new EditText(getActivity());
-            editTextIacId.setHint(R.string.string_fragment_attendees_new_input_hint);
-            editTextIacId.setLayoutParams(new ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT));
-            editTextIacId.setRawInputType(InputType.TYPE_CLASS_NUMBER);
-            editTextIacId.setKeyListener(DigitsKeyListener.getInstance("1234567890"));
-            AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
-            dialog.setTitle(R.string.string_fragment_attendees_new_title);
-            dialog.setView(editTextIacId);
-
-            //Add
-            dialog.setPositiveButton(R.string.string_fragment_attendees_new_confirm,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            //addNewAttendee(editTextIacId.getText().toString());
-                            dialogInterface.dismiss();
-                        }
-                    });
-            //Cancel
-            dialog.setNegativeButton(R.string.string_fragment_attendees_new_cancel,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.dismiss();
-                        }
-                    });
-
-            dialog.create().show();
-        } catch (Exception e) {
-            LogUtil.e(TAG, e.getMessage(), e);
-        }
-    }
 
     /**
      * Shows barcode reader for id card

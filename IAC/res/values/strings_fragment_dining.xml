@@ -34,5 +34,11 @@
     <string name="string_fragment_dining_support_type_beverage">Bebida</string>
     <string name="string_fragment_dining_support_type_water">Agua</string>
 
+    <string name="string_fragment_dining_manual">Manual</string>
+    <string name="string_fragment_dining_normal">Normal</string>
+    <string name="string_fragment_dining_no_support">Sin Subsidio</string>
+    <string name="string_fragment_dining_extra_time">Tiempo Extra</string>
+    <string name="string_fragment_dining_guests">Invitados</string>
+
 
 </resources>
