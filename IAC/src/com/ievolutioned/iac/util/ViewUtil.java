@@ -45,15 +45,16 @@ public class ViewUtil {
         if (showView == null || showView.getContext() == null)
             return false;
         if (!NetUtil.hasNetworkConnection(showView.getContext())) {
-            showView.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Animation fadeIn = AnimationUtils.loadAnimation(showView.getContext(),
-                            android.R.anim.fade_in);
-                    showView.startAnimation(fadeIn);
-                    showView.setVisibility(View.VISIBLE);
-                }
-            }, 300);
+            if (showView.getVisibility() != View.VISIBLE)
+                showView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Animation fadeIn = AnimationUtils.loadAnimation(showView.getContext(),
+                                android.R.anim.fade_in);
+                        showView.startAnimation(fadeIn);
+                        showView.setVisibility(View.VISIBLE);
+                    }
+                }, 300);
             return true;
         } else {
             showView.setVisibility(View.GONE);

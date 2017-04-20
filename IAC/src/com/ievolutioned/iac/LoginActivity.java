@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -80,8 +81,30 @@ public class LoginActivity extends Activity {
         checkInternetConnection();
     }
 
+    private Handler mHandler = new Handler();
+    private Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (mHandler != null) {
+                checkInternetConnection();
+            }
+        }
+    };
+
+    /**
+     * Checks for internet connection
+     */
     private void checkInternetConnection() {
         ViewUtil.internetConnectionView(mInternetConnection);
+        if (mHandler != null)
+            mHandler.postDelayed(mRunnable, 3000);
+    }
+
+    @Override
+    protected void onPause() {
+        if (mHandler != null && mRunnable != null)
+            mHandler.removeCallbacks(mRunnable);
+        super.onPause();
     }
 
     /**
@@ -95,6 +118,7 @@ public class LoginActivity extends Activity {
         mLoading = ViewUtility.getLoadingScreen(this);
 
         mInternetConnection = findViewById(R.id.activity_login_internet_msg);
+        mInternetConnection.setOnClickListener(button_click);
 
         //On click listeners
         mButtonSingIn.setOnClickListener(button_click);
@@ -114,6 +138,11 @@ public class LoginActivity extends Activity {
                     }
                     if (validateForm())
                         logIn();
+                    break;
+                case R.id.activity_login_internet_msg:
+                    ViewUtility.displayNetworkPreferences(LoginActivity.this);
+                    break;
+                default:
                     break;
             }
         }
