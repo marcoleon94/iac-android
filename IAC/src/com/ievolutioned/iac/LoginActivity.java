@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,6 +19,7 @@ import com.ievolutioned.iac.net.service.UtilService;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.util.LogUtil;
+import com.ievolutioned.iac.util.ViewUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 import com.ievolutioned.pxform.database.FormsDataSet;
 
@@ -50,6 +52,11 @@ public class LoginActivity extends Activity {
      */
     private AlertDialog mLoading;
 
+    /**
+     * Internet connection
+     */
+    private View mInternetConnection;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,13 +66,45 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_login);
         bindUI();
         if (AppConfig.DEBUG) {
-            mEmail.setText("123456789");
-            mPassword.setText("123456789");
+            mEmail.setText("99000097");
+            mPassword.setText("99000097");
         }
 
         com.ievolutioned.pxform.database.FormsDataSet f = new FormsDataSet(LoginActivity.this);
         f.deleteAll();
         new UtilService(AppConfig.getUUID(this)).getUpdate(LoginActivity.this, getFragmentManager());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkInternetConnection();
+    }
+
+    private Handler mHandler = new Handler();
+    private Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (mHandler != null) {
+                checkInternetConnection();
+            }
+        }
+    };
+
+    /**
+     * Checks for internet connection
+     */
+    private void checkInternetConnection() {
+        ViewUtil.internetConnectionView(mInternetConnection);
+        if (mHandler != null)
+            mHandler.postDelayed(mRunnable, 3000);
+    }
+
+    @Override
+    protected void onPause() {
+        if (mHandler != null && mRunnable != null)
+            mHandler.removeCallbacks(mRunnable);
+        super.onPause();
     }
 
     /**
@@ -77,6 +116,9 @@ public class LoginActivity extends Activity {
         mPassword = (EditText) findViewById(R.id.activity_login_editPassword);
         mButtonSingIn = (Button) findViewById(R.id.activity_login_btnLogIn);
         mLoading = ViewUtility.getLoadingScreen(this);
+
+        mInternetConnection = findViewById(R.id.activity_login_internet_msg);
+        mInternetConnection.setOnClickListener(button_click);
 
         //On click listeners
         mButtonSingIn.setOnClickListener(button_click);
@@ -96,6 +138,11 @@ public class LoginActivity extends Activity {
                     }
                     if (validateForm())
                         logIn();
+                    break;
+                case R.id.activity_login_internet_msg:
+                    ViewUtility.displayNetworkPreferences(LoginActivity.this);
+                    break;
+                default:
                     break;
             }
         }
@@ -194,11 +241,13 @@ public class LoginActivity extends Activity {
             return;
         try {
             LogUtil.d(TAG, "USER: " + user.getAdminToken() + ":" + user.getAdminRol() + ":" +
-                    user.getIacId());
+                    user.getIacId() + "type: " + user.getTypeIac());
             AppPreferences.setIacId(this, user.getIacId());
             AppPreferences.setAdminToken(this, user.getAdminToken());
             AppPreferences.setRole(this, user.getAdminRol());
             AppPreferences.setProfessionalGroup(this, user.getProfessionalGroup());
+            AppPreferences.setSiteId(this, user.getSiteId());
+            AppPreferences.setTypeIac(this, user.getTypeIac());
         } catch (Exception e) {
             LogUtil.e(LoginActivity.class.getName(), "Can not set property on User", e);
         }
