@@ -76,7 +76,7 @@ public class DiningFragment extends BaseFragmentClass {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View root = inflater.inflate(R.layout.fragment_dining, container, false);
-        setHasOptionsMenu(true);
+        //setHasOptionsMenu(true);
         bindUI(root);
         setTitle(getString(R.string.string_fragment_dining_title));
 
@@ -177,7 +177,7 @@ public class DiningFragment extends BaseFragmentClass {
      */
     private void bindData(Bundle args) {
         //TODO: restore state, add more things to load at first
-        if (!restoreState(mSavedInstanceState) && mSite == null) {
+        if (!restoreState(mSavedInstanceState)) {
             //Initial bind
             loadSite();
         }
@@ -192,6 +192,7 @@ public class DiningFragment extends BaseFragmentClass {
                             JsonArray array = response.json.getAsJsonArray();
                             if (array == null || array.size() == 0)
                                 return;
+                            mAttendees = new JsonArray();
                             for (JsonElement j : array) {
                                 if (j.getAsJsonObject().get("commensals").getAsJsonArray().size() > 0) {
                                     for (JsonElement c : j.getAsJsonObject().get("commensals").getAsJsonArray()) {
