@@ -30,5 +30,9 @@
     <string name="string_fragment_dining_barcode_add_confirm">Sí</string>
     <string name="string_fragment_dining_barcode_add_cancel">No</string>
 
+    <string name="string_fragment_dining_support_type_food">Comida</string>
+    <string name="string_fragment_dining_support_type_beverage">Bebida</string>
+    <string name="string_fragment_dining_support_type_water">Agua</string>
+
 
 </resources>

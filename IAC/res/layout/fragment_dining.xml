@@ -92,7 +92,7 @@
                 android:layout_weight="1"
                 android:checked="true"
                 android:minLines="2"
-                android:text="Comida" />
+                android:text="@string/string_fragment_dining_support_type_food" />
 
             <RadioButton
                 android:id="@+id/fragment_dining_support_type_beverage"
@@ -100,7 +100,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                android:text="Bebida" />
+                android:text="@string/string_fragment_dining_support_type_beverage" />
 
             <RadioButton
                 android:id="@+id/fragment_dining_support_type_water"
@@ -108,7 +108,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                android:text="Agua" />
+                android:text="@string/string_fragment_dining_support_type_water" />
 
         </info.hoang8f.android.segmented.SegmentedGroup>
 
@@ -130,13 +130,5 @@
             android:layout_height="wrap_content"
             android:focusable="true" />
 
-
-        <!--
-        <fragment
-            android:id="@+id/fragment_dining_attendee_guest_fragment"
-            android:name="com.ievolutioned.iac.fragment.DiningGuestsFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-            -->
     </LinearLayout>
 </ScrollView>
