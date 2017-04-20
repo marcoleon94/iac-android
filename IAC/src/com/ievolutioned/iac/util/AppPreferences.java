@@ -5,8 +5,6 @@ import android.content.SharedPreferences;
 
 import com.ievolutioned.iac.entity.UserRole;
 
-import java.util.Set;
-
 /**
  * Shared preferences class. Manages the shared preferences for the App.
  * <p/>
@@ -27,9 +25,10 @@ public class AppPreferences {
 
     private static final String KEY_PROFESSIONAL_GROUP = "KEY_PROFESSIONAL_GROUP";
 
-    private static final String KEY_DINING_ATTENDEES = "KEY_DINING_ATTENDEES";
+    private static final String KEY_SITE_ID = "KEY_SITE_ID";
 
-    private static final String KEY_DINING_PLANT = "KEY_DINING_PLANT";
+    private static final String KEY_TYPE_IAC = "KEY_TYPE_IAC";
+
 
     private static final String KEY_DINING_BARCODE_TEMPORAL = "KEY_DINING_BARCODE_TEMPORAL";
 
@@ -138,26 +137,45 @@ public class AppPreferences {
     }
 
     /**
-     * Sets the dinning attendees employees
+     * Sets the site id
      *
-     * @param c         - the context
-     * @param attendees - a set of attendees
+     * @param c     - the context
+     * @param value - the value
      */
-    public static void setDiningAttendees(Context c, Set<String> attendees) {
-        getEditor(c).putStringSet(KEY_DINING_ATTENDEES, attendees).commit();
+    public static void setSiteId(Context c, long value) {
+        getEditor(c).putLong(KEY_SITE_ID, value).commit();
     }
 
-    public static Set<String> getDinningAttendees(Context c) {
-        return getPrefs(c).getStringSet(KEY_DINING_ATTENDEES, null);
+    /**
+     * Gets the site id
+     *
+     * @param c - the context
+     * @return the saved value or null
+     */
+    public static long getSiteId(Context c) {
+        return getPrefs(c).getLong(KEY_SITE_ID, 0);
     }
 
-    public static void setDiningPlant(Context c, String value) {
-        getEditor(c).putString(KEY_DINING_PLANT, value).commit();
+    /**
+     * Sets the professional group preference
+     *
+     * @param c     - the context
+     * @param value - the value
+     */
+    public static void setTypeIac(Context c, String value) {
+        getEditor(c).putString(KEY_TYPE_IAC, value).commit();
     }
 
-    public static String getDiningPlant(Context c) {
-        return getPrefs(c).getString(KEY_DINING_PLANT, null);
+    /**
+     * Gets the professional group
+     *
+     * @param c - the context
+     * @return the saved value or null
+     */
+    public static String getTypeIac(Context c) {
+        return getPrefs(c).getString(KEY_TYPE_IAC, null);
     }
+
 
     public static void setDiningBarcodeTemporal(Context c, int value) {
         getEditor(c).putInt(KEY_DINING_BARCODE_TEMPORAL, value).commit();

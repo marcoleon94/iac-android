@@ -241,11 +241,13 @@ public class LoginActivity extends Activity {
             return;
         try {
             LogUtil.d(TAG, "USER: " + user.getAdminToken() + ":" + user.getAdminRol() + ":" +
-                    user.getIacId());
+                    user.getIacId() + "type: " + user.getTypeIac());
             AppPreferences.setIacId(this, user.getIacId());
             AppPreferences.setAdminToken(this, user.getAdminToken());
             AppPreferences.setRole(this, user.getAdminRol());
             AppPreferences.setProfessionalGroup(this, user.getProfessionalGroup());
+            AppPreferences.setSiteId(this, user.getSiteId());
+            AppPreferences.setTypeIac(this, user.getTypeIac());
         } catch (Exception e) {
             LogUtil.e(LoginActivity.class.getName(), "Can not set property on User", e);
         }
