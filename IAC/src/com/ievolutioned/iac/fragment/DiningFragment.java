@@ -235,22 +235,37 @@ public class DiningFragment extends BaseFragmentClass {
                             for (JsonElement j : array) {
                                 //TODO: check commensals
                                 if (j.getAsJsonObject().get("commensals").getAsJsonArray().size() > 0) {
-                                    JsonObject commensal = j.getAsJsonObject().get("commensals").getAsJsonArray().get(0).getAsJsonObject();
-                                    JsonObject info = j.getAsJsonObject().get("info_dining_room").getAsJsonObject();
+                                    for (JsonElement c : j.getAsJsonObject().get("commensals").getAsJsonArray()) {
+                                        JsonObject commensal = c.getAsJsonObject();
+                                        String commensalType = commensal.has("commensal_type") ?
+                                                commensal.get("commensal_type").getAsString() : "invitado";
+                                        JsonObject info = j.getAsJsonObject().get("info_dining_room").getAsJsonObject();
 
-                                    String category = Support.Category.getSupportCategory(info.get("clasification").getAsString());
-                                    String type = Support.Type.getSupportType(info.get("support").getAsString());
+                                        String category = commensalType.contentEquals("invitado") ?
+                                                Support.Category.GUEST :
+                                                Support.Category.getSupportCategory(info.get("clasification").getAsString());
+                                        String type = Support.Type.getSupportType(info.get("support").getAsString());
 
-                                    JsonObject attendee = new JsonObject();
-                                    attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_ID, commensal.get("id").getAsLong());
-                                    attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_IAC_ID, commensal.get("iac_id").getAsString());
-                                    attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_NAME, commensal.get("name").getAsString());
-                                    attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_SUPPORT_CATEGORY, category);
-                                    attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_SUPPORT_TYPE, type);
-                                    String date = FormatUtil.parseDate(info.get("created_at").getAsString());
-                                    attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_DATE, date);
+                                        JsonObject attendee = new JsonObject();
+                                        attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_ID, commensal.get("id").getAsLong());
+                                        String iacId = commensal.has("iac_id") &&
+                                                !commensal.get("iac_id").isJsonNull() ?
+                                                commensal.get("iac_id").getAsString() :
+                                                Support.Category.GUEST_DEFAULT_IAC_ID;
+                                        attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_IAC_ID, iacId);
 
-                                    mAttendees.add(attendee);
+                                        String name = commensal.has("name") &&
+                                                !commensal.get("name").isJsonNull() ?
+                                                commensal.get("name").getAsString() : "";
+                                        attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_NAME, name);
+
+                                        attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_SUPPORT_CATEGORY, category);
+                                        attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_SUPPORT_TYPE, type);
+                                        String date = FormatUtil.parseDate(info.get("created_at").getAsString());
+                                        attendee.addProperty(DiningAttendeeAdapter.ATTENDEE_DATE, date);
+
+                                        mAttendees.add(attendee);
+                                    }
                                 }
                                 if (mDiningAttendeeAdapter != null)
                                     mDiningAttendeeAdapter.notifyDataSetChanged();

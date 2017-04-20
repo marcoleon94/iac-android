@@ -170,6 +170,7 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         mHostCetegory = (ImageView) root.findViewById(R.id.list_item_attendee_support_category);
         mHostType = (ImageView) root.findViewById(R.id.list_item_attendee_support_type);
 
+        root.findViewById(R.id.list_item_attendee_delete_button).setOnClickListener(button_click);
         root.findViewById(R.id.fragment_dining_iac_id_button).setOnClickListener(button_click);
         root.findViewById(R.id.fragment_dining_barcode_normal_button).setOnClickListener(button_click);
         root.findViewById(R.id.fragment_dining_barcode_extra_time_button).setOnClickListener(button_click);
@@ -177,7 +178,6 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         root.findViewById(R.id.fragment_dining_guests_manual_button).setOnClickListener(button_click);
         root.findViewById(R.id.fragment_dining_guests_iac_id_button).setOnClickListener(button_click);
         root.findViewById(R.id.fragment_dining_guests_barcode_button).setOnClickListener(button_click);
-
 
     }
 
@@ -188,7 +188,7 @@ public class DiningGuestsFragment extends BaseFragmentClass {
      */
     private void bindData(Bundle args) {
         //TODO: restore state
-        restoreState(args != null ? args : mSavedInstanceState);
+        restoreState(mSavedInstanceState != null ? mSavedInstanceState : args);
     }
 
     /**
@@ -304,6 +304,11 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         showHost();
     }
 
+    private void removeHost() {
+        mCurrentHost = null;
+        showHost();
+    }
+
     private void showHost() {
         if (mCurrentHost != null && !mCurrentHost.isJsonNull() &&
                 mHostDetailsView != null && mHostIacId != null && mHostName != null) {
@@ -371,6 +376,9 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         public void onClick(View view) {
             switch (view.getId()) {
                 //HOST
+                case R.id.list_item_attendee_delete_button:
+                    removeHost();
+                    break;
                 case R.id.fragment_dining_iac_id_button:
                     showAttendeeDialog(null, Support.Category.NORMAL, Support.Type.FOOD,
                             DiningAttendeeDialogFragment.NO_ERROR);
@@ -413,7 +421,7 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         attendeeDialogFragment.setDiningManualCallback(new DiningAttendeeDialogFragment.IDiningManual() {
             @Override
             public void onAccept(String input, String category, String type) {
-                callServiceFor(EXTRA_GUEST, input, category, type);
+                callServiceFor(EXTRA_HOST, input, category, type);
             }
         });
         attendeeDialogFragment.show(getFragmentManager(), DiningAttendeeDialogFragment.TAG);
