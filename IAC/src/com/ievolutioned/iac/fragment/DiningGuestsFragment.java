@@ -63,6 +63,8 @@ public class DiningGuestsFragment extends BaseFragmentClass {
     public static final String ARGS_HOST = "ARGS_HOST";
     public static final String ARGS_GUESTS_SAVED = "ARGS_GUESTS_SAVED";
 
+    private static final boolean HAS_OPTION_MENU = false;
+
     private static final int EXTRA_HOST = 1;
     private static final int EXTRA_GUEST = 2;
 
@@ -83,7 +85,6 @@ public class DiningGuestsFragment extends BaseFragmentClass {
     private Bundle mSavedInstanceState = null;
     private Site mSite;
 
-
     public static Fragment newInstance(Bundle args) {
         DiningGuestsFragment fragment = new DiningGuestsFragment();
         if (args != null)
@@ -91,12 +92,11 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         return fragment;
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View root = inflater.inflate(R.layout.fragment_dining_guests, container, false);
-        setHasOptionsMenu(true);
+        setHasOptionsMenu(HAS_OPTION_MENU);
         bindUI(root);
         setTitle(getString(R.string.string_fragment_dining_guests_title));
         if (savedInstanceState != null)
@@ -124,11 +124,6 @@ public class DiningGuestsFragment extends BaseFragmentClass {
                     ViewUtility.displayNetworkPreferences(getActivity());
                     break;
                 }
-                if (validateForm())
-                    saveAndUpload();
-                else
-                    ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
-                            R.string.string_fragment_dining_guests_save_error_validation);
                 break;
             default:
                 break;
@@ -219,7 +214,6 @@ public class DiningGuestsFragment extends BaseFragmentClass {
      * @param args - {@link Bundle} arguments
      */
     private void bindData(Bundle args) {
-        //TODO: restore state
         restoreState(mSavedInstanceState != null ? mSavedInstanceState : args);
     }
 
@@ -621,6 +615,41 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         IntentIntegrator.forSupportFragment(DiningGuestsFragment.this).initiateScan();
     }
 
+    private void doSaveOption() {
+        if (validateForm())
+            saveAndUpload();
+        else
+            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                    R.string.string_fragment_dining_guests_save_error_validation);
+    }
+
+    private void doSaveBackPressed() {
+        if (validateForm())
+            saveAndUpload();
+        else
+            showBackUnsavedDialog();
+    }
+
+    private void showBackUnsavedDialog() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this.mAttachedActivity);
+        dialog.setTitle(R.string.string_fragment_dining_guests_dialog_title);
+        dialog.setMessage(R.string.string_fragment_dining_guests_dialog_body);
+        dialog.setPositiveButton(R.string.string_fragment_dining_guests_dialog_ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                closeGuests();
+            }
+        });
+
+        dialog.setNegativeButton(R.string.string_fragment_dining_guests_dialog_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        dialog.create().show();
+    }
+
     /**
      * Validates the form before to being sent
      *
@@ -658,7 +687,9 @@ public class DiningGuestsFragment extends BaseFragmentClass {
                         public void onError(DiningService.DiningResponse response) {
                             LogUtil.d(TAG, response.msg);
                             ViewUtility.showMessage(context, ViewUtility.MSG_ERROR,
-                                    R.string.string_fragment_dining_modify_save_error);
+                                    R.string.string_fragment_dining_guests_modify_save_error);
+                            if (!HAS_OPTION_MENU)
+                                showBackUnsavedDialog();
                         }
 
                         @Override
@@ -671,9 +702,17 @@ public class DiningGuestsFragment extends BaseFragmentClass {
     }
 
     private void closeGuests() {
-        //TODO: back?
-        getActivity().onBackPressed();
+        if (this.mAttachedActivity != null)
+            this.mAttachedActivity.onBackPressed();
     }
+
+    public void onBackPressed() {
+        if (HAS_OPTION_MENU)
+            doSaveOption();
+        else
+            doSaveBackPressed();
+    }
+
 
     /**
      * Gets the attendee list to be submitted

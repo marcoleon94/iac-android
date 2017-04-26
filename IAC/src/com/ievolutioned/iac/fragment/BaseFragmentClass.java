@@ -1,7 +1,9 @@
 package com.ievolutioned.iac.fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.ievolutioned.iac.MainActivity;
@@ -10,6 +12,23 @@ import com.ievolutioned.iac.MainActivity;
  * Base class for custom navigation fragment
  */
 public abstract class BaseFragmentClass extends Fragment {
+
+    protected AppCompatActivity mAttachedActivity;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof AppCompatActivity) {
+            mAttachedActivity = (AppCompatActivity) context;
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        mAttachedActivity = null;
+        super.onDetach();
+    }
+
     /**
      * Set a custom handler to get <b>HOME</b> touch events from the main tool bar
      *
