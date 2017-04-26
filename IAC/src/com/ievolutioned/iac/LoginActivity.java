@@ -66,8 +66,8 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_login);
         bindUI();
         if (AppConfig.DEBUG) {
-            mEmail.setText("99000097");
-            mPassword.setText("99000097");
+            mEmail.setText("32001930");
+            mPassword.setText("32001930");
         }
 
         com.ievolutioned.pxform.database.FormsDataSet f = new FormsDataSet(LoginActivity.this);
@@ -246,7 +246,7 @@ public class LoginActivity extends Activity {
             AppPreferences.setAdminToken(this, user.getAdminToken());
             AppPreferences.setRole(this, user.getAdminRol());
             AppPreferences.setProfessionalGroup(this, user.getProfessionalGroup());
-            AppPreferences.setSiteId(this, user.getSiteId());
+            AppPreferences.setSiteId(this, user.getSiteId().toString());
             AppPreferences.setTypeIac(this, user.getTypeIac());
         } catch (Exception e) {
             LogUtil.e(LoginActivity.class.getName(), "Can not set property on User", e);

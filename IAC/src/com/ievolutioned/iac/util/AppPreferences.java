@@ -144,8 +144,8 @@ public class AppPreferences {
      * @param c     - the context
      * @param value - the value
      */
-    public static void setSiteId(Context c, long value) {
-        getEditor(c).putLong(KEY_SITE_ID, value).commit();
+    public static void setSiteId(Context c, String value) {
+        getEditor(c).putString(KEY_SITE_ID, value).commit();
     }
 
     /**
@@ -154,8 +154,8 @@ public class AppPreferences {
      * @param c - the context
      * @return the saved value or null
      */
-    public static long getSiteId(Context c) {
-        return getPrefs(c).getLong(KEY_SITE_ID, 0);
+    public static String getSiteId(Context c) {
+        return getPrefs(c).getString(KEY_SITE_ID, null);
     }
 
     /**
