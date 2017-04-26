@@ -76,7 +76,7 @@ public class DiningGuestsFragment extends BaseFragmentClass {
     private View mHostInputView;
     private TextView mHostIacId;
     private TextView mHostName;
-    private ImageView mHostCetegory;
+    private ImageView mHostCategory;
     private ImageView mHostType;
     private JsonObject mCurrentHost;
 
@@ -176,7 +176,7 @@ public class DiningGuestsFragment extends BaseFragmentClass {
 
         mHostIacId = (TextView) root.findViewById(R.id.list_item_attendee_id);
         mHostName = (TextView) root.findViewById(R.id.list_item_attendee_name);
-        mHostCetegory = (ImageView) root.findViewById(R.id.list_item_attendee_support_category);
+        mHostCategory = (ImageView) root.findViewById(R.id.list_item_attendee_support_category);
         mHostType = (ImageView) root.findViewById(R.id.list_item_attendee_support_type);
 
         root.findViewById(R.id.list_item_attendee_delete_button).setOnClickListener(button_click);
@@ -347,7 +347,7 @@ public class DiningGuestsFragment extends BaseFragmentClass {
             mHostDetailsView.setVisibility(View.VISIBLE);
             mHostIacId.setText(mCurrentHost.get(DiningGuestsAttendeeAdapter.ATTENDEE_IAC_ID).getAsString());
             mHostName.setText(mCurrentHost.get(DiningGuestsAttendeeAdapter.ATTENDEE_NAME).getAsString());
-            mHostCetegory.setImageResource(getImageResource(mCurrentHost
+            mHostCategory.setImageResource(getImageResource(mCurrentHost
                     .get(DiningGuestsAttendeeAdapter.ATTENDEE_SUPPORT_CATEGORY).getAsString()));
             mHostType.setImageResource(getImageResource(mCurrentHost
                     .get(DiningGuestsAttendeeAdapter.ATTENDEE_SUPPORT_TYPE).getAsString()));
