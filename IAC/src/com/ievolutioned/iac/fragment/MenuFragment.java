@@ -256,48 +256,49 @@ public class MenuFragment extends Fragment {
             }
 
         //Assists
-        //Only for admins
-        if (!role.contentEquals(UserRole.ADMIN)) {
+        //Only for admins or rh
+        if (!role.contentEquals(UserRole.ADMIN) && !role.contentEquals(UserRole.RH)) {
             if (mActivity.findViewById(R.id.fragment_menu_attendees) != null)
                 mActivity.findViewById(R.id.fragment_menu_attendees).setVisibility(View.GONE);
         }
-        
-        //Only for Dining
-        if(typeIac != null && typeIac.contentEquals(AppPreferences.TYPE_IAC_DINING)){
-            if(mActivity.findViewById(R.id.fragment_menu_home) != null)
+
+        //Only for Dining type
+        if (typeIac != null && typeIac.contentEquals(AppPreferences.TYPE_IAC_DINING)) {
+            if (mActivity.findViewById(R.id.fragment_menu_home) != null)
                 mActivity.findViewById(R.id.fragment_menu_home).setVisibility(View.GONE);
 
-            if(mActivity.findViewById(R.id.fragment_menu_asks) != null)
+            if (mActivity.findViewById(R.id.fragment_menu_asks) != null)
                 mActivity.findViewById(R.id.fragment_menu_asks).setVisibility(View.GONE);
 
-            if(mActivity.findViewById(R.id.fragment_menu_ppf) != null)
+            if (mActivity.findViewById(R.id.fragment_menu_ppf) != null)
                 mActivity.findViewById(R.id.fragment_menu_ppf).setVisibility(View.GONE);
 
-            if(mActivity.findViewById(R.id.fragment_menu_contact) != null)
+            if (mActivity.findViewById(R.id.fragment_menu_contact) != null)
                 mActivity.findViewById(R.id.fragment_menu_contact).setVisibility(View.GONE);
 
-            if(mActivity.findViewById(R.id.fragment_menu_head) != null)
+            if (mActivity.findViewById(R.id.fragment_menu_head) != null)
                 mActivity.findViewById(R.id.fragment_menu_head).setVisibility(View.GONE);
 
-            if(mActivity.findViewById(R.id.fragment_menu_video) != null)
+            if (mActivity.findViewById(R.id.fragment_menu_video) != null)
                 mActivity.findViewById(R.id.fragment_menu_video).setVisibility(View.GONE);
 
-            if(mActivity.findViewById(R.id.fragment_menu_organization_chart) != null)
+            if (mActivity.findViewById(R.id.fragment_menu_organization_chart) != null)
                 mActivity.findViewById(R.id.fragment_menu_organization_chart).setVisibility(View.GONE);
 
-            if(mActivity.findViewById(R.id.fragment_menu_attendees) != null)
+            if (mActivity.findViewById(R.id.fragment_menu_attendees) != null)
                 mActivity.findViewById(R.id.fragment_menu_attendees).setVisibility(View.GONE);
 
-            if(mActivity.findViewById(R.id.fragment_menu_forms) != null)
+            if (mActivity.findViewById(R.id.fragment_menu_forms) != null)
                 mActivity.findViewById(R.id.fragment_menu_forms).setVisibility(View.GONE);
 
-            if(mActivity.findViewById(R.id.fragment_menu_form_list) != null)
+            if (mActivity.findViewById(R.id.fragment_menu_form_list) != null)
                 mActivity.findViewById(R.id.fragment_menu_form_list).setVisibility(View.GONE);
 
-            if(mActivity.findViewById(R.id.fragment_menu_profile) != null)
+            if (mActivity.findViewById(R.id.fragment_menu_profile) != null)
                 mActivity.findViewById(R.id.fragment_menu_profile).setVisibility(View.GONE);
-
-
+        } else {
+            if (mActivity.findViewById(R.id.fragment_menu_dining) != null)
+                mActivity.findViewById(R.id.fragment_menu_dining).setVisibility(View.GONE);
         }
     }
 
