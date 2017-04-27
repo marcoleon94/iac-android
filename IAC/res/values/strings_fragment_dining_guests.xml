@@ -38,7 +38,7 @@
     <string name="string_fragment_dining_guests_general_error">Error</string>
 
     <string name="string_fragment_dining_guests_dialog_title">Salir de Invitados</string>
-    <string name="string_fragment_dining_guests_dialog_body">Los invitados no pueden ser añadidos, ¿desea salir sin guardar?</string>
+    <string name="string_fragment_dining_guests_dialog_body">Los invitados no pueden ser actualizados, añada un anfitrion y al menos un invitado. ¿desea salir sin guardar?</string>
     <string name="string_fragment_dining_guests_dialog_cancel">Cancelar</string>
     <string name="string_fragment_dining_guests_dialog_ok">Sí, salir.</string>
 
