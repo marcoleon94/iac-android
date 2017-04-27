@@ -76,9 +76,9 @@ public class Support {
             switch (typeId) {
                 case FOOD_ID:
                     return FOOD;
-                case BEVERAGE:
+                case BEVERAGE_ID:
                     return BEVERAGE;
-                case WATER:
+                case WATER_ID:
                     return WATER;
                 default:
                     return FOOD;

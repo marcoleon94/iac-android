@@ -444,7 +444,7 @@ public class DiningGuestsFragment extends BaseFragmentClass {
                     removeHost();
                     break;
                 case R.id.fragment_dining_iac_id_button:
-                    showAttendeeDialog(null, Support.Category.NORMAL, Support.Type.FOOD,
+                    showAttendeeDialog(null, Support.Category.NORMAL, getSupportType(),
                             DiningAttendeeDialogFragment.NO_ERROR);
                     break;
                 case R.id.fragment_dining_barcode_normal_button:
@@ -734,11 +734,12 @@ public class DiningGuestsFragment extends BaseFragmentClass {
      */
     private void saveAndUpload() {
         final Context context = getActivity();
-        String type = getSupportType();
-        String category = getSupportCategory();
 
-        if (context != null && mSite != null && type != null && category != null && mCurrentHost != null
+        if (context != null && mSite != null && mCurrentHost.has(DiningGuestsAttendeeAdapter.ATTENDEE_SUPPORT_CATEGORY)
+                && mCurrentHost.has(DiningGuestsAttendeeAdapter.ATTENDEE_SUPPORT_TYPE) && mCurrentHost != null
                 && mGuests != null && mGuests.size() > 0) {
+            String type = mCurrentHost.get(DiningGuestsAttendeeAdapter.ATTENDEE_SUPPORT_TYPE).getAsString();
+            String category = mCurrentHost.get(DiningGuestsAttendeeAdapter.ATTENDEE_SUPPORT_CATEGORY).getAsString();
             String register = DiningService.getDiningRegisterBody(mSite.getId(), type, category,
                     mCurrentHost, mGuests);
             LogUtil.d(TAG, register);
