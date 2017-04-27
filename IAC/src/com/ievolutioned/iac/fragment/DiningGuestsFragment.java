@@ -43,6 +43,7 @@ import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.util.FormatUtil;
 import com.ievolutioned.iac.util.LogUtil;
+import com.ievolutioned.iac.util.ViewUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 
 import java.util.ArrayList;
@@ -252,8 +253,10 @@ public class DiningGuestsFragment extends BaseFragmentClass {
                         for (String g : jsonGuests) {
                             mGuests.add(new JsonParser().parse(g));
                         }
-                    if (mGuestsAdapter != null)
+                    if (mGuestsAdapter != null && mGuestsListView != null) {
                         mGuestsAdapter.notifyDataSetChanged();
+                        ViewUtil.setListViewHeightBasedOnChildren(mGuestsListView);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -316,6 +319,7 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         try {
             mGuests.remove(guest);
             mGuestsAdapter.notifyDataSetChanged();
+            ViewUtil.setListViewHeightBasedOnChildren(mGuestsListView);
         } catch (Exception e) {
             ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR, "Error");
         }
@@ -402,7 +406,7 @@ public class DiningGuestsFragment extends BaseFragmentClass {
 
         mGuestsAdapter.notifyDataSetChanged();
         LogUtil.d(TAG, mGuests.toString());
-        //ViewUtil.setListViewHeightBasedOnChildren(mGuestsListView);
+        ViewUtil.setListViewHeightBasedOnChildren(mGuestsListView);
     }
 
 
