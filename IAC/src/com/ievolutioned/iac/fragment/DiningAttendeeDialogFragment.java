@@ -3,9 +3,12 @@ package com.ievolutioned.iac.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -66,6 +69,15 @@ public class DiningAttendeeDialogFragment extends DialogFragment implements View
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Window w = getDialog().getWindow();
+        if (w != null) {
+            w.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
+            WindowManager.LayoutParams attrs = w.getAttributes();
+            attrs.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            w.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+            attrs.x = 0;
+            w.setAttributes(attrs);
+        }
         return bindUI(inflater.inflate(R.layout.dialog_fragment_dining_attendee, container, false));
     }
 
