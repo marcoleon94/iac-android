@@ -19,6 +19,8 @@
     <string name="string_fragment_dining_new_cancel">Cancelar</string>
     <string name="string_fragment_dining_new_no_record">No se encontró al usuario</string>
 
+    <string name="string_fragment_dining_scan_cancelled">Escaneo cancelado</string>
+
     <string name="string_fragment_dining_modify_save_success">Comensales actualizados</string>
     <string name="string_fragment_dining_modify_save_error">Error al añadir al comensal</string>
 

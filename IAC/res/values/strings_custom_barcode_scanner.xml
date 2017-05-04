@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="custom_barcode_scanner_cancel">Cancelar Escaneo</string>
+    <string name="custom_barcode_scanner_torch">Linterna</string>
+</resources>

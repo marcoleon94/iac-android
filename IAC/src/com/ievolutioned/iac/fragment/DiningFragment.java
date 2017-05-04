@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,6 +31,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.ievolutioned.iac.CustomScannerActivity;
 import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.entity.Site;
@@ -535,7 +537,10 @@ public class DiningFragment extends BaseFragmentClass {
      */
     private void showBarcodeReader(String args) {
         AppPreferences.setDiningArgsType(getContext(), args);
-        IntentIntegrator.forSupportFragment(DiningFragment.this).initiateScan();
+        IntentIntegrator integrator = IntentIntegrator.forSupportFragment(DiningFragment.this);
+        integrator.setCaptureActivity(CustomScannerActivity.class);
+        integrator.initiateScan();
+
     }
 
 
@@ -561,11 +566,13 @@ public class DiningFragment extends BaseFragmentClass {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if (result != null && !TextUtils.isEmpty(result.getContents()))
-            handleScanResult(result.getContents());
-        else
-            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR, "Error");
+        if (resultCode == AppCompatActivity.RESULT_OK) {
+            IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+            if (result != null && !TextUtils.isEmpty(result.getContents()))
+                handleScanResult(result.getContents());
+        } else
+            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                    R.string.string_fragment_dining_scan_cancelled);
 
 
     }
