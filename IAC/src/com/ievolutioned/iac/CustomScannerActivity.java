@@ -14,6 +14,8 @@ import com.journeyapps.barcodescanner.CaptureManager;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 
 /**
+ * Custom Barcode reader activity. Shows a different layout for cancel and torch options
+ * <p>
  * Created by Daniel on 04/05/2017.
  */
 
@@ -30,6 +32,11 @@ public class CustomScannerActivity extends Activity implements View.OnClickListe
         bindUI(savedInstanceState);
     }
 
+    /**
+     * Binds the UI
+     *
+     * @param savedInstanceState
+     */
     private void bindUI(Bundle savedInstanceState) {
         barcodeScannerView = (DecoratedBarcodeView) findViewById(R.id.zxing_barcode_scanner);
         View cancel = findViewById(R.id.zxing_barcode_cancel);
@@ -56,6 +63,9 @@ public class CustomScannerActivity extends Activity implements View.OnClickListe
         bindData();
     }
 
+    /**
+     * Sets the previous state preferences
+     */
     private void bindData() {
         boolean previousState = AppPreferences.getTorchState(this);
         if (previousState && barcodeScannerView != null) {
@@ -102,11 +112,19 @@ public class CustomScannerActivity extends Activity implements View.OnClickListe
     }
 
 
+    /**
+     * System has torch feature check
+     *
+     * @return true if it has, false otherwise
+     */
     private boolean hasTorch() {
         return getApplicationContext().getPackageManager()
                 .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
     }
 
+    /**
+     * Switches the torch state from preferences state, saves the new state
+     */
     private void switchTorchState() {
         boolean state = AppPreferences.toggleTorchState(this);
         if (state) {
@@ -117,6 +135,11 @@ public class CustomScannerActivity extends Activity implements View.OnClickListe
         switchTorchDrawableState(state);
     }
 
+    /**
+     * Gets a drawable indicator for the torch state
+     *
+     * @param state of torch
+     */
     private void switchTorchDrawableState(boolean state) {
         if (mTorch != null) {
             Drawable icon = state ? ContextCompat.getDrawable(this, android.R.drawable.presence_online) :
