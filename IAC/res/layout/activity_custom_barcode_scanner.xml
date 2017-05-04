@@ -15,7 +15,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background_gray_light">
+        android:background="@color/background_gray_light"
+        android:keepScreenOn="true">
 
 
         <Button
@@ -27,7 +28,7 @@
             android:drawableLeft="@android:drawable/presence_invisible"
             android:drawableStart="@android:drawable/presence_invisible"
             android:padding="10dp"
-            android:text="@string/custom_barcode_scanner_cancel" />
+            android:text="@string/custom_barcode_scanner_torch" />
 
 
         <Button

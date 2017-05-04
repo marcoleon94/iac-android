@@ -33,6 +33,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.ievolutioned.iac.CustomScannerActivity;
 import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.entity.Site;
@@ -673,7 +674,9 @@ public class DiningGuestsFragment extends BaseFragmentClass {
      */
     private void showBarcodeReader(int extra, final String category) {
         AppPreferences.setDiningBarcodeTemporal(getActivity(), extra);
-        IntentIntegrator.forSupportFragment(DiningGuestsFragment.this).initiateScan();
+        IntentIntegrator integrator = IntentIntegrator.forSupportFragment(DiningGuestsFragment.this);
+        integrator.setCaptureActivity(CustomScannerActivity.class);
+        integrator.initiateScan();
     }
 
     /**

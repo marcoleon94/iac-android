@@ -26,7 +26,7 @@ public class CustomScannerActivity extends Activity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.custom_barcode_scanner);
+        setContentView(R.layout.activity_custom_barcode_scanner);
         bindUI(savedInstanceState);
     }
 

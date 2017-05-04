@@ -540,7 +540,6 @@ public class DiningFragment extends BaseFragmentClass {
         IntentIntegrator integrator = IntentIntegrator.forSupportFragment(DiningFragment.this);
         integrator.setCaptureActivity(CustomScannerActivity.class);
         integrator.initiateScan();
-
     }
 
 
