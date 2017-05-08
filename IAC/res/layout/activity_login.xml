@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_login_activity"
-    tools:context="${relativePackage}.${activityClass}">
+    tools:context=".LoginActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -17,9 +17,9 @@
             <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="50dp"
+                android:background="@color/white_transparent_login"
                 android:gravity="center_vertical"
-                android:padding="15dp"
-                android:background="@color/white_transparent_login">
+                android:padding="15dp">
 
                 <TextView
                     android:id="@+id/activity_login_title"
@@ -108,4 +108,28 @@
 
         </LinearLayout>
     </ScrollView>
+
+
+    <RelativeLayout
+        android:id="@+id/activity_login_internet_msg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_orange_light"
+        android:gravity="center_vertical"
+        android:minHeight="50dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="30dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginStart="20dp"
+            android:drawableLeft="@android:drawable/ic_dialog_alert"
+            android:drawableStart="@android:drawable/ic_dialog_alert"
+            android:gravity="center"
+            android:text="@string/network_missing_title"
+            android:textColor="@color/gray_disabled_control" />
+    </RelativeLayout>
 </RelativeLayout>

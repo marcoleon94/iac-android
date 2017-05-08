@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="string_fragment_dining_guests_title">Invitados al Comedor</string>
+    <string name="string_fragment_dining_guests_hosts_title">ANFITRIÓN</string>
+    <string name="string_fragment_dining_guests_host">Anfitrión</string>
+    <string name="string_fragment_dining_guests_add_title">INVITADOS</string>
+    <string name="string_fragment_dining_guests_add_subtitle">Agregar</string>
+    <string name="string_fragment_dining_guests_list_title">Comensales invitados</string>
+
+    <string name="string_fragment_dining_guests_delete_title">Eliminar invitado</string>
+    <string name="string_fragment_dining_guests_delete_body">¿Desea eliminar invitado: %s?</string>
+    <string name="string_fragment_dining_guests_delete_confirm">Sí</string>
+    <string name="string_fragment_dining_guests_delete_cancel">No</string>
+
+    <string name="string_fragment_dining_guests_new_title">Agregar nuevo invitado</string>
+    <string name="string_fragment_dining_guests_host_new_title">Agregar nuevo anfitrión</string>
+    <string name="string_fragment_dining_guests_new_input_hint">Ingrese IAC-ID</string>
+    <string name="string_fragment_dining_guests_new_confirm">Agregar</string>
+    <string name="string_fragment_dining_guests_new_cancel">Cancelar</string>
+    <string name="string_fragment_dining_guests_new_no_record">No se encontró al usuario</string>
+
+    <string name="string_fragment_dining_guests_new_manual">Por Nombre</string>
+    <string name="string_fragment_dining_guests_new_manual_hint">Ingrese el nombre del invitado</string>
+
+    <string name="string_fragment_dining_guests_iac_button">Por IAC-ID</string>
+    <string name="string_fragment_dining_guests_barcode_button">Escanear</string>
+
+    <string name="string_fragment_dining_guests_modify_save_success">Comensales actualizados</string>
+    <string name="string_fragment_dining_guests_modify_save_error">Error al actualizar</string>
+
+    <string name="string_fragment_dining_guests_save_error_validation">No es posible guardar, añada el anfitrion y al menos un invitado</string>
+
+    <string name="string_fragment_dining_guests_barcode_add_title">Escanear</string>
+    <string name="string_fragment_dining_guests_barcode_add_body">¿Desea continuar escaneando?</string>
+    <string name="string_fragment_dining_guests_barcode_add_confirm">Sí</string>
+    <string name="string_fragment_dining_guests_barcode_add_cancel">No</string>
+
+    <string name="string_fragment_dining_guests_general_error">Error</string>
+
+    <string name="string_fragment_dining_guests_dialog_title">Salir de Invitados</string>
+    <string name="string_fragment_dining_guests_dialog_body">Los invitados no pueden ser actualizados, añada un anfitrion y al menos un invitado. ¿desea salir sin guardar?</string>
+    <string name="string_fragment_dining_guests_dialog_cancel">Cancelar</string>
+    <string name="string_fragment_dining_guests_dialog_ok">Sí, salir.</string>
+
+
+</resources>

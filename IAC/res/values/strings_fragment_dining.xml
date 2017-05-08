@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="string_fragment_dining_title">Comedor</string>
+    <string name="string_fragment_dining_plant_title">SELECCIONE COMEDOR DE PLANTA</string>
+    <string name="string_fragment_dining_plant">Comedor en Planta</string>
+    <string name="string_fragment_dining_plant_fetch_error">Error al cargar la planta</string>
+    <string name="string_fragment_dining_add_title">AGREGAR COMENSAL</string>
+    <string name="string_fragment_dining_add_subtitle">Agregar</string>
+    <string name="string_fragment_dining_list_title">Comensales</string>
+
+    <string name="string_fragment_dining_delete_title">Eliminar comensal</string>
+    <string name="string_fragment_dining_delete_body">¿Desea eliminar comensal: %s?</string>
+    <string name="string_fragment_dining_delete_confirm">Sí</string>
+    <string name="string_fragment_dining_delete_cancel">No</string>
+
+    <string name="string_fragment_dining_new_title">Agregar nuevo comensal</string>
+    <string name="string_fragment_dining_new_input_hint">Ingrese IAC-ID</string>
+    <string name="string_fragment_dining_new_confirm">Agregar</string>
+    <string name="string_fragment_dining_new_cancel">Cancelar</string>
+    <string name="string_fragment_dining_new_no_record">No se encontró al usuario</string>
+
+    <string name="string_fragment_dining_scan_cancelled">Escaneo cancelado</string>
+
+    <string name="string_fragment_dining_modify_save_success">Comensales actualizados</string>
+    <string name="string_fragment_dining_modify_save_error">Error al añadir al comensal</string>
+
+    <string name="string_fragment_dining_delete_success">Comensal removido</string>
+    <string name="string_fragment_dining_delete_error">Error al eliminar comensal</string>
+
+    <string name="string_fragment_dining_barcode_add_title">Escanear</string>
+    <string name="string_fragment_dining_barcode_add_body">¿Desea continuar escaneando?</string>
+    <string name="string_fragment_dining_barcode_add_confirm">Sí</string>
+    <string name="string_fragment_dining_barcode_add_cancel">No</string>
+
+    <string name="string_fragment_dining_support_type_food">Comida</string>
+    <string name="string_fragment_dining_support_type_beverage">Bebida</string>
+    <string name="string_fragment_dining_support_type_water">Agua</string>
+
+    <string name="string_fragment_dining_manual">Manual</string>
+    <string name="string_fragment_dining_normal">Normal</string>
+    <string name="string_fragment_dining_no_support">Sin Subsidio</string>
+    <string name="string_fragment_dining_extra_time">Tiempo Extra</string>
+    <string name="string_fragment_dining_guests">Invitados</string>
+
+
+</resources>

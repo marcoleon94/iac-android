@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -13,19 +14,24 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.ievolutioned.iac.fragment.AttendeesFragment;
+import com.ievolutioned.iac.fragment.DiningFragment;
+import com.ievolutioned.iac.fragment.DiningGuestsFragment;
 import com.ievolutioned.iac.fragment.FormsFragment;
 import com.ievolutioned.iac.fragment.MyProfileFragment;
 import com.ievolutioned.iac.fragment.SitesFragment;
 import com.ievolutioned.iac.fragment.TuobaFragment;
 import com.ievolutioned.iac.util.AppConfig;
+import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.util.FileUtil;
 import com.ievolutioned.iac.util.LogUtil;
+import com.ievolutioned.iac.util.ViewUtil;
 import com.ievolutioned.iac.view.MenuDrawerItem;
 import com.ievolutioned.iac.view.ViewUtility;
 import com.ievolutioned.pxform.database.FormsDataSet;
@@ -71,6 +77,11 @@ public class MainActivity extends AppCompatActivity {
      */
     private AlertDialog mLoading;
 
+    /**
+     * For internet check message
+     */
+    private View mInternetConnection;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +102,13 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.activity_main_drawer);
         mToolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
         mLoading = ViewUtility.getLoadingScreen(this);
+        mInternetConnection = findViewById(R.id.activity_main_internet_msg);
+        mInternetConnection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ViewUtility.displayNetworkPreferences(MainActivity.this);
+            }
+        });
         showLoading(true);
         setDrawer();
     }
@@ -103,9 +121,45 @@ public class MainActivity extends AppCompatActivity {
         if (args != null && !args.isEmpty()) {
             if (args.getString(ARGS_DEFAULT_HOME, null) != null) {
                 getIntent().removeExtra(ARGS_DEFAULT_HOME);
-                showHome();
+                String typeIac = AppPreferences.getTypeIac(this);
+                if (typeIac != null && typeIac.contentEquals(AppPreferences.TYPE_IAC_DINING))
+                    showDining();
+                else
+                    showHome();
             }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkInternetConnection();
+    }
+
+    @Override
+    protected void onPause() {
+        if (mHandler != null && mRunnable != null)
+            mHandler.removeCallbacks(mRunnable);
+        super.onPause();
+    }
+
+    private Handler mHandler = new Handler();
+    private Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (mHandler != null) {
+                checkInternetConnection();
+            }
+        }
+    };
+
+    /**
+     * Checks for internet connection
+     */
+    private void checkInternetConnection() {
+        ViewUtil.internetConnectionView(mInternetConnection);
+        if (mHandler != null)
+            mHandler.postDelayed(mRunnable, 3000);
     }
 
     /**
@@ -122,7 +176,8 @@ public class MainActivity extends AppCompatActivity {
             FragmentManager fm = getSupportFragmentManager();
             Fragment fragment = fm.findFragmentById(R.id.activity_main_frame_container);
             if (fragment instanceof MyProfileFragment || fragment instanceof SitesFragment ||
-                    fragment instanceof TuobaFragment || fragment instanceof AttendeesFragment) {
+                    fragment instanceof TuobaFragment || fragment instanceof AttendeesFragment ||
+                    fragment instanceof DiningFragment) {
                 //Open drawer
                 mDrawerLayout.openDrawer(GravityCompat.START);
             } else if (fragment instanceof FormsFragment) {
@@ -133,6 +188,8 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     onBackPressed();
                 }
+            } else if (fragment instanceof DiningGuestsFragment) {
+                ((DiningGuestsFragment)fragment).onBackPressed();
             }
         }
     };
@@ -154,6 +211,17 @@ public class MainActivity extends AppCompatActivity {
      */
     public void showAttendees() {
         Fragment fragment = new AttendeesFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        replaceFragment(fragment, null);
+        mDrawerLayout.closeDrawers();
+    }
+
+    /**
+     * Displays the dining entrance for users
+     */
+    public void showDining() {
+        Fragment fragment = new DiningFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         replaceFragment(fragment, null);
@@ -195,6 +263,14 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false); //disable static back arrow
         DrawerToggleSynchronizeState(); //refresh all menu state
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -333,10 +409,23 @@ public class MainActivity extends AppCompatActivity {
      * Replaces the current fragment on the frame container.
      * <br>This can be call from the {@link FormsFragment fragments childs }
      */
-    public void replaceFragment(Fragment mFragment, String tag) {
+    public void replaceFragment(Fragment fragment, String tag) {
+        replaceFragment(fragment, tag, false);
+    }
+
+    /**
+     * Replaces the fragment in the main activity frame
+     *
+     * @param fragment   - Fragment to be replaced
+     * @param tag        - TAG attribute
+     * @param isAnimated - Shows animation or not.
+     */
+    public void replaceFragment(Fragment fragment, String tag, boolean isAnimated) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.activity_main_frame_container, mFragment, tag);
+        if (isAnimated)
+            transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
+        transaction.replace(R.id.activity_main_frame_container, fragment, tag);
         transaction.addToBackStack(null);
         transaction.commit();
     }
@@ -458,4 +547,6 @@ public class MainActivity extends AppCompatActivity {
         replaceFragment(mFragment, null);
         mDrawerLayout.closeDrawers();
     }
+
+
 }

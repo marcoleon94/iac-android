@@ -9,10 +9,12 @@
     <string name="nav_drawer_form_video">@string/string_site_video</string>
     <string name="nav_drawer_form_organization_chart">@string/string_site_organization_chart</string>
     <string name="nav_drawer_form_attendees">Asistencias</string>
+    <string name="nav_drawer_form_dining">Comedor</string>
     <string name="nav_drawer_form_profile">Mi perfil</string>
     <string name="nav_drawer_form_logout">Cerrar sesión</string>
     <string name="nav_drawer_form_about">Acerca de</string>
     <string name="menu_action_upload">Enviar</string>
+    <string name="menu_action_save">Guardar</string>
     <string-array name="nav_drawer_form_items">
         <!--
         TODO: Removed temporally
