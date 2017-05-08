@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
@@ -816,11 +817,16 @@ public class DiningGuestsFragment extends BaseFragmentClass {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if (result != null && !TextUtils.isEmpty(result.getContents())) {
-            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS, result.getContents());
-            int from = AppPreferences.getDiningBarcodeTemporal(getContext());
-            handleScanResult(from, result.getContents());
+        if (resultCode == AppCompatActivity.RESULT_OK) {
+            IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+            if (result != null && !TextUtils.isEmpty(result.getContents())) {
+                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS, result.getContents());
+                int from = AppPreferences.getDiningBarcodeTemporal(getContext());
+                handleScanResult(from, result.getContents());
+            }
+        } else {
+            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                    R.string.string_fragment_dining_scan_cancelled);
         }
     }
 
@@ -830,6 +836,7 @@ public class DiningGuestsFragment extends BaseFragmentClass {
      * @param from
      * @param iacId
      */
+    //TODO: Set strings
     private void handleScanResult(int from, final String iacId) {
         if (from == EXTRA_HOST) {
             if (!isAttendeeInList(iacId)) {
