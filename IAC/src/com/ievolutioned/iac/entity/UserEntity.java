@@ -1,5 +1,6 @@
 package com.ievolutioned.iac.entity;
 
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -43,6 +44,18 @@ public class UserEntity {
      */
     @SerializedName("professional_group")
     private String professionalGroup;
+
+    /**
+     * {@link Site} id
+     */
+    @SerializedName("site_id")
+    private JsonElement siteId;
+
+    /**
+     * Type IAC
+     */
+    @SerializedName("type_iac")
+    private String typeIac;
 
     public String getIacId() {
         return iacId;
@@ -90,5 +103,21 @@ public class UserEntity {
 
     public void setProfessionalGroup(String professionalGroup) {
         this.professionalGroup = professionalGroup;
+    }
+
+    public JsonElement getSiteId() {
+        return siteId;
+    }
+
+    public void setSiteId(JsonElement siteId) {
+        this.siteId = siteId;
+    }
+
+    public String getTypeIac() {
+        return typeIac;
+    }
+
+    public void setTypeIac(String typeIac) {
+        this.typeIac = typeIac;
     }
 }

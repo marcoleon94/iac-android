@@ -2,6 +2,7 @@ package com.ievolutioned.iac.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -54,6 +55,42 @@ public class FormatUtil {
             LogUtil.e(FormatUtil.class.getName(), e.getMessage(), e);
         }
         return "";
+    }
+
+    /**
+     * Parses data from ruby in a single format dd/MM - HH:mm
+     *
+     * @param s date from ruby
+     * @return
+     */
+    public static String parseDate(String s) {
+        try {
+            String format = "yyyy-MM-dd'T'HH:mm:ss.sssZZZZ";
+            SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.US);
+            Date date;
+            date = sdf.parse(s);
+            String newFormatString = "dd/MM'-'HH:mm";
+            SimpleDateFormat newFormatter = new SimpleDateFormat(newFormatString, Locale.getDefault());
+            return newFormatter.format(date);
+        } catch (ParseException e) {
+            return "";
+        }
+    }
+
+    /**
+     * Parses a date in a single format dd/MM - HH:mm
+     *
+     * @param date
+     * @return
+     */
+    public static String parseDate(Date date) {
+        try {
+            String newFormatString = "dd/MM'-'HH:mm";
+            SimpleDateFormat newFormatter = new SimpleDateFormat(newFormatString, Locale.getDefault());
+            return newFormatter.format(date);
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     /**

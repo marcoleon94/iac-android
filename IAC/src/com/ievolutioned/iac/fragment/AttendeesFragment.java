@@ -165,7 +165,6 @@ public class AttendeesFragment extends BaseFragmentClass {
                             public void onSuccess(CoursesService.CoursesResponse response) {
                                 LogUtil.d(TAG, response.json.toString());
                                 try {
-                                    //TODO: default value in resources
                                     if (mCourses == null)
                                         mCourses = new JsonArray();
                                     mCourses.addAll(response.json.getAsJsonArray());
@@ -234,7 +233,6 @@ public class AttendeesFragment extends BaseFragmentClass {
      * @param attendee - the attendee
      */
     private void removeAttendee(final JsonObject attendee) {
-        //TODO: Remove it
         try {
             mAttendees.remove(attendee);
             mAttendeeAdapter.notifyDataSetChanged();

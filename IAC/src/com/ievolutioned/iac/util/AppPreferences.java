@@ -25,6 +25,19 @@ public class AppPreferences {
 
     private static final String KEY_PROFESSIONAL_GROUP = "KEY_PROFESSIONAL_GROUP";
 
+    private static final String KEY_SITE_ID = "KEY_SITE_ID";
+
+    private static final String KEY_TYPE_IAC = "KEY_TYPE_IAC";
+
+
+    private static final String KEY_DINING_BARCODE_TEMPORAL = "KEY_DINING_BARCODE_TEMPORAL";
+
+    private static final String KEY_DINING_ARGS_TYPE = "KEY_DINING_ARGS_TYPE";
+
+    public static final String TYPE_IAC_DINING = "comedor";
+
+    private static final String KEY_TORCH_STATE = "KEY_TORCH_STATE";
+
     /**
      * Gets the SharedPreferences
      *
@@ -125,5 +138,78 @@ public class AppPreferences {
      */
     public static String getProfessionalGroup(Context c) {
         return getPrefs(c).getString(KEY_PROFESSIONAL_GROUP, null);
+    }
+
+    /**
+     * Sets the site id
+     *
+     * @param c     - the context
+     * @param value - the value
+     */
+    public static void setSiteId(Context c, String value) {
+        getEditor(c).putString(KEY_SITE_ID, value).commit();
+    }
+
+    /**
+     * Gets the site id
+     *
+     * @param c - the context
+     * @return the saved value or null
+     */
+    public static String getSiteId(Context c) {
+        return getPrefs(c).getString(KEY_SITE_ID, null);
+    }
+
+    /**
+     * Sets the professional group preference
+     *
+     * @param c     - the context
+     * @param value - the value
+     */
+    public static void setTypeIac(Context c, String value) {
+        getEditor(c).putString(KEY_TYPE_IAC, value).commit();
+    }
+
+    /**
+     * Gets the professional group
+     *
+     * @param c - the context
+     * @return the saved value or null
+     */
+    public static String getTypeIac(Context c) {
+        return getPrefs(c).getString(KEY_TYPE_IAC, null);
+    }
+
+
+    public static void setDiningBarcodeTemporal(Context c, int value) {
+        getEditor(c).putInt(KEY_DINING_BARCODE_TEMPORAL, value).commit();
+    }
+
+    public static int getDiningBarcodeTemporal(Context c) {
+        return getPrefs(c).getInt(KEY_DINING_BARCODE_TEMPORAL, 0);
+    }
+
+    public static void setDiningArgsType(Context c, String args) {
+        getEditor(c).putString(KEY_DINING_ARGS_TYPE, args).commit();
+    }
+
+    public static String getDiningArgsType(Context c) {
+        return getPrefs(c).getString(KEY_DINING_ARGS_TYPE, null);
+    }
+
+    public static void setTorchState(Context c, boolean b) {
+        getEditor(c).putBoolean(KEY_TORCH_STATE, b).commit();
+    }
+
+    public static boolean getTorchState(Context c) {
+        return getPrefs(c).getBoolean(KEY_TORCH_STATE, false);
+    }
+
+    public static boolean toggleTorchState(Context c) {
+        if (!getPrefs(c).contains(KEY_TORCH_STATE))
+            setTorchState(c, false);
+        boolean currentState = getTorchState(c);
+        setTorchState(c, !currentState);
+        return !currentState;
     }
 }

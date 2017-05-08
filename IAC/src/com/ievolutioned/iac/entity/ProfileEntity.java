@@ -1,5 +1,6 @@
 package com.ievolutioned.iac.entity;
 
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -28,7 +29,7 @@ public class ProfileEntity {
     private String iacId;
     private String divp;
     @SerializedName("site_id")
-    private long siteId;
+    private JsonElement siteId;
     @SerializedName("type_iac")
     private String type;
     private String position;
@@ -53,6 +54,7 @@ public class ProfileEntity {
     private DepartmentEntity department;
     @SerializedName("employee_type_id")
     private long employeeTypeId;
+    private Site site;
 
     public long getId() {
         return id;
@@ -150,11 +152,11 @@ public class ProfileEntity {
         this.divp = divp;
     }
 
-    public long getSiteId() {
+    public JsonElement getSiteId() {
         return siteId;
     }
 
-    public void setSiteId(long siteId) {
+    public void setSiteId(JsonElement siteId) {
         this.siteId = siteId;
     }
 
@@ -268,5 +270,13 @@ public class ProfileEntity {
 
     public void setEmployeeTypeId(long employeeTypeId) {
         this.employeeTypeId = employeeTypeId;
+    }
+
+    public Site getSite() {
+        return site;
+    }
+
+    public void setSite(Site site) {
+        this.site = site;
     }
 }
