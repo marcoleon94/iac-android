@@ -172,8 +172,8 @@ public class ProfileFragment extends Fragment {
             mTextDepartment.setText(profile.getDepartment().getTitle());
         if (mTextDivp != null && profile.getDivp() != null)
             mTextDivp.setText(profile.getDivp());
-        if (mTextSite != null && profile.getSiteId() > 0)
-            mTextSite.setText(String.valueOf(profile.getSiteId()));
+        if (mTextSite != null && profile.getSiteId() != null)
+            mTextSite.setText(profile.getSiteId().toString());
         if (mTextEmployeeType != null && profile.getType() != null)
             mTextEmployeeType.setText(profile.getType());
         if (mTextDateAdmission != null && profile.getDateAdmission() != null)

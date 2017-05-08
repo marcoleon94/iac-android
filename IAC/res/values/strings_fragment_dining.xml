@@ -19,6 +19,8 @@
     <string name="string_fragment_dining_new_cancel">Cancelar</string>
     <string name="string_fragment_dining_new_no_record">No se encontró al usuario</string>
 
+    <string name="string_fragment_dining_scan_cancelled">Escaneo cancelado</string>
+
     <string name="string_fragment_dining_modify_save_success">Comensales actualizados</string>
     <string name="string_fragment_dining_modify_save_error">Error al añadir al comensal</string>
 
@@ -29,6 +31,16 @@
     <string name="string_fragment_dining_barcode_add_body">¿Desea continuar escaneando?</string>
     <string name="string_fragment_dining_barcode_add_confirm">Sí</string>
     <string name="string_fragment_dining_barcode_add_cancel">No</string>
+
+    <string name="string_fragment_dining_support_type_food">Comida</string>
+    <string name="string_fragment_dining_support_type_beverage">Bebida</string>
+    <string name="string_fragment_dining_support_type_water">Agua</string>
+
+    <string name="string_fragment_dining_manual">Manual</string>
+    <string name="string_fragment_dining_normal">Normal</string>
+    <string name="string_fragment_dining_no_support">Sin Subsidio</string>
+    <string name="string_fragment_dining_extra_time">Tiempo Extra</string>
+    <string name="string_fragment_dining_guests">Invitados</string>
 
 
 </resources>

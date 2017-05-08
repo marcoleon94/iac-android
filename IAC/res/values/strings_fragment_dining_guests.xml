@@ -19,8 +19,11 @@
     <string name="string_fragment_dining_guests_new_cancel">Cancelar</string>
     <string name="string_fragment_dining_guests_new_no_record">No se encontró al usuario</string>
 
-    <string name="string_fragment_dining_guests_new_manual">Manual</string>
+    <string name="string_fragment_dining_guests_new_manual">Por Nombre</string>
     <string name="string_fragment_dining_guests_new_manual_hint">Ingrese el nombre del invitado</string>
+
+    <string name="string_fragment_dining_guests_iac_button">Por IAC-ID</string>
+    <string name="string_fragment_dining_guests_barcode_button">Escanear</string>
 
     <string name="string_fragment_dining_guests_modify_save_success">Comensales actualizados</string>
     <string name="string_fragment_dining_guests_modify_save_error">Error al actualizar</string>
@@ -33,5 +36,11 @@
     <string name="string_fragment_dining_guests_barcode_add_cancel">No</string>
 
     <string name="string_fragment_dining_guests_general_error">Error</string>
+
+    <string name="string_fragment_dining_guests_dialog_title">Salir de Invitados</string>
+    <string name="string_fragment_dining_guests_dialog_body">Los invitados no pueden ser actualizados, añada un anfitrion y al menos un invitado. ¿desea salir sin guardar?</string>
+    <string name="string_fragment_dining_guests_dialog_cancel">Cancelar</string>
+    <string name="string_fragment_dining_guests_dialog_ok">Sí, salir.</string>
+
 
 </resources>

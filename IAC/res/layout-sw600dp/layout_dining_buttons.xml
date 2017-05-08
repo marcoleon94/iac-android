@@ -18,7 +18,7 @@
         android:layout_marginStart="10dp"
         android:layout_weight="1"
         android:drawableRight="@drawable/ic_iac_id"
-        android:text="Manual" />
+        android:text="@string/string_fragment_dining_manual" />
 
     <Button
         android:id="@+id/fragment_dining_barcode_normal_button"
@@ -30,7 +30,7 @@
         android:layout_marginStart="10dp"
         android:layout_weight="1"
         android:drawableRight="@drawable/ic_barcode"
-        android:text="Normal" />
+        android:text="@string/string_fragment_dining_normal" />
 
     <Button
         android:id="@+id/fragment_dining_barcode_no_support_button"
@@ -42,7 +42,7 @@
         android:layout_marginStart="10dp"
         android:layout_weight="1"
         android:drawableRight="@drawable/ic_barcode"
-        android:text="Sin Subsidio" />
+        android:text="@string/string_fragment_dining_no_support" />
 
     <Button
         android:id="@+id/fragment_dining_barcode_extra_time_button"
@@ -54,7 +54,7 @@
         android:layout_marginStart="10dp"
         android:layout_weight="1"
         android:drawableRight="@drawable/ic_barcode"
-        android:text="Tiempo extra" />
+        android:text="@string/string_fragment_dining_extra_time" />
 
     <Button
         android:id="@+id/fragment_dining_guests_show"
@@ -65,7 +65,7 @@
         android:layout_marginRight="10dp"
         android:layout_marginStart="10dp"
         android:layout_weight="1"
-        android:text="Invitados" />
+        android:text="@string/string_fragment_dining_guests" />
 
 
 </LinearLayout>

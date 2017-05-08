@@ -16,6 +16,8 @@ import com.ievolutioned.iac.util.LogUtil;
  */
 public class LoginService extends ServiceBase {
 
+    private static final String TAG = LoginService.class.getName();
+
     /**
      * Admin token for log in.
      */
@@ -70,6 +72,7 @@ public class LoginService extends ServiceBase {
                         return new LoginResponse(true, user, response.result, null);
                     return new LoginResponse(false, null, null, null);
                 } catch (Exception e) {
+                    LogUtil.e(TAG, e.getMessage(), e);
                     return new LoginResponse(false, null, e.getMessage(), e);
                 }
             }

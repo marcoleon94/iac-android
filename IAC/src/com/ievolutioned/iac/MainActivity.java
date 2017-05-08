@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
                     onBackPressed();
                 }
             } else if (fragment instanceof DiningGuestsFragment) {
-                onBackPressed();
+                ((DiningGuestsFragment)fragment).onBackPressed();
             }
         }
     };

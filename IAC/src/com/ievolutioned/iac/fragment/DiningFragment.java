@@ -4,13 +4,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.text.InputType;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.text.method.DigitsKeyListener;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,9 +20,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -29,10 +31,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.ievolutioned.iac.CustomScannerActivity;
 import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.entity.Site;
 import com.ievolutioned.iac.entity.Support;
+import com.ievolutioned.iac.net.NetUtil;
 import com.ievolutioned.iac.net.service.DiningService;
 import com.ievolutioned.iac.net.service.ProfileService;
 import com.ievolutioned.iac.util.AppConfig;
@@ -118,7 +122,6 @@ public class DiningFragment extends BaseFragmentClass {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        //TODO: Save state
         if (mSite != null) {
             String siteOut = new Gson().toJson(mSite, Site.class);
             outState.putString(ARGS_PLANT, siteOut);
@@ -133,10 +136,14 @@ public class DiningFragment extends BaseFragmentClass {
         super.onSaveInstanceState(outState);
     }
 
+    /**
+     * Gets plant string
+     *
+     * @return site from json
+     */
     private String getPlantString() {
         if (mSite != null) {
-            String siteOut = new Gson().toJson(mSite, Site.class);
-            return siteOut;
+            return new Gson().toJson(mSite, Site.class);
         }
         return null;
     }
@@ -168,6 +175,30 @@ public class DiningFragment extends BaseFragmentClass {
         root.findViewById(R.id.fragment_dining_barcode_no_support_button).setOnClickListener(button_click);
         if (root.findViewById(R.id.fragment_dining_guests_show) != null)
             root.findViewById(R.id.fragment_dining_guests_show).setOnClickListener(button_click);
+
+        setDrawablesRadioButtons(root);
+    }
+
+    /**
+     * Sets drawables for {@link RadioButton}
+     *
+     * @param root find view
+     */
+    private void setDrawablesRadioButtons(View root) {
+        Rect bounds = new Rect(0, 0, 40, 50);
+
+        Drawable food = ContextCompat.getDrawable(getActivity(), R.drawable.ic_food);
+        food.setBounds(bounds);
+        ((RadioButton) root.findViewById(R.id.fragment_dining_support_type_food)).setCompoundDrawables(null, null, food, null);
+
+        Drawable beverage = ContextCompat.getDrawable(getActivity(), R.drawable.ic_soda);
+        beverage.setBounds(bounds);
+        ((RadioButton) root.findViewById(R.id.fragment_dining_support_type_beverage)).setCompoundDrawables(null, null, beverage, null);
+
+        Drawable water = ContextCompat.getDrawable(getActivity(), R.drawable.ic_water);
+        water.setBounds(bounds);
+        ((RadioButton) root.findViewById(R.id.fragment_dining_support_type_water)).setCompoundDrawables(null, null, water, null);
+
     }
 
     /**
@@ -176,7 +207,6 @@ public class DiningFragment extends BaseFragmentClass {
      * @param args - {@link Bundle} arguments
      */
     private void bindData(Bundle args) {
-        //TODO: restore state, add more things to load at first
         if (!restoreState(mSavedInstanceState)) {
             //Initial bind
             loadSite();
@@ -301,7 +331,7 @@ public class DiningFragment extends BaseFragmentClass {
                 try {
                     loadingScreen.dismiss();
                 } catch (Exception e) {
-
+                    LogUtil.e(TAG, e.getMessage(), e);
                 }
             }
 
@@ -310,7 +340,7 @@ public class DiningFragment extends BaseFragmentClass {
                 try {
                     loadingScreen.dismiss();
                 } catch (Exception e) {
-
+                    LogUtil.e(TAG, e.getMessage(), e);
                 }
             }
         });
@@ -462,6 +492,11 @@ public class DiningFragment extends BaseFragmentClass {
     private View.OnClickListener button_click = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            if (!NetUtil.hasNetworkConnection(getActivity())) {
+                ViewUtility.displayNetworkPreferences(getActivity());
+                return;
+            }
+
             switch (view.getId()) {
                 case R.id.fragment_dining_iac_id_button:
                     showAttendeeDialog(null, Support.Category.NORMAL, Support.Type.FOOD,
@@ -496,54 +531,15 @@ public class DiningFragment extends BaseFragmentClass {
 
 
     /**
-     * Shows iac id prompt dialog
-     */
-    @Deprecated
-    private void showIacIdDialog() {
-        try {
-            final EditText editTextIacId = new EditText(getActivity());
-            editTextIacId.setHint(R.string.string_fragment_attendees_new_input_hint);
-            editTextIacId.setLayoutParams(new ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT));
-            editTextIacId.setRawInputType(InputType.TYPE_CLASS_NUMBER);
-            editTextIacId.setKeyListener(DigitsKeyListener.getInstance("1234567890"));
-            AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
-            dialog.setTitle(R.string.string_fragment_attendees_new_title);
-            dialog.setView(editTextIacId);
-
-            //Add
-            dialog.setPositiveButton(R.string.string_fragment_attendees_new_confirm,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            //addNewAttendee(editTextIacId.getText().toString());
-                            dialogInterface.dismiss();
-                        }
-                    });
-            //Cancel
-            dialog.setNegativeButton(R.string.string_fragment_attendees_new_cancel,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.dismiss();
-                        }
-                    });
-
-            dialog.create().show();
-        } catch (Exception e) {
-            LogUtil.e(TAG, e.getMessage(), e);
-        }
-    }
-
-    /**
      * Shows barcode reader for id card
      *
      * @param args
      */
     private void showBarcodeReader(String args) {
         AppPreferences.setDiningArgsType(getContext(), args);
-        IntentIntegrator.forSupportFragment(DiningFragment.this).initiateScan();
+        IntentIntegrator integrator = IntentIntegrator.forSupportFragment(DiningFragment.this);
+        integrator.setCaptureActivity(CustomScannerActivity.class);
+        integrator.initiateScan();
     }
 
 
@@ -569,11 +565,13 @@ public class DiningFragment extends BaseFragmentClass {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if (result != null && !TextUtils.isEmpty(result.getContents()))
-            handleScanResult(result.getContents());
-        else
-            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR, "Error");
+        if (resultCode == AppCompatActivity.RESULT_OK) {
+            IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+            if (result != null && !TextUtils.isEmpty(result.getContents()))
+                handleScanResult(result.getContents());
+        } else
+            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                    R.string.string_fragment_dining_scan_cancelled);
 
 
     }

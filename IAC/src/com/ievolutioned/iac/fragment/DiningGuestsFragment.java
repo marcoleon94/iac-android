@@ -4,9 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
@@ -20,6 +24,7 @@ import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -29,15 +34,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.ievolutioned.iac.CustomScannerActivity;
 import com.ievolutioned.iac.MainActivity;
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.entity.Site;
 import com.ievolutioned.iac.entity.Support;
+import com.ievolutioned.iac.net.NetUtil;
 import com.ievolutioned.iac.net.service.DiningService;
 import com.ievolutioned.iac.util.AppConfig;
 import com.ievolutioned.iac.util.AppPreferences;
 import com.ievolutioned.iac.util.FormatUtil;
 import com.ievolutioned.iac.util.LogUtil;
+import com.ievolutioned.iac.util.ViewUtil;
 import com.ievolutioned.iac.view.ViewUtility;
 
 import java.util.ArrayList;
@@ -58,6 +66,8 @@ public class DiningGuestsFragment extends BaseFragmentClass {
     public static final String ARGS_HOST = "ARGS_HOST";
     public static final String ARGS_GUESTS_SAVED = "ARGS_GUESTS_SAVED";
 
+    private static final boolean HAS_OPTION_MENU = false;
+
     private static final int EXTRA_HOST = 1;
     private static final int EXTRA_GUEST = 2;
 
@@ -71,14 +81,19 @@ public class DiningGuestsFragment extends BaseFragmentClass {
     private View mHostInputView;
     private TextView mHostIacId;
     private TextView mHostName;
-    private ImageView mHostCetegory;
+    private ImageView mHostCategory;
     private ImageView mHostType;
     private JsonObject mCurrentHost;
 
     private Bundle mSavedInstanceState = null;
     private Site mSite;
 
-
+    /**
+     * Creates anew instrance with {@link Bundle } arguments
+     *
+     * @param args
+     * @return
+     */
     public static Fragment newInstance(Bundle args) {
         DiningGuestsFragment fragment = new DiningGuestsFragment();
         if (args != null)
@@ -86,12 +101,11 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         return fragment;
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View root = inflater.inflate(R.layout.fragment_dining_guests, container, false);
-        setHasOptionsMenu(true);
+        setHasOptionsMenu(HAS_OPTION_MENU);
         bindUI(root);
         setTitle(getString(R.string.string_fragment_dining_guests_title));
         if (savedInstanceState != null)
@@ -115,11 +129,10 @@ public class DiningGuestsFragment extends BaseFragmentClass {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_fragment_dining_guests:
-                if (validateForm())
-                    saveAndUpload();
-                else
-                    ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
-                            R.string.string_fragment_dining_guests_save_error_validation);
+                if (!NetUtil.hasNetworkConnection(getActivity())) {
+                    ViewUtility.displayNetworkPreferences(getActivity());
+                    break;
+                }
                 break;
             default:
                 break;
@@ -130,7 +143,6 @@ public class DiningGuestsFragment extends BaseFragmentClass {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        //TODO: Save state
         if (mCurrentHost != null)
             outState.putString(ARGS_HOST, mCurrentHost.getAsJsonObject().toString());
         if (mGuests != null) {
@@ -167,7 +179,7 @@ public class DiningGuestsFragment extends BaseFragmentClass {
 
         mHostIacId = (TextView) root.findViewById(R.id.list_item_attendee_id);
         mHostName = (TextView) root.findViewById(R.id.list_item_attendee_name);
-        mHostCetegory = (ImageView) root.findViewById(R.id.list_item_attendee_support_category);
+        mHostCategory = (ImageView) root.findViewById(R.id.list_item_attendee_support_category);
         mHostType = (ImageView) root.findViewById(R.id.list_item_attendee_support_type);
 
         root.findViewById(R.id.list_item_attendee_delete_button).setOnClickListener(button_click);
@@ -179,6 +191,29 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         root.findViewById(R.id.fragment_dining_guests_iac_id_button).setOnClickListener(button_click);
         root.findViewById(R.id.fragment_dining_guests_barcode_button).setOnClickListener(button_click);
 
+        setDrawablesRadioButtons(root);
+    }
+
+    /**
+     * Sets drawables for {@link RadioButton}
+     *
+     * @param root find view
+     */
+    private void setDrawablesRadioButtons(View root) {
+        Rect bounds = new Rect(0, 0, 40, 50);
+
+        Drawable food = ContextCompat.getDrawable(getActivity(), R.drawable.ic_food);
+        food.setBounds(bounds);
+        ((RadioButton) root.findViewById(R.id.fragment_dining_support_type_food)).setCompoundDrawables(null, null, food, null);
+
+        Drawable beverage = ContextCompat.getDrawable(getActivity(), R.drawable.ic_soda);
+        beverage.setBounds(bounds);
+        ((RadioButton) root.findViewById(R.id.fragment_dining_support_type_beverage)).setCompoundDrawables(null, null, beverage, null);
+
+        Drawable water = ContextCompat.getDrawable(getActivity(), R.drawable.ic_water);
+        water.setBounds(bounds);
+        ((RadioButton) root.findViewById(R.id.fragment_dining_support_type_water)).setCompoundDrawables(null, null, water, null);
+
     }
 
     /**
@@ -187,7 +222,6 @@ public class DiningGuestsFragment extends BaseFragmentClass {
      * @param args - {@link Bundle} arguments
      */
     private void bindData(Bundle args) {
-        //TODO: restore state
         restoreState(mSavedInstanceState != null ? mSavedInstanceState : args);
     }
 
@@ -197,7 +231,6 @@ public class DiningGuestsFragment extends BaseFragmentClass {
      * @param args - previous state
      */
     private void restoreState(Bundle args) {
-        //TODO: restore state
         try {
             if (args != null) {
                 //Get site
@@ -222,8 +255,10 @@ public class DiningGuestsFragment extends BaseFragmentClass {
                         for (String g : jsonGuests) {
                             mGuests.add(new JsonParser().parse(g));
                         }
-                    if (mGuestsAdapter != null)
+                    if (mGuestsAdapter != null && mGuestsListView != null) {
                         mGuestsAdapter.notifyDataSetChanged();
+                        ViewUtil.setListViewHeightBasedOnChildren(mGuestsListView);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -243,6 +278,11 @@ public class DiningGuestsFragment extends BaseFragmentClass {
             activity.setTitle(title);
     }
 
+    /**
+     * Gets the support type
+     *
+     * @return
+     */
     private String getSupportType() {
         if (mSegmentedSupportType == null)
             return Support.Type.FOOD;
@@ -259,6 +299,11 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         }
     }
 
+    /**
+     * Gets the support category
+     *
+     * @return
+     */
     private String getSupportCategory() {
         if (getActivity() == null)
             return Support.Category.NORMAL;
@@ -273,10 +318,10 @@ public class DiningGuestsFragment extends BaseFragmentClass {
      * @param guest - the attendee
      */
     private void removeGuest(final JsonObject guest) {
-        //TODO: Remove it
         try {
             mGuests.remove(guest);
             mGuestsAdapter.notifyDataSetChanged();
+            ViewUtil.setListViewHeightBasedOnChildren(mGuestsListView);
         } catch (Exception e) {
             ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR, "Error");
         }
@@ -304,18 +349,24 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         showHost();
     }
 
+    /**
+     * Removes host
+     */
     private void removeHost() {
         mCurrentHost = null;
         showHost();
     }
 
+    /**
+     * Show hosts if it's set
+     */
     private void showHost() {
         if (mCurrentHost != null && !mCurrentHost.isJsonNull() &&
                 mHostDetailsView != null && mHostIacId != null && mHostName != null) {
             mHostDetailsView.setVisibility(View.VISIBLE);
             mHostIacId.setText(mCurrentHost.get(DiningGuestsAttendeeAdapter.ATTENDEE_IAC_ID).getAsString());
             mHostName.setText(mCurrentHost.get(DiningGuestsAttendeeAdapter.ATTENDEE_NAME).getAsString());
-            mHostCetegory.setImageResource(getImageResource(mCurrentHost
+            mHostCategory.setImageResource(getImageResource(mCurrentHost
                     .get(DiningGuestsAttendeeAdapter.ATTENDEE_SUPPORT_CATEGORY).getAsString()));
             mHostType.setImageResource(getImageResource(mCurrentHost
                     .get(DiningGuestsAttendeeAdapter.ATTENDEE_SUPPORT_TYPE).getAsString()));
@@ -326,6 +377,16 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         }
     }
 
+    /**
+     * Adds a new attendee with the current params
+     *
+     * @param id
+     * @param iacId
+     * @param name
+     * @param category
+     * @param type
+     * @param date
+     */
     private void addNewAttendee(final long id, final String iacId, final String name,
                                 final String category, final String type, final Date date) {
         //Verify if it exists
@@ -347,7 +408,7 @@ public class DiningGuestsFragment extends BaseFragmentClass {
 
         mGuestsAdapter.notifyDataSetChanged();
         LogUtil.d(TAG, mGuests.toString());
-        //ViewUtil.setListViewHeightBasedOnChildren(mGuestsListView);
+        ViewUtil.setListViewHeightBasedOnChildren(mGuestsListView);
     }
 
 
@@ -374,13 +435,18 @@ public class DiningGuestsFragment extends BaseFragmentClass {
     private View.OnClickListener button_click = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            if (!NetUtil.hasNetworkConnection(getActivity())) {
+                ViewUtility.displayNetworkPreferences(getActivity());
+                return;
+            }
+
             switch (view.getId()) {
                 //HOST
                 case R.id.list_item_attendee_delete_button:
                     removeHost();
                     break;
                 case R.id.fragment_dining_iac_id_button:
-                    showAttendeeDialog(null, Support.Category.NORMAL, Support.Type.FOOD,
+                    showAttendeeDialog(null, Support.Category.NORMAL, getSupportType(),
                             DiningAttendeeDialogFragment.NO_ERROR);
                     break;
                 case R.id.fragment_dining_barcode_normal_button:
@@ -408,6 +474,14 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         }
     };
 
+    /**
+     * Shows the attendee dialog
+     *
+     * @param input
+     * @param category
+     * @param type
+     * @param errorCode
+     */
     private void showAttendeeDialog(final String input, final String category, final String type,
                                     final int errorCode) {
         Bundle args = new Bundle();
@@ -427,6 +501,14 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         attendeeDialogFragment.show(getFragmentManager(), DiningAttendeeDialogFragment.TAG);
     }
 
+    /**
+     * Validate a user for enter to diner room
+     *
+     * @param extra
+     * @param iacId
+     * @param category
+     * @param type
+     */
     private void callServiceFor(final int extra, final String iacId, final String category, final String type) {
         String adminToken = AppPreferences.getAdminToken(getActivity());
         String deviceId = AppConfig.getUUID(getActivity());
@@ -453,6 +535,15 @@ public class DiningGuestsFragment extends BaseFragmentClass {
                 });
     }
 
+    /**
+     * Handles the validation user for dining room
+     *
+     * @param extra
+     * @param iacId
+     * @param response
+     * @param category
+     * @param type
+     */
     private void handleServiceCallResponse(final int extra, final String iacId, JsonElement response,
                                            final String category, final String type) {
         try {
@@ -536,6 +627,9 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         }
     }
 
+    /**
+     * Shows a manual input
+     */
     private void showManualInput() {
         try {
             final EditText editText = new EditText(getActivity());
@@ -581,7 +675,53 @@ public class DiningGuestsFragment extends BaseFragmentClass {
      */
     private void showBarcodeReader(int extra, final String category) {
         AppPreferences.setDiningBarcodeTemporal(getActivity(), extra);
-        IntentIntegrator.forSupportFragment(DiningGuestsFragment.this).initiateScan();
+        IntentIntegrator integrator = IntentIntegrator.forSupportFragment(DiningGuestsFragment.this);
+        integrator.setCaptureActivity(CustomScannerActivity.class);
+        integrator.initiateScan();
+    }
+
+    /**
+     * Saves the dining attendees and host for the menu option
+     */
+    private void doSaveOption() {
+        if (validateForm())
+            saveAndUpload();
+        else
+            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                    R.string.string_fragment_dining_guests_save_error_validation);
+    }
+
+    /**
+     * Saves the dining attendees on back pressed event
+     */
+    private void doSaveBackPressed() {
+        if (validateForm())
+            saveAndUpload();
+        else
+            showBackUnsavedDialog();
+    }
+
+    /**
+     * Shows error on save decision, allows exit without saving
+     */
+    private void showBackUnsavedDialog() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this.mAttachedActivity);
+        dialog.setTitle(R.string.string_fragment_dining_guests_dialog_title);
+        dialog.setMessage(R.string.string_fragment_dining_guests_dialog_body);
+        dialog.setPositiveButton(R.string.string_fragment_dining_guests_dialog_ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                closeGuests();
+            }
+        });
+
+        dialog.setNegativeButton(R.string.string_fragment_dining_guests_dialog_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        dialog.create().show();
     }
 
     /**
@@ -598,11 +738,12 @@ public class DiningGuestsFragment extends BaseFragmentClass {
      */
     private void saveAndUpload() {
         final Context context = getActivity();
-        String type = getSupportType();
-        String category = getSupportCategory();
 
-        if (context != null && mSite != null && type != null && category != null && mCurrentHost != null
+        if (context != null && mSite != null && mCurrentHost.has(DiningGuestsAttendeeAdapter.ATTENDEE_SUPPORT_CATEGORY)
+                && mCurrentHost.has(DiningGuestsAttendeeAdapter.ATTENDEE_SUPPORT_TYPE) && mCurrentHost != null
                 && mGuests != null && mGuests.size() > 0) {
+            String type = mCurrentHost.get(DiningGuestsAttendeeAdapter.ATTENDEE_SUPPORT_TYPE).getAsString();
+            String category = mCurrentHost.get(DiningGuestsAttendeeAdapter.ATTENDEE_SUPPORT_CATEGORY).getAsString();
             String register = DiningService.getDiningRegisterBody(mSite.getId(), type, category,
                     mCurrentHost, mGuests);
             LogUtil.d(TAG, register);
@@ -621,7 +762,9 @@ public class DiningGuestsFragment extends BaseFragmentClass {
                         public void onError(DiningService.DiningResponse response) {
                             LogUtil.d(TAG, response.msg);
                             ViewUtility.showMessage(context, ViewUtility.MSG_ERROR,
-                                    R.string.string_fragment_dining_modify_save_error);
+                                    R.string.string_fragment_dining_guests_modify_save_error);
+                            if (!HAS_OPTION_MENU)
+                                showBackUnsavedDialog();
                         }
 
                         @Override
@@ -633,10 +776,24 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         }
     }
 
+    /**
+     * back stack to the previous fragment
+     */
     private void closeGuests() {
-        //TODO: back?
-        getActivity().onBackPressed();
+        if (this.mAttachedActivity != null)
+            this.mAttachedActivity.onBackPressed();
     }
+
+    /**
+     * Saves and goes back to the previus fragment
+     */
+    public void onBackPressed() {
+        if (HAS_OPTION_MENU)
+            doSaveOption();
+        else
+            doSaveBackPressed();
+    }
+
 
     /**
      * Gets the attendee list to be submitted
@@ -660,14 +817,26 @@ public class DiningGuestsFragment extends BaseFragmentClass {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if (result != null && !TextUtils.isEmpty(result.getContents())) {
-            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS, result.getContents());
-            int from = AppPreferences.getDiningBarcodeTemporal(getContext());
-            handleScanResult(from, result.getContents());
+        if (resultCode == AppCompatActivity.RESULT_OK) {
+            IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+            if (result != null && !TextUtils.isEmpty(result.getContents())) {
+                ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS, result.getContents());
+                int from = AppPreferences.getDiningBarcodeTemporal(getContext());
+                handleScanResult(from, result.getContents());
+            }
+        } else {
+            ViewUtility.showMessage(getActivity(), ViewUtility.MSG_ERROR,
+                    R.string.string_fragment_dining_scan_cancelled);
         }
     }
 
+    /**
+     * Scan result handler
+     *
+     * @param from
+     * @param iacId
+     */
+    //TODO: Set strings
     private void handleScanResult(int from, final String iacId) {
         if (from == EXTRA_HOST) {
             if (!isAttendeeInList(iacId)) {
@@ -686,24 +855,12 @@ public class DiningGuestsFragment extends BaseFragmentClass {
         }
     }
 
-
     /**
-     * Shows or hides the attendee layouts
+     * Get the Icons for guests and host support type and category
      *
-     * @param itemId if any course is selected, that means <code>itemId > 0</code>
+     * @param s
+     * @return
      */
-    private void showAttendeeElements(long itemId) {
-        int visibility = itemId > 0 ? View.VISIBLE : View.GONE;
-        try {
-            getView().findViewById(R.id.fragment_dining_guests_title).setVisibility(visibility);
-            getView().findViewById(R.id.fragment_dining_guests_add_layout).setVisibility(visibility);
-            getView().findViewById(R.id.fragment_dining_guests_attendee_subtitle).setVisibility(visibility);
-            getView().findViewById(R.id.fragment_dining_guests_list).setVisibility(visibility);
-        } catch (NullPointerException npe) {
-            LogUtil.e(TAG, npe.getMessage(), npe);
-        }
-    }
-
     private int getImageResource(String s) {
         if (s == null)
             return R.drawable.ic_mapcross_dummy;
@@ -728,6 +885,9 @@ public class DiningGuestsFragment extends BaseFragmentClass {
     }
 
 
+    /**
+     * {@link DiningGuestsAttendeeAdapter} list adapter for guests
+     */
     public class DiningGuestsAttendeeAdapter extends BaseAdapter implements View.OnClickListener {
 
         protected final static String ATTENDEE_ID = "id";

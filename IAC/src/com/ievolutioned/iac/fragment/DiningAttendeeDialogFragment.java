@@ -3,20 +3,27 @@ package com.ievolutioned.iac.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.ievolutioned.iac.R;
 import com.ievolutioned.iac.entity.Support;
+import com.ievolutioned.iac.net.NetUtil;
 import com.ievolutioned.iac.util.LogUtil;
+import com.ievolutioned.iac.view.ViewUtility;
 
 import info.hoang8f.android.segmented.SegmentedGroup;
 
 /**
+ * Dining attendee dialog fragment, allows to define any attendee for dining room
+ * <p>
  * Created by Daniel on 11/04/2017.
  */
 
@@ -62,6 +69,15 @@ public class DiningAttendeeDialogFragment extends DialogFragment implements View
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Window w = getDialog().getWindow();
+        if (w != null) {
+            w.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
+            WindowManager.LayoutParams attrs = w.getAttributes();
+            attrs.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            w.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+            attrs.x = 0;
+            w.setAttributes(attrs);
+        }
         return bindUI(inflater.inflate(R.layout.dialog_fragment_dining_attendee, container, false));
     }
 
@@ -158,6 +174,10 @@ public class DiningAttendeeDialogFragment extends DialogFragment implements View
 
     @Override
     public void onClick(View view) {
+        if (!NetUtil.hasNetworkConnection(getActivity())) {
+            ViewUtility.displayNetworkPreferences(getActivity());
+            return;
+        }
         switch (view.getId()) {
             case R.id.dialog_fragment_dining_attendee_accept:
                 try {

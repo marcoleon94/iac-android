@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="string_dialog_fragment_commensal_entry">Comensal entrante</string>
+    <string name="string_dialog_fragment_commensal">Comensal</string>
+    <string name="string_dialog_fragment_type">Tipo</string>
+    <string name="string_dialog_fragment_accept">Aceptar</string>
+    <string name="string_dialog_fragment_cancel">Cancelar</string>
+</resources>

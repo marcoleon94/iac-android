@@ -36,6 +36,8 @@ public class AppPreferences {
 
     public static final String TYPE_IAC_DINING = "comedor";
 
+    private static final String KEY_TORCH_STATE = "KEY_TORCH_STATE";
+
     /**
      * Gets the SharedPreferences
      *
@@ -144,8 +146,8 @@ public class AppPreferences {
      * @param c     - the context
      * @param value - the value
      */
-    public static void setSiteId(Context c, long value) {
-        getEditor(c).putLong(KEY_SITE_ID, value).commit();
+    public static void setSiteId(Context c, String value) {
+        getEditor(c).putString(KEY_SITE_ID, value).commit();
     }
 
     /**
@@ -154,8 +156,8 @@ public class AppPreferences {
      * @param c - the context
      * @return the saved value or null
      */
-    public static long getSiteId(Context c) {
-        return getPrefs(c).getLong(KEY_SITE_ID, 0);
+    public static String getSiteId(Context c) {
+        return getPrefs(c).getString(KEY_SITE_ID, null);
     }
 
     /**
@@ -193,5 +195,21 @@ public class AppPreferences {
 
     public static String getDiningArgsType(Context c) {
         return getPrefs(c).getString(KEY_DINING_ARGS_TYPE, null);
+    }
+
+    public static void setTorchState(Context c, boolean b) {
+        getEditor(c).putBoolean(KEY_TORCH_STATE, b).commit();
+    }
+
+    public static boolean getTorchState(Context c) {
+        return getPrefs(c).getBoolean(KEY_TORCH_STATE, false);
+    }
+
+    public static boolean toggleTorchState(Context c) {
+        if (!getPrefs(c).contains(KEY_TORCH_STATE))
+            setTorchState(c, false);
+        boolean currentState = getTorchState(c);
+        setTorchState(c, !currentState);
+        return !currentState;
     }
 }

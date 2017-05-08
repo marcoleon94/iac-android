@@ -18,16 +18,18 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:drawableEnd="@drawable/ic_iac_id"
             android:drawableRight="@drawable/ic_iac_id"
-            android:text="Manual" />
+            android:text="@string/string_fragment_dining_manual" />
 
         <Button
             android:id="@+id/fragment_dining_barcode_normal_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:drawableEnd="@drawable/ic_barcode"
             android:drawableRight="@drawable/ic_barcode"
-            android:text="Normal" />
+            android:text="@string/string_fragment_dining_normal" />
     </LinearLayout>
 
     <LinearLayout
@@ -41,16 +43,18 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:drawableEnd="@drawable/ic_barcode"
             android:drawableRight="@drawable/ic_barcode"
-            android:text="Sin Subsidio" />
+            android:text="@string/string_fragment_dining_no_support" />
 
         <Button
             android:id="@+id/fragment_dining_barcode_extra_time_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:drawableEnd="@drawable/ic_barcode"
             android:drawableRight="@drawable/ic_barcode"
-            android:text="Tiempo extra" />
+            android:text="@string/string_fragment_dining_extra_time" />
     </LinearLayout>
 
 </LinearLayout>
