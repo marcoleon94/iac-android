@@ -2,8 +2,21 @@ package com.ievolutioned.iac.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.ievolutioned.iac.entity.UserRole;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Shared preferences class. Manages the shared preferences for the App.
@@ -37,6 +50,8 @@ public class AppPreferences {
     public static final String TYPE_IAC_DINING = "comedor";
 
     private static final String KEY_TORCH_STATE = "KEY_TORCH_STATE";
+
+    public static final String KEY_ATTENDEE_TEMP_LIST = "KEY_ATTENDEE_TEMP_LIST";
 
     /**
      * Gets the SharedPreferences
@@ -211,5 +226,16 @@ public class AppPreferences {
         boolean currentState = getTorchState(c);
         setTorchState(c, !currentState);
         return !currentState;
+    }
+
+    public static void setAttendeeTempList (Context c, JsonArray list){
+        getEditor(c).putString(KEY_ATTENDEE_TEMP_LIST,list.toString());
+    }
+
+    public static JsonArray getAttendeeTempList(Context c){
+        String array= getPrefs(c).getString(KEY_ATTENDEE_TEMP_LIST,null);
+        JsonElement e = new JsonParser().parse(array);
+        JsonArray list = e.getAsJsonArray();
+        return list;
     }
 }

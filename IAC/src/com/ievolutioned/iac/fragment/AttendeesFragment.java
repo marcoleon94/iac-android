@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.DigitsKeyListener;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -63,6 +64,9 @@ public class AttendeesFragment extends BaseFragmentClass {
     private JsonArray mAttendees = new JsonArray();
 
     private Bundle mSavedInstanceState = null;
+
+    private boolean mScannResult= false;
+    private static boolean first = true;
 
 
     @Override
@@ -196,6 +200,7 @@ public class AttendeesFragment extends BaseFragmentClass {
      * @param args - previous state
      */
     private void restoreState(Bundle args) {
+        Log.d(TAG,"restoreState");
         try {
             JsonElement json = new JsonParser().parse(args.getString(ARGS_SAVED_COURSES));
             mCourses = new JsonArray();
@@ -207,13 +212,18 @@ public class AttendeesFragment extends BaseFragmentClass {
                     mCoursesSpinner.setSelection(args.getInt(ARGS_SAVED_COURSE_ITEM_POS));
                 }
             }
-            JsonElement jsonAttendees = new JsonParser().parse(args.getString(ARGS_SAVED_ATTENDEES));
-            mAttendees = jsonAttendees.getAsJsonArray();
-            if (mAttendeeAdapter != null)
+            if(mScannResult)
+                mAttendees = AppPreferences.getAttendeeTempList(getContext());
+            else{
+                JsonElement jsonAttendees = new JsonParser().parse(args.getString(ARGS_SAVED_ATTENDEES));
+                mAttendees = jsonAttendees.getAsJsonArray();
+            }
+            if (mAttendeeAdapter != null || mScannResult)
                 mAttendeeAdapter.notifyDataSetChanged();
         } catch (Exception e) {
 
         }
+        mScannResult=false;
     }
 
     /**
@@ -371,6 +381,7 @@ public class AttendeesFragment extends BaseFragmentClass {
      * Shows barcode reader for id card
      */
     private void showBarcodeReader() {
+        mScannResult=true;
         IntentIntegrator.forSupportFragment(AttendeesFragment.this).initiateScan();
     }
 
@@ -441,10 +452,13 @@ public class AttendeesFragment extends BaseFragmentClass {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG,"On Activity Result");
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null && !TextUtils.isEmpty(result.getContents())) {
             ViewUtility.showMessage(getActivity(), ViewUtility.MSG_SUCCESS, result.getContents());
             addNewAttendee(result.getContents());
+            //TODO save attendees on temporal list
+            AppPreferences.setAttendeeTempList(getContext(),mAttendees);
             showBarCodeDecision();
         }
     }
@@ -493,6 +507,8 @@ public class AttendeesFragment extends BaseFragmentClass {
                                 LogUtil.d(TAG, response.json.toString());
                                 if (response.json != null || !response.json.isJsonNull()) {
                                     mAttendees = response.json.getAsJsonArray();
+                                    //TODO delete temporal list of attendees
+                                    AppPreferences.setAttendeeTempList(getContext(),mAttendees);
                                     mAttendeeAdapter.notifyDataSetChanged();
                                 }
                             }
